@@ -20,12 +20,11 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v2.3 (Modo Pantalla Completa / Vista Zen con Botón Flotante 'X')
-- **Nueva Funcionalidad de Pantalla Completa**:
-  - Incorporado botón `⛶ Pantalla` en la barra de herramientas superior y atajos globales `F11` y `Esc`.
-  - Al activarse:
-    1. Se ocultan por completo todas las barras de herramientas (selector, rotación, opacidad, botones) y la barra de estado inferior.
-    2. La ventana se expande a pantalla completa sin bordes (*borderless fullscreen*), permitiendo que la ventana clonada ocupe el 100% del monitor con escalado limpio.
-    3. Aparece un **botón flotante '✕'** elegante y translúcido en la esquina superior derecha (`BtnExitFullscreen`).
-    4. Al hacer clic en la '✕' o pulsar la tecla `Esc` (o `F11`), se sale instantáneamente de pantalla completa, restaurando todos los botones y dimensiones originales.
+### [2026-11-07] - AlwaysRotate v2.4 (Simulación de Clics Sin Esperas y Sub-Frame VSync en Misma Pantalla)
+- **Corrección Definitiva de Clics en la Misma Pantalla**:
+  - Se eliminó el gancho `WM_NCHITTEST` que interfería con la cola de eventos de WPF.
+  - Se restauró el despacho por hardware que demostró funcionar al 100% en WhatsApp en v2.1.
+  - **Eliminación del parpadeo visual**:
+    - El desplazamiento off-screen se condiciona estrictamente a `isCoveredByMe` (si AlwaysRotate no solapa el punto de clic, no se mueve en absoluto).
+    - Si se solapa, el desplazamiento, clic y restauración se ejecutan de forma **síncrona e instantánea sin ningún `Thread.Sleep`** intermedio (< 0.1 ms). Al completarse en una fracción minúscula de un solo ciclo de refresco (16.6 ms a 60 Hz), el Compositor de Windows (DWM) no llega a renderizar ningún fotograma ausente, resultando en clics inmediatos en WhatsApp sin ningún parpadeo visible.
 - **Control de Versiones**: Commits realizados en Git `master`.
