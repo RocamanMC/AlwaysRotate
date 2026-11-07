@@ -350,10 +350,6 @@
                     <Image x:Name="RotatedImageHost" RenderOptions.BitmapScalingMode="HighQuality"/>
                 </Viewbox>
 
-                <!-- Top Drag Strip for Zen Mode -->
-                <Border x:Name="ZenTopDragStrip" Height="10" VerticalAlignment="Top" Background="#01000000" Cursor="SizeAll"
-                        MouseLeftButtonDown="ZenDrag_MouseLeftButtonDown" ToolTip="Arrastrar ventana (o mantén Alt + clic)" Visibility="Collapsed" Panel.ZIndex="500"/>
-
                 <!-- Floating Fullscreen & Zen HUD Toolbar -->
                 <Border x:Name="FullscreenHud"
                         HorizontalAlignment="Right" VerticalAlignment="Top"
@@ -371,12 +367,6 @@
                         <DropShadowEffect BlurRadius="18" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.75"/>
                     </Border.Effect>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <!-- 0. Drag Grip for Zen Mode -->
-                        <Border x:Name="BdFsGrip" Background="Transparent" Width="22" Height="34" Cursor="SizeAll"
-                                MouseLeftButtonDown="HudGrip_MouseLeftButtonDown" ToolTip="Arrastra aquí para mover la ventana">
-                            <TextBlock Text="⋮⋮" FontSize="14" Foreground="#71717a" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-
                         <!-- 1. Rotate +90° Button -->
                         <Button x:Name="BtnFsRotate" Click="BtnFsRotate_Click" Style="{StaticResource HudBtn}"
                                 ToolTip="Girar +90° Horario" Margin="2,0">

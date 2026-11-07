@@ -20,19 +20,13 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v2.9 (Doble Modo de Vista Limpia: Ventana Zen y Pantalla Completa)
-- **Implementación de 2 Tipos de Visualización Limpia sin Menús**:
-  1. **Modo Solo Ventana (`ViewState.WindowZen` / Botón `🗖 Ventana` / Atajo `F10`)**:
-     - Oculta todos los botones, cabeceras y barras de estado molestas.
-     - Mantiene la app en una ventana libre y flotante que el usuario puede redimensionar desde cualquier borde o esquina (`WindowChrome` con borde de redimensionamiento nativo de 7px).
-     - Permite mover la ventana fácilmente:
-       - Mediante el tirador de agarre `⋮⋮` en la barra flotante HUD.
-       - Mediante la tira superior discreta de agarre.
-       - Manteniendo pulsado `Alt + Clic` en cualquier punto de la pantalla.
-  2. **Modo Pantalla Completa (`ViewState.Fullscreen` / Botón `⛶ Completa` / Atajo `F11`)**:
-     - Ocupa el monitor entero sin bordes.
-- **HUD Flotante Unificado con Conmutación Rápida**:
-  - Tanto en Ventana Zen como en Pantalla Completa se dispone del HUD flotante con auto-ocultado tras 2.5s.
-  - Incluye botón directo `⛶` / `🗖` para alternar entre ambos modos sin tener que salir al modo normal.
-  - El botón `✕` o pulsar la tecla `Esc` restaura inmediatamente la ventana normal con todos los menús.
+### [2026-11-07] - AlwaysRotate v3.0 (Marco Nativo de Ventana en Modo Zen y Eliminación de Borde Retro DWM)
+- **Corrección del Borde Clásico Retro (Fallback DWM)**:
+  - Eliminada la manipulación dinámica de `WindowChrome` en tiempo de ejecución, la cual causaba que Windows perdiera la composición moderna de DWM y dibujara el marco básico clásico de Windows 95/98.
+- **Modo Solo Ventana con Marco Nativo Completo**:
+  - En **Modo Solo Ventana** (`🗖 Ventana` / `F10`), la ventana conserva 100% su marco nativo moderno de Windows 11 (`WindowStyle.SingleBorderWindow`):
+    - Permite agarrar la barra de título superior para mover la ventana con total naturalidad como cualquier app del sistema.
+    - Los 4 bordes y esquinas permiten redimensionar de forma nativa fluida.
+    - Se ocultan por completo los menús interiores (`HeaderBorder` y `FooterBorder`), dedicando el 100% del área de cliente al contenido rotado sin estorbos.
+    - Transición perfecta y sin glitches entre Modo Normal, Modo Solo Ventana y Pantalla Completa.
 - **Control de Versiones**: Commits realizados en Git `master`.

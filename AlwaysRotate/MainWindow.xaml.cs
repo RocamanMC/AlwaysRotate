@@ -532,22 +532,6 @@ namespace AlwaysRotate
             }
         }
 
-        private void HudGrip_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ButtonState == MouseButtonState.Pressed)
-            {
-                DragMove();
-            }
-        }
-
-        private void ZenDrag_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ButtonState == MouseButtonState.Pressed)
-            {
-                DragMove();
-            }
-        }
-
         private void BtnFsRotate_Click(object sender, RoutedEventArgs e)
         {
             ApplyAngle(_currentAngle + 90);
@@ -579,42 +563,35 @@ namespace AlwaysRotate
                     FullscreenHud.Opacity = 1.0;
                     FullscreenHud.Visibility = Visibility.Collapsed;
 
-                    System.Windows.Shell.WindowChrome.SetWindowChrome(this, null);
-
+                    // Restore menus
                     HeaderBorder.Visibility = Visibility.Visible;
                     FooterBorder.Visibility = Visibility.Visible;
-                    ZenTopDragStrip.Visibility = Visibility.Collapsed;
 
-                    WindowStyle = _prevWindowStyle;
-                    ResizeMode = _prevResizeMode;
-                    WindowState = _prevWindowState;
-                    break;
-
-                case ViewState.WindowZen:
-                    HeaderBorder.Visibility = Visibility.Collapsed;
-                    FooterBorder.Visibility = Visibility.Collapsed;
-                    ZenTopDragStrip.Visibility = Visibility.Visible;
-
-                    // Set resizable borderless WindowChrome
-                    var chrome = new System.Windows.Shell.WindowChrome
-                    {
-                        CaptionHeight = 0,
-                        ResizeBorderThickness = new Thickness(7),
-                        GlassFrameThickness = new Thickness(0),
-                        CornerRadius = new CornerRadius(0)
-                    };
-                    System.Windows.Shell.WindowChrome.SetWindowChrome(this, chrome);
-
-                    WindowStyle = WindowStyle.None;
-                    ResizeMode = ResizeMode.CanResize;
+                    // Ensure standard window frame
                     if (WindowState == WindowState.Maximized)
                     {
                         WindowState = WindowState.Normal;
                     }
+                    WindowStyle = WindowStyle.SingleBorderWindow;
+                    ResizeMode = ResizeMode.CanResize;
+                    break;
+
+                case ViewState.WindowZen:
+                    // Hide menus (Header and Footer)
+                    HeaderBorder.Visibility = Visibility.Collapsed;
+                    FooterBorder.Visibility = Visibility.Collapsed;
+
+                    // Keep normal window frame so titlebar and borders are 100% native Windows
+                    if (WindowState == WindowState.Maximized)
+                    {
+                        WindowState = WindowState.Normal;
+                    }
+                    WindowStyle = WindowStyle.SingleBorderWindow;
+                    ResizeMode = ResizeMode.CanResize;
 
                     // Configure HUD toggle button
                     IcoFsToggleMode.Text = "⛶";
-                    BtnFsToggleMode.ToolTip = "Cambiar a Pantalla Completa total (F11)";
+                    BtnFsToggleMode.ToolTip = "Pantalla Completa total (F11)";
 
                     // Show HUD with auto-hide timer
                     FullscreenHud.BeginAnimation(UIElement.OpacityProperty, null);
@@ -627,17 +604,15 @@ namespace AlwaysRotate
                 case ViewState.Fullscreen:
                     HeaderBorder.Visibility = Visibility.Collapsed;
                     FooterBorder.Visibility = Visibility.Collapsed;
-                    ZenTopDragStrip.Visibility = Visibility.Collapsed;
 
-                    System.Windows.Shell.WindowChrome.SetWindowChrome(this, null);
-
+                    // Borderless Fullscreen
                     WindowStyle = WindowStyle.None;
                     ResizeMode = ResizeMode.NoResize;
                     WindowState = WindowState.Maximized;
 
                     // Configure HUD toggle button
                     IcoFsToggleMode.Text = "🗖";
-                    BtnFsToggleMode.ToolTip = "Cambiar a Modo Solo Ventana libre (F10)";
+                    BtnFsToggleMode.ToolTip = "Modo Solo Ventana (F10)";
 
                     // Show HUD with auto-hide timer
                     FullscreenHud.BeginAnimation(UIElement.OpacityProperty, null);
