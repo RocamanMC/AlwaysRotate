@@ -539,27 +539,19 @@ namespace AlwaysRotate
 
             IntPtr myHwnd = new WindowInteropHelper(this).Handle;
             Win32.GetWindowRect(myHwnd, out var myRect);
-            bool isCoveredByMe = (screenX >= myRect.Left && screenX <= myRect.Right && screenY >= myRect.Top && screenY <= myRect.Bottom);
+            int origX = myRect.Left;
+            int origY = myRect.Top;
 
             ThreadPool.QueueUserWorkItem(_ =>
             {
                 lock (_clickLock)
                 {
                     _isSimulatingInput = true;
-                    int originalExStyle = 0;
                     int targetOriginalExStyle = 0;
                     try
                     {
-                        if (isCoveredByMe)
-                        {
-                            // 1. Temporarily demote AlwaysRotate from Topmost so it cannot intercept the click
-                            Win32.SetWindowPos(myHwnd, Win32.HWND_NOTOPMOST, 0, 0, 0, 0, Win32.SWP_NOMOVE | Win32.SWP_NOSIZE | Win32.SWP_NOACTIVATE);
-
-                            // 2. Make AlwaysRotate click-transparent with frame update
-                            originalExStyle = Win32.GetWindowLong(myHwnd, Win32.GWL_EXSTYLE);
-                            Win32.SetWindowLong(myHwnd, Win32.GWL_EXSTYLE, originalExStyle | Win32.WS_EX_TRANSPARENT);
-                            Win32.SetWindowPos(myHwnd, IntPtr.Zero, 0, 0, 0, 0, Win32.SWP_NOMOVE | Win32.SWP_NOSIZE | Win32.SWP_NOZORDER | Win32.SWP_FRAMECHANGED | Win32.SWP_NOACTIVATE);
-                        }
+                        // 1. Physically shift AlwaysRotate off-screen for 50ms so it is 100% impossible for it to intercept the click
+                        Win32.SetWindowPos(myHwnd, IntPtr.Zero, -15000, -15000, 0, 0, Win32.SWP_NOSIZE | Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
 
                         if (_isGhostEnabled)
                         {
@@ -571,24 +563,24 @@ namespace AlwaysRotate
 
                         Win32.GetCursorPos(out var oldCursor);
 
-                        // 3. Activate target window in foreground (now above AlwaysRotate)
+                        // 2. Activate target window in foreground (WhatsApp)
                         Win32.SetForegroundWindow(_targetHwnd);
                         Thread.Sleep(30);
 
-                        // 4. Position cursor exactly over the control in target window
+                        // 3. Position cursor exactly over the control in target window
                         Win32.SetCursorPos(screenX, screenY);
                         Thread.Sleep(15);
 
                         uint downFlag = isRightClick ? Win32.MOUSEEVENTF_RIGHTDOWN : Win32.MOUSEEVENTF_LEFTDOWN;
                         uint upFlag = isRightClick ? Win32.MOUSEEVENTF_RIGHTUP : Win32.MOUSEEVENTF_LEFTUP;
 
-                        // 5. Dispatch real hardware mouse down + hold + up directly to target
+                        // 4. Dispatch real hardware mouse down + hold + up directly to target
                         Win32.mouse_event(downFlag, 0, 0, 0, UIntPtr.Zero);
                         Thread.Sleep(45);
                         Win32.mouse_event(upFlag, 0, 0, 0, UIntPtr.Zero);
                         Thread.Sleep(20);
 
-                        // 6. Return cursor to original position
+                        // 5. Return cursor to original position
                         Win32.SetCursorPos(oldCursor.X, oldCursor.Y);
                     }
                     finally
@@ -598,15 +590,9 @@ namespace AlwaysRotate
                             Win32.SetWindowLong(_targetHwnd, Win32.GWL_EXSTYLE, targetOriginalExStyle | Win32.WS_EX_TRANSPARENT);
                             Win32.SetWindowPos(_targetHwnd, IntPtr.Zero, 0, 0, 0, 0, Win32.SWP_NOMOVE | Win32.SWP_NOSIZE | Win32.SWP_NOZORDER | Win32.SWP_FRAMECHANGED | Win32.SWP_NOACTIVATE);
                         }
-                        if (isCoveredByMe)
-                        {
-                            Win32.SetWindowLong(myHwnd, Win32.GWL_EXSTYLE, originalExStyle);
-                            Win32.SetWindowPos(myHwnd, _isAlwaysOnTop ? Win32.HWND_TOPMOST : Win32.HWND_NOTOPMOST, 0, 0, 0, 0, Win32.SWP_NOMOVE | Win32.SWP_NOSIZE | Win32.SWP_FRAMECHANGED | Win32.SWP_NOACTIVATE);
-                        }
-                        else if (_isAlwaysOnTop)
-                        {
-                            Win32.SetWindowPos(myHwnd, Win32.HWND_TOPMOST, 0, 0, 0, 0, Win32.SWP_NOMOVE | Win32.SWP_NOSIZE | Win32.SWP_NOACTIVATE);
-                        }
+
+                        // 6. Restore AlwaysRotate back to its exact on-screen coordinates
+                        Win32.SetWindowPos(myHwnd, _isAlwaysOnTop ? Win32.HWND_TOPMOST : Win32.HWND_NOTOPMOST, origX, origY, 0, 0, Win32.SWP_NOSIZE | Win32.SWP_NOACTIVATE);
                         Thread.Sleep(20);
                         _isSimulatingInput = false;
                     }
@@ -691,25 +677,19 @@ namespace AlwaysRotate
 
                     IntPtr myHwnd = new WindowInteropHelper(this).Handle;
                     Win32.GetWindowRect(myHwnd, out var myRect);
-                    bool isCoveredByMe = (screenX >= myRect.Left && screenX <= myRect.Right && screenY >= myRect.Top && screenY <= myRect.Bottom);
+                    int origX = myRect.Left;
+                    int origY = myRect.Top;
 
                     ThreadPool.QueueUserWorkItem(_ =>
                     {
                         lock (_wheelLock)
                         {
                             _isForwardingWheel = true;
-                            int myOriginalExStyle = 0;
                             int targetOriginalExStyle = 0;
                             try
                             {
-                                if (isCoveredByMe)
-                                {
-                                    // Demote AlwaysRotate from Topmost & make transparent
-                                    Win32.SetWindowPos(myHwnd, Win32.HWND_NOTOPMOST, 0, 0, 0, 0, Win32.SWP_NOMOVE | Win32.SWP_NOSIZE | Win32.SWP_NOACTIVATE);
-                                    myOriginalExStyle = Win32.GetWindowLong(myHwnd, Win32.GWL_EXSTYLE);
-                                    Win32.SetWindowLong(myHwnd, Win32.GWL_EXSTYLE, myOriginalExStyle | Win32.WS_EX_TRANSPARENT);
-                                    Win32.SetWindowPos(myHwnd, IntPtr.Zero, 0, 0, 0, 0, Win32.SWP_NOMOVE | Win32.SWP_NOSIZE | Win32.SWP_NOZORDER | Win32.SWP_FRAMECHANGED | Win32.SWP_NOACTIVATE);
-                                }
+                                // Temporarily shift AlwaysRotate off-screen so wheel cannot hit it
+                                Win32.SetWindowPos(myHwnd, IntPtr.Zero, -15000, -15000, 0, 0, Win32.SWP_NOSIZE | Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
 
                                 if (_isGhostEnabled)
                                 {
@@ -734,15 +714,8 @@ namespace AlwaysRotate
                                     Win32.SetWindowLong(_targetHwnd, Win32.GWL_EXSTYLE, targetOriginalExStyle | Win32.WS_EX_TRANSPARENT);
                                     Win32.SetWindowPos(_targetHwnd, IntPtr.Zero, 0, 0, 0, 0, Win32.SWP_NOMOVE | Win32.SWP_NOSIZE | Win32.SWP_NOZORDER | Win32.SWP_FRAMECHANGED | Win32.SWP_NOACTIVATE);
                                 }
-                                if (isCoveredByMe)
-                                {
-                                    Win32.SetWindowLong(myHwnd, Win32.GWL_EXSTYLE, myOriginalExStyle);
-                                    Win32.SetWindowPos(myHwnd, _isAlwaysOnTop ? Win32.HWND_TOPMOST : Win32.HWND_NOTOPMOST, 0, 0, 0, 0, Win32.SWP_NOMOVE | Win32.SWP_NOSIZE | Win32.SWP_FRAMECHANGED | Win32.SWP_NOACTIVATE);
-                                }
-                                else if (_isAlwaysOnTop)
-                                {
-                                    Win32.SetWindowPos(myHwnd, Win32.HWND_TOPMOST, 0, 0, 0, 0, Win32.SWP_NOMOVE | Win32.SWP_NOSIZE | Win32.SWP_NOACTIVATE);
-                                }
+
+                                Win32.SetWindowPos(myHwnd, _isAlwaysOnTop ? Win32.HWND_TOPMOST : Win32.HWND_NOTOPMOST, origX, origY, 0, 0, Win32.SWP_NOSIZE | Win32.SWP_NOACTIVATE);
                                 Thread.Sleep(8);
                                 _isForwardingWheel = false;
                             }
