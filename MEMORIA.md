@@ -20,11 +20,10 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v2.4 (Simulación de Clics Sin Esperas y Sub-Frame VSync en Misma Pantalla)
-- **Corrección Definitiva de Clics en la Misma Pantalla**:
-  - Se eliminó el gancho `WM_NCHITTEST` que interfería con la cola de eventos de WPF.
-  - Se restauró el despacho por hardware que demostró funcionar al 100% en WhatsApp en v2.1.
-  - **Eliminación del parpadeo visual**:
-    - El desplazamiento off-screen se condiciona estrictamente a `isCoveredByMe` (si AlwaysRotate no solapa el punto de clic, no se mueve en absoluto).
-    - Si se solapa, el desplazamiento, clic y restauración se ejecutan de forma **síncrona e instantánea sin ningún `Thread.Sleep`** intermedio (< 0.1 ms). Al completarse en una fracción minúscula de un solo ciclo de refresco (16.6 ms a 60 Hz), el Compositor de Windows (DWM) no llega a renderizar ningún fotograma ausente, resultando en clics inmediatos en WhatsApp sin ningún parpadeo visible.
+### [2026-11-07] - AlwaysRotate v2.5 (Nuevo Icono Oficial: Cristales Orbitantes Púrpura y Azul)
+- **Actualización de Identidad Visual**:
+  - Incorporado el nuevo icono oficial con cristales morados y órbitas rotatorias cian.
+  - Procesamiento con algoritmo de inundación (*flood-fill*) para transparentar el fondo exterior blanco manteniendo intactos los brillos y reflejos especulares interiores de los cristales.
+  - Generado paquete multi-resolución en `app_icon.ico` (desde 16x16 hasta 256x256) y `app_icon.png`.
+  - Desplegado en la ventana, barra de título y barra de tareas de Windows.
 - **Control de Versiones**: Commits realizados en Git `master`.
