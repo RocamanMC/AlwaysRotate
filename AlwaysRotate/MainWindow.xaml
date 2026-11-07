@@ -16,7 +16,8 @@
         Loaded="Window_Loaded"
         Closing="Window_Closing"
         Deactivated="Window_Deactivated"
-        KeyDown="Window_KeyDown">
+        PreviewKeyDown="Window_PreviewKeyDown"
+        PreviewMouseMove="Window_PreviewMouseMove">
 
     <Window.Resources>
         <!-- Modern Button Base Style -->
@@ -360,6 +361,8 @@
                         CornerRadius="20"
                         Padding="6,4"
                         Visibility="Collapsed"
+                        MouseEnter="FullscreenHud_MouseEnter"
+                        MouseLeave="FullscreenHud_MouseLeave"
                         Panel.ZIndex="999">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="18" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.75"/>

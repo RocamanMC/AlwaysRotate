@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,6 +20,9 @@ namespace AlwaysRotate
 
         private readonly WindowCaptureEngine _engine = new WindowCaptureEngine();
         private readonly DispatcherTimer _captureTimer = new DispatcherTimer();
+        private readonly DispatcherTimer _hudFadeTimer = new DispatcherTimer();
+        private Win32.LowLevelKeyboardProc? _keyboardProc;
+        private IntPtr _keyboardHookId = IntPtr.Zero;
 
         private IntPtr _targetHwnd = IntPtr.Zero;
         private string _targetTitle = string.Empty;
@@ -43,6 +47,16 @@ namespace AlwaysRotate
 
             _captureTimer.Interval = TimeSpan.FromMilliseconds(33); // ~30 FPS
             _captureTimer.Tick += CaptureTimer_Tick;
+
+            _hudFadeTimer.Interval = TimeSpan.FromSeconds(2.5);
+            _hudFadeTimer.Tick += (s, e) =>
+            {
+                if (_isFullscreen && !FullscreenHud.IsMouseOver)
+                {
+                    var anim = new System.Windows.Media.Animation.DoubleAnimation(0.0, TimeSpan.FromMilliseconds(400));
+                    FullscreenHud.BeginAnimation(UIElement.OpacityProperty, anim);
+                }
+            };
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -53,6 +67,16 @@ namespace AlwaysRotate
 
             // Register global hotkey Ctrl + Alt + R
             Win32.RegisterHotKey(handle, HOTKEY_ID, (uint)(Win32.MOD_CONTROL | Win32.MOD_ALT), 0x52);
+
+            // Install low-level keyboard hook for 100% reliable hotkeys (Esc, F11, Ctrl+Alt+R, Ctrl+Alt+G, etc.)
+            try
+            {
+                _keyboardProc = KeyboardHookCallback;
+                using var curProcess = Process.GetCurrentProcess();
+                using var curModule = curProcess.MainModule;
+                _keyboardHookId = Win32.SetWindowsHookEx(Win32.WH_KEYBOARD_LL, _keyboardProc, Win32.GetModuleHandle(curModule?.ModuleName), 0);
+            }
+            catch { }
 
             // Set Taskbar and Window Icon explicitly via Win32 WM_SETICON
             try
@@ -122,6 +146,12 @@ namespace AlwaysRotate
 
             IntPtr handle = new WindowInteropHelper(this).Handle;
             Win32.UnregisterHotKey(handle, HOTKEY_ID);
+
+            if (_keyboardHookId != IntPtr.Zero)
+            {
+                Win32.UnhookWindowsHookEx(_keyboardHookId);
+                _keyboardHookId = IntPtr.Zero;
+            }
 
             if (_hwndSource != null)
             {
@@ -497,8 +527,12 @@ namespace AlwaysRotate
                 HeaderBorder.Visibility = Visibility.Collapsed;
                 FooterBorder.Visibility = Visibility.Collapsed;
 
-                // Show floating fullscreen HUD
+                // Show floating fullscreen HUD with full opacity and start auto-fade timer
+                FullscreenHud.BeginAnimation(UIElement.OpacityProperty, null);
+                FullscreenHud.Opacity = 1.0;
                 FullscreenHud.Visibility = Visibility.Visible;
+                _hudFadeTimer.Stop();
+                _hudFadeTimer.Start();
 
                 // Expand to borderless full screen
                 WindowStyle = WindowStyle.None;
@@ -507,10 +541,15 @@ namespace AlwaysRotate
             }
             else
             {
+                // Stop HUD fade timer
+                _hudFadeTimer.Stop();
+                FullscreenHud.BeginAnimation(UIElement.OpacityProperty, null);
+                FullscreenHud.Opacity = 1.0;
+                FullscreenHud.Visibility = Visibility.Collapsed;
+
                 // Restore controls
                 HeaderBorder.Visibility = Visibility.Visible;
                 FooterBorder.Visibility = Visibility.Visible;
-                FullscreenHud.Visibility = Visibility.Collapsed;
 
                 // Restore window
                 WindowStyle = _prevWindowStyle;
@@ -519,7 +558,39 @@ namespace AlwaysRotate
             }
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+        private void Window_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_isFullscreen) return;
+
+            if (FullscreenHud.Opacity < 1.0)
+            {
+                var anim = new System.Windows.Media.Animation.DoubleAnimation(1.0, TimeSpan.FromMilliseconds(150));
+                FullscreenHud.BeginAnimation(UIElement.OpacityProperty, anim);
+            }
+
+            _hudFadeTimer.Stop();
+            if (!FullscreenHud.IsMouseOver)
+            {
+                _hudFadeTimer.Start();
+            }
+        }
+
+        private void FullscreenHud_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!_isFullscreen) return;
+            _hudFadeTimer.Stop();
+            var anim = new System.Windows.Media.Animation.DoubleAnimation(1.0, TimeSpan.FromMilliseconds(120));
+            FullscreenHud.BeginAnimation(UIElement.OpacityProperty, anim);
+        }
+
+        private void FullscreenHud_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!_isFullscreen) return;
+            _hudFadeTimer.Stop();
+            _hudFadeTimer.Start();
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape && _isFullscreen)
             {
@@ -531,6 +602,85 @@ namespace AlwaysRotate
                 ToggleFullscreen(!_isFullscreen);
                 e.Handled = true;
             }
+        }
+
+        private IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode >= 0 && (wParam == (IntPtr)Win32.WM_KEYDOWN_MSG || wParam == (IntPtr)Win32.WM_SYSKEYDOWN_MSG))
+            {
+                var hookStruct = Marshal.PtrToStructure<Win32.KBDLLHOOKSTRUCT>(lParam);
+                uint vk = hookStruct.vkCode;
+
+                bool isCtrl = (Win32.GetAsyncKeyState(0x11) & 0x8000) != 0;
+                bool isAlt = (Win32.GetAsyncKeyState(0x12) & 0x8000) != 0;
+
+                // Escape: Always exit fullscreen if in fullscreen mode
+                if (vk == 0x1B && _isFullscreen) // VK_ESCAPE
+                {
+                    Dispatcher.BeginInvoke(() => ToggleFullscreen(false));
+                    return (IntPtr)1; // swallow
+                }
+
+                // F11: Toggle fullscreen if AlwaysRotate is active or target is active or if in fullscreen
+                if (vk == 0x7A) // VK_F11
+                {
+                    IntPtr fg = Win32.GetForegroundWindow();
+                    IntPtr myHwnd = new WindowInteropHelper(this).Handle;
+                    if (fg == myHwnd || (_targetHwnd != IntPtr.Zero && fg == _targetHwnd) || _isFullscreen)
+                    {
+                        Dispatcher.BeginInvoke(() => ToggleFullscreen(!_isFullscreen));
+                        return (IntPtr)1; // swallow
+                    }
+                }
+
+                // Global hotkeys with Ctrl + Alt:
+                if (isCtrl && isAlt)
+                {
+                    // Ctrl + Alt + R -> Capture active window
+                    if (vk == 0x52) // 'R'
+                    {
+                        IntPtr fg = Win32.GetForegroundWindow();
+                        IntPtr myHwnd = new WindowInteropHelper(this).Handle;
+                        if (fg != IntPtr.Zero && fg != myHwnd)
+                        {
+                            Dispatcher.BeginInvoke(() => SetTarget(fg));
+                            return (IntPtr)1;
+                        }
+                    }
+                    // Ctrl + Alt + G -> Toggle Ghost mode (Hide original)
+                    else if (vk == 0x47) // 'G'
+                    {
+                        Dispatcher.BeginInvoke(() => BtnGhost_Click(this, new RoutedEventArgs()));
+                        return (IntPtr)1;
+                    }
+                    // Ctrl + Alt + Right Arrow OR Ctrl + Alt + Space -> Rotate +90
+                    else if (vk == 0x27 || vk == 0x20) // VK_RIGHT or VK_SPACE
+                    {
+                        Dispatcher.BeginInvoke(() => ApplyAngle(_currentAngle + 90));
+                        return (IntPtr)1;
+                    }
+                    // Ctrl + Alt + Left Arrow -> Rotate -90
+                    else if (vk == 0x25) // VK_LEFT
+                    {
+                        Dispatcher.BeginInvoke(() => ApplyAngle(_currentAngle - 90));
+                        return (IntPtr)1;
+                    }
+                    // Ctrl + Alt + P -> Toggle Pin (Always on top)
+                    else if (vk == 0x50) // 'P'
+                    {
+                        Dispatcher.BeginInvoke(() => BtnPin_Click(this, new RoutedEventArgs()));
+                        return (IntPtr)1;
+                    }
+                    // Ctrl + Alt + I -> Toggle Interact (Click forwarding)
+                    else if (vk == 0x49) // 'I'
+                    {
+                        Dispatcher.BeginInvoke(() => BtnInteract_Click(this, new RoutedEventArgs()));
+                        return (IntPtr)1;
+                    }
+                }
+            }
+
+            return Win32.CallNextHookEx(_keyboardHookId, nCode, wParam, lParam);
         }
         #endregion
 
