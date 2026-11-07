@@ -1,0 +1,17 @@
+# Build results
+**/bin/
+**/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+*.tmp
+run.log
+crash.log
+
+# VS Code / Visual Studio
+.vs/
+.vscode/
