@@ -20,10 +20,13 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v1.6 (Modo Fantasma: Ocultar Original Invisible)
-- **Implementación del Modo Fantasma (`👻 Ocultar Real`)**:
-  - Permite volver 100% invisible la ventana original de WhatsApp en pantalla (`SetLayeredWindowAttributes` con `Alpha = 1`).
-  - Para los ojos humanos es completamente invisible (no estorba en ningún monitor).
-  - Para Windows y la tarjeta gráfica sigue activa y sólida: AlwaysRotate la sigue capturando en tiempo real y puede enviarle clics y eventos de ratón.
-  - Al desactivar el botón o al cerrar AlwaysRotate, la ventana original recupera su visibilidad normal (`Alpha = 255`) automáticamente.
+### [2026-11-07] - AlwaysRotate v1.7 (Corrección Definitiva del Clic de Ratón)
+- **Diagnóstico del problema de clics**:
+  - El scroll funcionaba porque en Windows la rueda del ratón no requiere foco ni captura; se despacha a la ventana bajo el cursor.
+  - El clic fallaba porque se enviaba durante el evento `MouseDown`: en ese instante, el dedo del usuario seguía físicamente presionando el botón izquierdo sobre AlwaysRotate. AlwaysRotate mantenía la captura del ratón en Windows (`MouseCapture`), absorbiendo la simulación e impidiendo que WhatsApp la procesara. Además, WhatsApp requería activación de foco en primer plano para registrar clics en sus controles WinUI.
+- **Solución implementada**:
+  - Los clics interactivos ahora se despachan en `MouseLeftButtonUp` (al soltar el botón, cuando el ratón físico está liberado y sin captura).
+  - Liberación explícita de captura con `Mouse.Capture(null)`.
+  - Activación instantánea de la ventana de destino con `Win32.SetForegroundWindow`.
+  - Simulación física con temporización de 40ms y restauración de cursor.
 - **Control de Versiones**: Commits realizados en Git `master`.
