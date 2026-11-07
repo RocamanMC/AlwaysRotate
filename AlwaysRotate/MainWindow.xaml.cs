@@ -34,7 +34,15 @@ namespace AlwaysRotate
         private IntPtr _ghostedHwnd = IntPtr.Zero;
         private volatile bool _isSimulatingInput = false;
 
-        private bool _isFullscreen = false;
+        public enum ViewState
+        {
+            Normal,
+            WindowZen,
+            Fullscreen
+        }
+
+        private ViewState _currentView = ViewState.Normal;
+        private bool _isFullscreen => _currentView == ViewState.Fullscreen;
         private WindowState _prevWindowState = WindowState.Normal;
         private WindowStyle _prevWindowStyle = WindowStyle.SingleBorderWindow;
         private ResizeMode _prevResizeMode = ResizeMode.CanResize;
@@ -51,7 +59,7 @@ namespace AlwaysRotate
             _hudFadeTimer.Interval = TimeSpan.FromSeconds(2.5);
             _hudFadeTimer.Tick += (s, e) =>
             {
-                if (_isFullscreen && !FullscreenHud.IsMouseOver)
+                if (_currentView != ViewState.Normal && !FullscreenHud.IsMouseOver)
                 {
                     var anim = new System.Windows.Media.Animation.DoubleAnimation(0.0, TimeSpan.FromMilliseconds(400));
                     FullscreenHud.BeginAnimation(UIElement.OpacityProperty, anim);
@@ -496,15 +504,48 @@ namespace AlwaysRotate
             }
         }
 
-        #region Fullscreen / Zen Mode
+        #region Fullscreen & Window Zen Modes
         private void BtnFullscreen_Click(object sender, RoutedEventArgs e)
         {
-            ToggleFullscreen(true);
+            SetViewState(_currentView == ViewState.Fullscreen ? ViewState.Normal : ViewState.Fullscreen);
+        }
+
+        private void BtnWindowZen_Click(object sender, RoutedEventArgs e)
+        {
+            SetViewState(_currentView == ViewState.WindowZen ? ViewState.Normal : ViewState.WindowZen);
         }
 
         private void BtnExitFullscreen_Click(object sender, RoutedEventArgs e)
         {
-            ToggleFullscreen(false);
+            SetViewState(ViewState.Normal);
+        }
+
+        private void BtnFsToggleMode_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentView == ViewState.Fullscreen)
+            {
+                SetViewState(ViewState.WindowZen);
+            }
+            else
+            {
+                SetViewState(ViewState.Fullscreen);
+            }
+        }
+
+        private void HudGrip_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ButtonState == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
+
+        private void ZenDrag_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ButtonState == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
         }
 
         private void BtnFsRotate_Click(object sender, RoutedEventArgs e)
@@ -514,53 +555,105 @@ namespace AlwaysRotate
 
         private void ToggleFullscreen(bool enable)
         {
-            if (_isFullscreen == enable) return;
-            _isFullscreen = enable;
+            SetViewState(enable ? ViewState.Fullscreen : ViewState.Normal);
+        }
 
-            if (_isFullscreen)
+        private void SetViewState(ViewState target)
+        {
+            if (_currentView == target) return;
+
+            if (_currentView == ViewState.Normal)
             {
                 _prevWindowState = WindowState;
                 _prevWindowStyle = WindowStyle;
                 _prevResizeMode = ResizeMode;
-
-                // Hide Header and Footer toolbars
-                HeaderBorder.Visibility = Visibility.Collapsed;
-                FooterBorder.Visibility = Visibility.Collapsed;
-
-                // Show floating fullscreen HUD with full opacity and start auto-fade timer
-                FullscreenHud.BeginAnimation(UIElement.OpacityProperty, null);
-                FullscreenHud.Opacity = 1.0;
-                FullscreenHud.Visibility = Visibility.Visible;
-                _hudFadeTimer.Stop();
-                _hudFadeTimer.Start();
-
-                // Expand to borderless full screen
-                WindowStyle = WindowStyle.None;
-                ResizeMode = ResizeMode.NoResize;
-                WindowState = WindowState.Maximized;
             }
-            else
+
+            _currentView = target;
+
+            switch (target)
             {
-                // Stop HUD fade timer
-                _hudFadeTimer.Stop();
-                FullscreenHud.BeginAnimation(UIElement.OpacityProperty, null);
-                FullscreenHud.Opacity = 1.0;
-                FullscreenHud.Visibility = Visibility.Collapsed;
+                case ViewState.Normal:
+                    _hudFadeTimer.Stop();
+                    FullscreenHud.BeginAnimation(UIElement.OpacityProperty, null);
+                    FullscreenHud.Opacity = 1.0;
+                    FullscreenHud.Visibility = Visibility.Collapsed;
 
-                // Restore controls
-                HeaderBorder.Visibility = Visibility.Visible;
-                FooterBorder.Visibility = Visibility.Visible;
+                    System.Windows.Shell.WindowChrome.SetWindowChrome(this, null);
 
-                // Restore window
-                WindowStyle = _prevWindowStyle;
-                ResizeMode = _prevResizeMode;
-                WindowState = _prevWindowState;
+                    HeaderBorder.Visibility = Visibility.Visible;
+                    FooterBorder.Visibility = Visibility.Visible;
+                    ZenTopDragStrip.Visibility = Visibility.Collapsed;
+
+                    WindowStyle = _prevWindowStyle;
+                    ResizeMode = _prevResizeMode;
+                    WindowState = _prevWindowState;
+                    break;
+
+                case ViewState.WindowZen:
+                    HeaderBorder.Visibility = Visibility.Collapsed;
+                    FooterBorder.Visibility = Visibility.Collapsed;
+                    ZenTopDragStrip.Visibility = Visibility.Visible;
+
+                    // Set resizable borderless WindowChrome
+                    var chrome = new System.Windows.Shell.WindowChrome
+                    {
+                        CaptionHeight = 0,
+                        ResizeBorderThickness = new Thickness(7),
+                        GlassFrameThickness = new Thickness(0),
+                        CornerRadius = new CornerRadius(0)
+                    };
+                    System.Windows.Shell.WindowChrome.SetWindowChrome(this, chrome);
+
+                    WindowStyle = WindowStyle.None;
+                    ResizeMode = ResizeMode.CanResize;
+                    if (WindowState == WindowState.Maximized)
+                    {
+                        WindowState = WindowState.Normal;
+                    }
+
+                    // Configure HUD toggle button
+                    IcoFsToggleMode.Text = "⛶";
+                    BtnFsToggleMode.ToolTip = "Cambiar a Pantalla Completa total (F11)";
+
+                    // Show HUD with auto-hide timer
+                    FullscreenHud.BeginAnimation(UIElement.OpacityProperty, null);
+                    FullscreenHud.Opacity = 1.0;
+                    FullscreenHud.Visibility = Visibility.Visible;
+                    _hudFadeTimer.Stop();
+                    _hudFadeTimer.Start();
+                    break;
+
+                case ViewState.Fullscreen:
+                    HeaderBorder.Visibility = Visibility.Collapsed;
+                    FooterBorder.Visibility = Visibility.Collapsed;
+                    ZenTopDragStrip.Visibility = Visibility.Collapsed;
+
+                    System.Windows.Shell.WindowChrome.SetWindowChrome(this, null);
+
+                    WindowStyle = WindowStyle.None;
+                    ResizeMode = ResizeMode.NoResize;
+                    WindowState = WindowState.Maximized;
+
+                    // Configure HUD toggle button
+                    IcoFsToggleMode.Text = "🗖";
+                    BtnFsToggleMode.ToolTip = "Cambiar a Modo Solo Ventana libre (F10)";
+
+                    // Show HUD with auto-hide timer
+                    FullscreenHud.BeginAnimation(UIElement.OpacityProperty, null);
+                    FullscreenHud.Opacity = 1.0;
+                    FullscreenHud.Visibility = Visibility.Visible;
+                    _hudFadeTimer.Stop();
+                    _hudFadeTimer.Start();
+                    break;
             }
+
+            EnforceAlwaysOnTop();
         }
 
         private void Window_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (!_isFullscreen) return;
+            if (_currentView == ViewState.Normal) return;
 
             if (FullscreenHud.Opacity < 1.0)
             {
@@ -577,7 +670,7 @@ namespace AlwaysRotate
 
         private void FullscreenHud_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (!_isFullscreen) return;
+            if (_currentView == ViewState.Normal) return;
             _hudFadeTimer.Stop();
             var anim = new System.Windows.Media.Animation.DoubleAnimation(1.0, TimeSpan.FromMilliseconds(120));
             FullscreenHud.BeginAnimation(UIElement.OpacityProperty, anim);
@@ -585,21 +678,26 @@ namespace AlwaysRotate
 
         private void FullscreenHud_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (!_isFullscreen) return;
+            if (_currentView == ViewState.Normal) return;
             _hudFadeTimer.Stop();
             _hudFadeTimer.Start();
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape && _isFullscreen)
+            if (e.Key == Key.Escape && _currentView != ViewState.Normal)
             {
-                ToggleFullscreen(false);
+                SetViewState(ViewState.Normal);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.F10)
+            {
+                SetViewState(_currentView == ViewState.WindowZen ? ViewState.Normal : ViewState.WindowZen);
                 e.Handled = true;
             }
             else if (e.Key == Key.F11)
             {
-                ToggleFullscreen(!_isFullscreen);
+                SetViewState(_currentView == ViewState.Fullscreen ? ViewState.Normal : ViewState.Fullscreen);
                 e.Handled = true;
             }
         }
@@ -614,21 +712,33 @@ namespace AlwaysRotate
                 bool isCtrl = (Win32.GetAsyncKeyState(0x11) & 0x8000) != 0;
                 bool isAlt = (Win32.GetAsyncKeyState(0x12) & 0x8000) != 0;
 
-                // Escape: Always exit fullscreen if in fullscreen mode
-                if (vk == 0x1B && _isFullscreen) // VK_ESCAPE
+                // Escape: Always restore normal menus if in Zen or Fullscreen
+                if (vk == 0x1B && _currentView != ViewState.Normal) // VK_ESCAPE
                 {
-                    Dispatcher.BeginInvoke(() => ToggleFullscreen(false));
+                    Dispatcher.BeginInvoke(() => SetViewState(ViewState.Normal));
                     return (IntPtr)1; // swallow
                 }
 
-                // F11: Toggle fullscreen if AlwaysRotate is active or target is active or if in fullscreen
+                // F10: Toggle Window Zen (Solo Ventana)
+                if (vk == 0x79) // VK_F10
+                {
+                    IntPtr fg = Win32.GetForegroundWindow();
+                    IntPtr myHwnd = new WindowInteropHelper(this).Handle;
+                    if (fg == myHwnd || (_targetHwnd != IntPtr.Zero && fg == _targetHwnd) || _currentView != ViewState.Normal)
+                    {
+                        Dispatcher.BeginInvoke(() => SetViewState(_currentView == ViewState.WindowZen ? ViewState.Normal : ViewState.WindowZen));
+                        return (IntPtr)1; // swallow
+                    }
+                }
+
+                // F11: Toggle Fullscreen (Monitor Completo)
                 if (vk == 0x7A) // VK_F11
                 {
                     IntPtr fg = Win32.GetForegroundWindow();
                     IntPtr myHwnd = new WindowInteropHelper(this).Handle;
-                    if (fg == myHwnd || (_targetHwnd != IntPtr.Zero && fg == _targetHwnd) || _isFullscreen)
+                    if (fg == myHwnd || (_targetHwnd != IntPtr.Zero && fg == _targetHwnd) || _currentView != ViewState.Normal)
                     {
-                        Dispatcher.BeginInvoke(() => ToggleFullscreen(!_isFullscreen));
+                        Dispatcher.BeginInvoke(() => SetViewState(_currentView == ViewState.Fullscreen ? ViewState.Normal : ViewState.Fullscreen));
                         return (IntPtr)1; // swallow
                     }
                 }
@@ -872,7 +982,8 @@ namespace AlwaysRotate
                 return;
             }
 
-            if (!_isInteractive)
+            // If user holds Alt or is not interactive, allow moving the window freely
+            if (Keyboard.Modifiers.HasFlag(ModifierKeys.Alt) || !_isInteractive)
             {
                 if (e.ButtonState == MouseButtonState.Pressed)
                 {

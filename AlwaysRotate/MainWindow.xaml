@@ -278,9 +278,10 @@
                     </Grid>
                 </Border>
 
-                <!-- Row 3: Always on Top, Click Interaction, Ghost Original & Fullscreen Mode -->
+                <!-- Row 3: Pin, Interact, Ghost, Window Zen & Fullscreen -->
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
@@ -288,38 +289,47 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Pin Always on Top Toggle -->
-                    <Button x:Name="BtnPin" Grid.Column="0" Click="BtnPin_Click" Margin="0,0,3,0" Height="34"
+                    <Button x:Name="BtnPin" Grid.Column="0" Click="BtnPin_Click" Margin="0,0,2,0" Height="34"
                             Style="{StaticResource ModernBtn}" ToolTip="Garantiza que AlwaysRotate se quede fija por encima de todos los programas">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock x:Name="IcoPin" Text="📌" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="TxtPin" Text="Fijo (ON)" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="IcoPin" Text="📌" FontSize="11" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="TxtPin" Text="Fijo" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <!-- Interaction Mode Toggle -->
-                    <Button x:Name="BtnInteract" Grid.Column="1" Click="BtnInteract_Click" Margin="3,0,3,0" Height="34"
+                    <Button x:Name="BtnInteract" Grid.Column="1" Click="BtnInteract_Click" Margin="2,0" Height="34"
                             Style="{StaticResource ModernBtn}" ToolTip="Activa hacer clics y scroll directamente en la ventana rotada">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock x:Name="IcoInteract" Text="🖱️" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="TxtInteract" Text="Interactuar" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="IcoInteract" Text="🖱️" FontSize="11" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="TxtInteract" Text="Clics" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <!-- Ghost Mode: Hide Original Window Toggle -->
-                    <Button x:Name="BtnGhost" Grid.Column="2" Click="BtnGhost_Click" Margin="3,0,3,0" Height="34"
+                    <Button x:Name="BtnGhost" Grid.Column="2" Click="BtnGhost_Click" Margin="2,0" Height="34"
                             Style="{StaticResource ModernBtn}" ToolTip="Vuelve 100% invisible la ventana original para que solo veas la rotada">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock x:Name="IcoGhost" Text="👻" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="TxtGhost" Text="Ocultar Real" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="IcoGhost" Text="👻" FontSize="11" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="TxtGhost" Text="Ocultar" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
-                    <!-- Fullscreen / Zen Mode Toggle -->
-                    <Button x:Name="BtnFullscreen" Grid.Column="3" Click="BtnFullscreen_Click" Margin="3,0,0,0" Height="34"
-                            Style="{StaticResource ModernBtn}" ToolTip="Modo Pantalla Completa: quita todos los botones para máxima visión (o pulsa F11)">
+                    <!-- Window Zen Mode (Solo Ventana Limpia y Redimensionable) -->
+                    <Button x:Name="BtnWindowZen" Grid.Column="3" Click="BtnWindowZen_Click" Margin="2,0" Height="34"
+                            Style="{StaticResource ModernBtn}" ToolTip="Modo Solo Ventana: quita todos los menús para ver solo la app, pero manteniéndola en ventana para moverla y redimensionarla libremente (o pulsa F10)">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="⛶" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Pantalla" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBlock Text="🗖" FontSize="11" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Ventana" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Fullscreen / Monitor Completo Toggle -->
+                    <Button x:Name="BtnFullscreen" Grid.Column="4" Click="BtnFullscreen_Click" Margin="2,0,0,0" Height="34"
+                            Style="{StaticResource ModernBtn}" ToolTip="Modo Pantalla Completa: ocupa todo el monitor (o pulsa F11)">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="⛶" FontSize="11" Margin="0,0,3,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Completa" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Grid>
@@ -340,7 +350,11 @@
                     <Image x:Name="RotatedImageHost" RenderOptions.BitmapScalingMode="HighQuality"/>
                 </Viewbox>
 
-                <!-- Floating Fullscreen HUD Toolbar (Visible only in Fullscreen Mode) -->
+                <!-- Top Drag Strip for Zen Mode -->
+                <Border x:Name="ZenTopDragStrip" Height="10" VerticalAlignment="Top" Background="#01000000" Cursor="SizeAll"
+                        MouseLeftButtonDown="ZenDrag_MouseLeftButtonDown" ToolTip="Arrastrar ventana (o mantén Alt + clic)" Visibility="Collapsed" Panel.ZIndex="500"/>
+
+                <!-- Floating Fullscreen & Zen HUD Toolbar -->
                 <Border x:Name="FullscreenHud"
                         HorizontalAlignment="Right" VerticalAlignment="Top"
                         Margin="0,16,16,0"
@@ -357,6 +371,12 @@
                         <DropShadowEffect BlurRadius="18" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.75"/>
                     </Border.Effect>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- 0. Drag Grip for Zen Mode -->
+                        <Border x:Name="BdFsGrip" Background="Transparent" Width="22" Height="34" Cursor="SizeAll"
+                                MouseLeftButtonDown="HudGrip_MouseLeftButtonDown" ToolTip="Arrastra aquí para mover la ventana">
+                            <TextBlock Text="⋮⋮" FontSize="14" Foreground="#71717a" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+
                         <!-- 1. Rotate +90° Button -->
                         <Button x:Name="BtnFsRotate" Click="BtnFsRotate_Click" Style="{StaticResource HudBtn}"
                                 ToolTip="Girar +90° Horario" Margin="2,0">
@@ -392,12 +412,20 @@
                             </Border>
                         </Button>
 
+                        <!-- 5. Toggle Fullscreen / Window Zen -->
+                        <Button x:Name="BtnFsToggleMode" Click="BtnFsToggleMode_Click" Style="{StaticResource HudBtn}"
+                                Margin="2,0" Width="34" Height="34">
+                            <Border x:Name="BdFsToggleMode" Background="#1e1e28" BorderBrush="#383848" BorderThickness="1" CornerRadius="17" Width="34" Height="34">
+                                <TextBlock x:Name="IcoFsToggleMode" Text="⛶" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Button>
+
                         <!-- Separator -->
                         <Rectangle Width="1" Height="18" Fill="#40ffffff" Margin="4,0"/>
 
-                        <!-- 5. Exit Fullscreen (X) -->
+                        <!-- 6. Exit to Normal Mode (X) -->
                         <Button x:Name="BtnExitFullscreen" Click="BtnExitFullscreen_Click" Style="{StaticResource HudBtn}"
-                                ToolTip="Salir de Pantalla Completa (o pulsa Esc)" Margin="2,0" Width="34" Height="34">
+                                ToolTip="Restaurar menús normales (o pulsa Esc)" Margin="2,0" Width="34" Height="34">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border x:Name="bd" Background="#29181f" BorderBrush="#66f43f5e" BorderThickness="1" CornerRadius="17" Width="34" Height="34" Cursor="Hand">

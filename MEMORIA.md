@@ -20,9 +20,19 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v2.8 (Eliminación de Opacidad y Rediseño Simétrico de Barra Superior)
-- **Eliminación del Slider de Opacidad**:
-  - Eliminado el control deslizante de opacidad y porcentaje a petición del usuario para simplificar y limpiar la barra de herramientas.
-- **Rediseño Armónico de la Barra Superior**:
-  - Los 4 botones de rotación (`0° Normal`, `+90° Horario`, `180°`, `-90°`) ahora ocupan una cuadrícula equilibrada de 4 columnas idéntica a la fila inferior de controles (`Fijado`, `Interactuar`, `Ocultar Real`, `Pantalla Completa`), logrando una interfaz limpia, simétrica y espaciosa.
+### [2026-11-07] - AlwaysRotate v2.9 (Doble Modo de Vista Limpia: Ventana Zen y Pantalla Completa)
+- **Implementación de 2 Tipos de Visualización Limpia sin Menús**:
+  1. **Modo Solo Ventana (`ViewState.WindowZen` / Botón `🗖 Ventana` / Atajo `F10`)**:
+     - Oculta todos los botones, cabeceras y barras de estado molestas.
+     - Mantiene la app en una ventana libre y flotante que el usuario puede redimensionar desde cualquier borde o esquina (`WindowChrome` con borde de redimensionamiento nativo de 7px).
+     - Permite mover la ventana fácilmente:
+       - Mediante el tirador de agarre `⋮⋮` en la barra flotante HUD.
+       - Mediante la tira superior discreta de agarre.
+       - Manteniendo pulsado `Alt + Clic` en cualquier punto de la pantalla.
+  2. **Modo Pantalla Completa (`ViewState.Fullscreen` / Botón `⛶ Completa` / Atajo `F11`)**:
+     - Ocupa el monitor entero sin bordes.
+- **HUD Flotante Unificado con Conmutación Rápida**:
+  - Tanto en Ventana Zen como en Pantalla Completa se dispone del HUD flotante con auto-ocultado tras 2.5s.
+  - Incluye botón directo `⛶` / `🗖` para alternar entre ambos modos sin tener que salir al modo normal.
+  - El botón `✕` o pulsar la tecla `Esc` restaura inmediatamente la ventana normal con todos los menús.
 - **Control de Versiones**: Commits realizados en Git `master`.
