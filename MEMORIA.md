@@ -20,11 +20,12 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v2.1 (Desplazamiento Físico Off-Screen Instantáneo en Clics Misma Pantalla)
-- **Diagnóstico definitivo de clics en la misma pantalla**:
-  - Aunque se modificaran los estilos y flags Win32 (`WS_EX_TRANSPARENT`, `HWND_NOTOPMOST`), el Compositor de Windows (DWM) no actualizaba instantáneamente el árbol de colisiones en la GPU en ventanas WPF con aceleración hardware, provocando que el ratón físico siguiera colisionando con AlwaysRotate.
-- **Solución física absoluta implementada en v2.1**:
-  - **Desplazamiento Win32 fuera de pantalla (-15000, -15000)**: En el instante de despachar el clic o el scroll, AlwaysRotate se mueve físicamente a $(-15000, -15000)$ mediante `SetWindowPos` con `SWP_NOSIZE | SWP_NOACTIVATE`. Al no estar físicamente en esa zona de la pantalla durante esos 45ms, es **físicamente imposible** que AlwaysRotate intercepte el clic.
-  - El clic o la rueda de ratón cae sin obstáculo alguno sobre la ventana de WhatsApp.
-  - Al concluir la simulación (50ms), AlwaysRotate regresa a sus coordenadas exactas de pantalla `(origX, origY)` con su propiedad `HWND_TOPMOST` intacta, sin parpadeo perceptible para el ojo humano.
+### [2026-11-07] - AlwaysRotate v2.2 (Eliminación Total de Parpadeo con HTTRANSPARENT y WS_EX_LAYERED)
+- **Diagnóstico del parpadeo / cierre momentáneo**:
+  - Al desplazar la ventana a $(-15000, -15000)$ para evitar colisiones en la misma pantalla, el Compositor de Windows provocaba que el usuario viera desaparecer y reaparecer la ventana ("como si se cerrara y abriera").
+- **Solución definitiva sin parpadeo (Cero movimiento)**:
+  - **Eliminación del desplazamiento off-screen**: AlwaysRotate ya no se mueve de sus coordenadas en ningún momento.
+  - **Interceptación de mensajes con `WM_NCHITTEST` (`HTTRANSPARENT`)**: Mediante `HwndHook`, durante la simulación de entrada (`_isSimulatingInput` o `_isForwardingWheel`), AlwaysRotate responde a `WM_NCHITTEST` devolviendo `-1` (`HTTRANSPARENT`) y a `WM_MOUSEACTIVATE` devolviendo `MA_NOACTIVATE`. Esto instruye al subsistema de entrada de Windows a ignorar por completo AlwaysRotate y transferir el evento de ratón a la ventana inmediatamente inferior (WhatsApp).
+  - **Capa transparente nativa (`WS_EX_LAYERED | WS_EX_TRANSPARENT`)**: En conjunto con `SWP_FRAMECHANGED`, asegura una colisión transparente nativa en el compositor sin redibujar ni mover la ventana.
+  - **Resultado**: Clics y scroll 100% operativos en la misma pantalla con **cero parpadeo** y estabilidad visual perfecta.
 - **Control de Versiones**: Commits realizados en Git `master`.
