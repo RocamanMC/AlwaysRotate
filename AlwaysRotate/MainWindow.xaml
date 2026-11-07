@@ -267,27 +267,38 @@
                 </Grid>
 
                 <!-- Row 3: Always on Top & Click Interaction Mode -->
+                <!-- Row 3: Always on Top, Click Interaction Mode & Ghost Original -->
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Pin Always on Top Toggle -->
-                    <Button x:Name="BtnPin" Grid.Column="0" Click="BtnPin_Click" Margin="0,0,4,0" Height="34"
-                            Style="{StaticResource ModernBtn}" ToolTip="Garantiza que la ventana se quede fija por encima de todos los programas">
+                    <Button x:Name="BtnPin" Grid.Column="0" Click="BtnPin_Click" Margin="0,0,3,0" Height="34"
+                            Style="{StaticResource ModernBtn}" ToolTip="Garantiza que AlwaysRotate se quede fija por encima de todos los programas">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock x:Name="IcoPin" Text="📌" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="TxtPin" Text="Siempre Encima (ON)" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="IcoPin" Text="📌" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="TxtPin" Text="Fijo (ON)" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <!-- Interaction Mode Toggle -->
-                    <Button x:Name="BtnInteract" Grid.Column="1" Click="BtnInteract_Click" Margin="4,0,0,0" Height="34"
+                    <Button x:Name="BtnInteract" Grid.Column="1" Click="BtnInteract_Click" Margin="3,0,3,0" Height="34"
                             Style="{StaticResource ModernBtn}" ToolTip="Activa hacer clics y scroll directamente en la ventana rotada">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock x:Name="IcoInteract" Text="🖱️" FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="TxtInteract" Text="Interactivo (Clics ON)" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="IcoInteract" Text="🖱️" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="TxtInteract" Text="Interactuar" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Ghost Mode: Hide Original Window Toggle -->
+                    <Button x:Name="BtnGhost" Grid.Column="2" Click="BtnGhost_Click" Margin="3,0,0,0" Height="34"
+                            Style="{StaticResource ModernBtn}" ToolTip="Vuelve 100% invisible la ventana original para que solo veas la rotada">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock x:Name="IcoGhost" Text="👻" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="TxtGhost" Text="Ocultar Real" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Grid>

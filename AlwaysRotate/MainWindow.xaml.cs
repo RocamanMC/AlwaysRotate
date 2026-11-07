@@ -26,6 +26,8 @@ namespace AlwaysRotate
         private bool _isAlwaysOnTop = true;
         private bool _isInteractive = true;
         private bool _isUpdatingSelection = false;
+        private bool _isGhostEnabled = false;
+        private IntPtr _ghostedHwnd = IntPtr.Zero;
 
         private HwndSource? _hwndSource;
 
@@ -65,6 +67,7 @@ namespace AlwaysRotate
             ApplyAngle(_currentAngle);
             UpdatePinButtonStyle();
             UpdateInteractButtonStyle();
+            UpdateGhostButtonStyle();
             RefreshWindowsList();
 
             // Auto-select WhatsApp if running
@@ -77,6 +80,16 @@ namespace AlwaysRotate
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             _captureTimer.Stop();
+
+            // Always restore ghosted original window
+            if (_ghostedHwnd != IntPtr.Zero)
+            {
+                Win32.SetWindowGhost(_ghostedHwnd, false);
+            }
+            if (_targetHwnd != IntPtr.Zero)
+            {
+                Win32.SetWindowGhost(_targetHwnd, false);
+            }
 
             IntPtr handle = new WindowInteropHelper(this).Handle;
             Win32.UnregisterHotKey(handle, HOTKEY_ID);
@@ -181,6 +194,13 @@ namespace AlwaysRotate
             if (hwnd == IntPtr.Zero) return;
             if (_targetHwnd == hwnd && _engine.CurrentBitmap != null) return;
 
+            // If we previously ghosted another window, restore it
+            if (_ghostedHwnd != IntPtr.Zero && _ghostedHwnd != hwnd)
+            {
+                Win32.SetWindowGhost(_ghostedHwnd, false);
+                _ghostedHwnd = IntPtr.Zero;
+            }
+
             _targetHwnd = hwnd;
             _targetTitle = "Ventana";
 
@@ -192,6 +212,11 @@ namespace AlwaysRotate
             else if (!Win32.IsWindowVisible(_targetHwnd))
             {
                 Win32.ShowWindow(_targetHwnd, Win32.SW_SHOW);
+            }
+
+            if (_isGhostEnabled)
+            {
+                ApplyGhostState();
             }
 
             _isUpdatingSelection = true;
@@ -330,6 +355,55 @@ namespace AlwaysRotate
                 IcoInteract.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
                 TxtInteract.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
                 TxtInteract.Text = "Solo Ver (Clics OFF)";
+            }
+        }
+
+        private void BtnGhost_Click(object sender, RoutedEventArgs e)
+        {
+            _isGhostEnabled = !_isGhostEnabled;
+            ApplyGhostState();
+            UpdateGhostButtonStyle();
+        }
+
+        private void ApplyGhostState()
+        {
+            if (_targetHwnd == IntPtr.Zero) return;
+
+            if (_isGhostEnabled)
+            {
+                _ghostedHwnd = _targetHwnd;
+                Win32.SetWindowGhost(_targetHwnd, true);
+                TxtStatus.Text = "Ventana original: OCULTA (100% invisible para tus ojos)";
+            }
+            else
+            {
+                if (_ghostedHwnd != IntPtr.Zero)
+                {
+                    Win32.SetWindowGhost(_ghostedHwnd, false);
+                    _ghostedHwnd = IntPtr.Zero;
+                }
+                Win32.SetWindowGhost(_targetHwnd, false);
+                TxtStatus.Text = "Ventana original: VISIBLE";
+            }
+        }
+
+        private void UpdateGhostButtonStyle()
+        {
+            if (_isGhostEnabled)
+            {
+                BtnGhost.Background = new SolidColorBrush(Color.FromRgb(58, 20, 80));
+                BtnGhost.BorderBrush = new SolidColorBrush(Color.FromRgb(168, 85, 247));
+                IcoGhost.Foreground = new SolidColorBrush(Color.FromRgb(216, 180, 254));
+                TxtGhost.Foreground = new SolidColorBrush(Color.FromRgb(216, 180, 254));
+                TxtGhost.Text = "Oculta (ON)";
+            }
+            else
+            {
+                BtnGhost.Background = new SolidColorBrush(Color.FromRgb(30, 30, 38));
+                BtnGhost.BorderBrush = new SolidColorBrush(Color.FromRgb(51, 51, 66));
+                IcoGhost.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
+                TxtGhost.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
+                TxtGhost.Text = "Ocultar Real";
             }
         }
 

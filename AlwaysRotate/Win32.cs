@@ -168,6 +168,35 @@ namespace AlwaysRotate
         [DllImport("user32.dll")]
         public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        [DllImport("user32.dll")]
+        public static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
+
+        public const uint LWA_ALPHA = 0x00000002;
+        public const int WS_EX_LAYERED = 0x00080000;
+
+        public static void SetWindowGhost(IntPtr hwnd, bool ghost)
+        {
+            if (hwnd == IntPtr.Zero) return;
+            try
+            {
+                int exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+                if (ghost)
+                {
+                    SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED);
+                    SetLayeredWindowAttributes(hwnd, 0, 1, LWA_ALPHA); // Alpha = 1: invisible to human eye, active for Win32
+                }
+                else
+                {
+                    SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
+                    SetWindowLong(hwnd, GWL_EXSTYLE, exStyle & ~WS_EX_LAYERED);
+                }
+            }
+            catch { }
+        }
+
         [DllImport("dwmapi.dll")]
         public static extern int DwmGetWindowAttribute(IntPtr hwnd, int dwAttribute, out int pvAttribute, int cbAttribute);
 
