@@ -25,5 +25,8 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
   - Incorporado el nuevo icono oficial con cristales morados y órbitas rotatorias cian.
   - Procesamiento con algoritmo de inundación (*flood-fill*) para transparentar el fondo exterior blanco manteniendo intactos los brillos y reflejos especulares interiores de los cristales.
   - Generado paquete multi-resolución en `app_icon.ico` (desde 16x16 hasta 256x256) y `app_icon.png`.
-  - Desplegado en la ventana, barra de título y barra de tareas de Windows.
+  - Integración nativa en la barra de tareas de Windows:
+    - Registro de `SetCurrentProcessExplicitAppUserModelID("Rocaman.AlwaysRotate")` en `App.OnStartup` para desvincular el proceso de hosts genéricos y agruparlo con identidad propia en la Shell de Windows.
+    - Soporte dinámico de DPI con `GetSystemMetrics(SM_CXICON)` / `GetSystemMetrics(SM_CYICON)` para envío por `WM_SETICON`.
+    - Incrustación de recurso nativo PE en `AlwaysRotate.exe`.
 - **Control de Versiones**: Commits realizados en Git `master`.

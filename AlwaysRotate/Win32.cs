@@ -29,6 +29,10 @@ namespace AlwaysRotate
         public const int WM_SETCURSOR = 0x0020;
         public const int WM_ACTIVATE = 0x0006;
         public const int WM_SETICON = 0x0080;
+        public const int SM_CXICON = 11;
+        public const int SM_CYICON = 12;
+        public const int SM_CXSMICON = 49;
+        public const int SM_CYSMICON = 50;
         public const int WA_CLICKACTIVE = 2;
         public const int MK_LBUTTON = 0x0001;
         public const int MK_RBUTTON = 0x0002;
@@ -205,6 +209,12 @@ namespace AlwaysRotate
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern IntPtr LoadImage(IntPtr hinst, string lpszName, uint uType, int cxDesired, int cyDesired, uint fuLoad);
+
+        [DllImport("user32.dll")]
+        public static extern int GetSystemMetrics(int nIndex);
+
+        [DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int SetCurrentProcessExplicitAppUserModelID(string AppID);
 
         public static void EnforceTopmost(IntPtr hwnd, bool enable)
         {

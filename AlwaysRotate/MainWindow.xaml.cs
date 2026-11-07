@@ -73,8 +73,18 @@ namespace AlwaysRotate
 
                 if (System.IO.File.Exists(icoPath))
                 {
-                    IntPtr hIconBig = Win32.LoadImage(IntPtr.Zero, icoPath, 1, 32, 32, 0x0010);
-                    IntPtr hIconSm = Win32.LoadImage(IntPtr.Zero, icoPath, 1, 16, 16, 0x0010);
+                    int cxBig = Win32.GetSystemMetrics(Win32.SM_CXICON);
+                    if (cxBig <= 0) cxBig = 32;
+                    int cyBig = Win32.GetSystemMetrics(Win32.SM_CYICON);
+                    if (cyBig <= 0) cyBig = 32;
+
+                    int cxSm = Win32.GetSystemMetrics(Win32.SM_CXSMICON);
+                    if (cxSm <= 0) cxSm = 16;
+                    int cySm = Win32.GetSystemMetrics(Win32.SM_CYSMICON);
+                    if (cySm <= 0) cySm = 16;
+
+                    IntPtr hIconBig = Win32.LoadImage(IntPtr.Zero, icoPath, 1, cxBig, cyBig, 0x0010);
+                    IntPtr hIconSm = Win32.LoadImage(IntPtr.Zero, icoPath, 1, cxSm, cySm, 0x0010);
                     if (hIconBig != IntPtr.Zero) Win32.SendMessage(handle, Win32.WM_SETICON, (IntPtr)1, hIconBig);
                     if (hIconSm != IntPtr.Zero) Win32.SendMessage(handle, Win32.WM_SETICON, (IntPtr)0, hIconSm);
 

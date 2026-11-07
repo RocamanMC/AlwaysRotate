@@ -11,6 +11,12 @@ namespace AlwaysRotate
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            try
+            {
+                Win32.SetCurrentProcessExplicitAppUserModelID("Rocaman.AlwaysRotate");
+            }
+            catch { }
+
             File.AppendAllText(LogPath, $"[{DateTime.Now:HH:mm:ss.fff}] App OnStartup\n");
 
             AppDomain.CurrentDomain.UnhandledException += (s, ev) =>
