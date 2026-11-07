@@ -20,7 +20,18 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v3.1 (Pestaña Completa de Información, Atajos y Ajustes del Sistema)
+### [2026-11-07] - AlwaysRotate v3.2 (Rediseño de Iconos a Vectores SVG Nítidos y Corrección de Truncamiento)
+- **Eliminación Total de Emojis Obsoletos**:
+  - Reemplazados todos los emojis del sistema (`📌`, `🖱️`, `👻`, `⛶`, `🔄`, `⚡`, `ℹ️`, etc.) por vectores `Path` SVG nítidos, estilizados y escalables sin distorsión.
+  - El color de los iconos se adapta dinámicamente mediante enlace (`RelativeSource AncestorType=Button`) al estado activo/inactivo de cada control.
+- **Solución Definitiva a los Textos Cortados en Botones**:
+  - Eliminadas las cadenas largas inyectadas dinámicamente (`Siempre Encima (ON)`, `Interactivo (Clics ON)`).
+  - Etiquetas compactas y limpias (`Fijo`, `Clics`, `Ocultar`, `Ventana`, `Completa`) que nunca se truncan ni se desbordan en ninguna resolución de ventana.
+  - Indicación de estado ON/OFF visualmente evidente mediante brillo de fondo, bordes de acento de color e iluminación del icono vector.
+- **HUD Flotante y Placeholder Vectorizados**:
+  - Iconos del HUD (`IcoFsPin`, `IcoFsInteract`, `IcoFsGhost`, `IcoFsToggleMode`) rediseñados en vectores modernos.
+  - Placeholder de bienvenida rediseñado con contenedor vectorizado moderno.
+- **Compilación y Despliegue**: Compilado con 0 errores y 0 advertencias; binarios publicados en `bin/AlwaysRotate`.
 - **Panel Modal de Información y Ajustes (`InfoOverlay`)**:
   - Incorporado botón `ℹ️ Ayuda` en la barra superior junto al selector de ventana.
   - Diseño moderno y desplazable con fondo atenuado (*backdrop blur/dim*):

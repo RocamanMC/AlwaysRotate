@@ -235,22 +235,26 @@
 
                     <Button Grid.Column="1" Click="BtnRefreshWindows_Click" ToolTip="Refrescar lista de ventanas"
                             Style="{StaticResource ModernBtn}" Height="36" Padding="10,0" Margin="8,0,0,0">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🔄" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Path Data="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,6,0"/>
                             <TextBlock Text="Actualizar" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <Button x:Name="BtnInfo" Grid.Column="2" Click="BtnInfo_Click" ToolTip="Información, Atajos y Ajustes"
                             Style="{StaticResource ModernBtn}" Height="36" Padding="10,0" Margin="6,0,0,0">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="ℹ️" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,6,0"/>
                             <TextBlock Text="Ayuda" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Grid>
 
-                <!-- Row 2: Rotation Controls (Balanced 4-Column Layout) -->
+                <!-- Row 2: Rotation Controls (Clean Vector Icons & Proportional Grid) -->
                 <Border Margin="0,0,0,10" Background="#1a1a22" BorderBrush="#2e2e3d" BorderThickness="1" CornerRadius="8" Padding="3">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -260,34 +264,49 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
+                        <!-- 0° -->
                         <Button x:Name="BtnRot0" Grid.Column="0" Click="BtnRotate0_Click" Style="{StaticResource SegmentBtn}" Margin="0,0,2,0" ToolTip="Normal (0°)">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="⟲" Margin="0,0,4,0"/>
-                                <TextBlock Text="0° Normal"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Path Data="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8z"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBlock Text="0°" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
+
+                        <!-- +90° -->
                         <Button x:Name="BtnRotCW" Grid.Column="1" Click="BtnRotateCW_Click" Style="{StaticResource SegmentBtn}" Margin="2,0" ToolTip="Girar 90° en sentido horario (WhatsApp vertical)">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="↻" Margin="0,0,4,0"/>
-                                <TextBlock Text="+90° Horario"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Path Data="M15.55 5.55L11 1v4.07C7.05 5.56 4 8.92 4 13c0 4.42 3.58 8 8 8s8-3.58 8-8h-2c0 3.31-2.69 6-6 6s-6-2.69-6-6c0-2.97 2.16-5.43 5-5.91V12l4.55-4.55a.996.996 0 0 0 0-1.41z"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBlock Text="90°" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
+
+                        <!-- 180° -->
                         <Button x:Name="BtnRot180" Grid.Column="2" Click="BtnRotate180_Click" Style="{StaticResource SegmentBtn}" Margin="2,0" ToolTip="Invertir 180°">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="⇅" Margin="0,0,4,0"/>
-                                <TextBlock Text="180°"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Path Data="M9 3L5 7h3v7h2V7h3L9 3zm6 18l4-4h-3v-7h-2v7h-3l4 4z"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBlock Text="180°" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button x:Name="BtnRotCCW" Grid.Column="3" Click="BtnRotateCCW_Click" Style="{StaticResource SegmentBtn}" Margin="2,0,0,0" ToolTip="Girar -90° (Antihorario)">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="↺" Margin="0,0,4,0"/>
-                                <TextBlock Text="-90°"/>
+
+                        <!-- 270° / -90° -->
+                        <Button x:Name="BtnRotCCW" Grid.Column="3" Click="BtnRotateCCW_Click" Style="{StaticResource SegmentBtn}" Margin="2,0,0,0" ToolTip="Girar 270° / -90° (Antihorario)">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Path Data="M8.45 5.55L13 1v4.07C16.95 5.56 20 8.92 20 13c0 4.42-3.58 8-8 8s-8-3.58-8-8h2c0 3.31 2.69 6 6 6s6-2.69 6-6c0-2.97-2.16-5.43-5-5.91V12L8.45 7.45a.996.996 0 0 1 0-1.41z"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBlock Text="270°" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                     </Grid>
                 </Border>
 
-                <!-- Row 3: Pin, Interact, Ghost, Window Zen & Fullscreen -->
+                <!-- Row 3: Pin, Interact, Ghost, Window Zen & Fullscreen (With Sharp Modern Vector Icons) -->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -299,46 +318,56 @@
 
                     <!-- Pin Always on Top Toggle -->
                     <Button x:Name="BtnPin" Grid.Column="0" Click="BtnPin_Click" Margin="0,0,2,0" Height="34"
-                            Style="{StaticResource ModernBtn}" ToolTip="Garantiza que AlwaysRotate se quede fija por encima de todos los programas">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock x:Name="IcoPin" Text="📌" FontSize="11" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="TxtPin" Text="Fijo" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                            Style="{StaticResource ModernBtn}" ToolTip="Fijar ventana Siempre Encima de las demás">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Path x:Name="IcoPin" Data="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <TextBlock x:Name="TxtPin" Text="Fijo" FontSize="10.5" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <!-- Interaction Mode Toggle -->
                     <Button x:Name="BtnInteract" Grid.Column="1" Click="BtnInteract_Click" Margin="2,0" Height="34"
-                            Style="{StaticResource ModernBtn}" ToolTip="Activa hacer clics y scroll directamente en la ventana rotada">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock x:Name="IcoInteract" Text="🖱️" FontSize="11" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="TxtInteract" Text="Clics" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                            Style="{StaticResource ModernBtn}" ToolTip="Habilitar clics y rueda del ratón en la ventana">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Path x:Name="IcoInteract" Data="M13 2a8 8 0 0 1 8 8v4a8 8 0 0 1-16 0v-4a8 8 0 0 1 8-8zm-1 3v4h2V5h-2z"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <TextBlock x:Name="TxtInteract" Text="Clics" FontSize="10.5" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <!-- Ghost Mode: Hide Original Window Toggle -->
                     <Button x:Name="BtnGhost" Grid.Column="2" Click="BtnGhost_Click" Margin="2,0" Height="34"
-                            Style="{StaticResource ModernBtn}" ToolTip="Vuelve 100% invisible la ventana original para que solo veas la rotada">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock x:Name="IcoGhost" Text="👻" FontSize="11" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="TxtGhost" Text="Ocultar" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                            Style="{StaticResource ModernBtn}" ToolTip="Ocultar la ventana real (Modo Fantasma)">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Path x:Name="IcoGhost" Data="M12 2a9 9 0 0 0-9 9v9l3-2 3 2 3-2 3 2 3-2 3 2V11a9 9 0 0 0-9-9zm-3.5 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <TextBlock x:Name="TxtGhost" Text="Ocultar" FontSize="10.5" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <!-- Window Zen Mode (Solo Ventana Limpia y Redimensionable) -->
                     <Button x:Name="BtnWindowZen" Grid.Column="3" Click="BtnWindowZen_Click" Margin="2,0" Height="34"
-                            Style="{StaticResource ModernBtn}" ToolTip="Modo Solo Ventana: quita todos los menús para ver solo la app, pero manteniéndola en ventana para moverla y redimensionarla libremente (o pulsa F10)">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="🗖" FontSize="11" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Ventana" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                            Style="{StaticResource ModernBtn}" ToolTip="Modo Solo Ventana: quita todos los menús conservando el marco nativo para mover y redimensionar (F10)">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Path Data="M19 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 14H5V8h14v10z"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <TextBlock Text="Ventana" FontSize="10.5" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <!-- Fullscreen / Monitor Completo Toggle -->
                     <Button x:Name="BtnFullscreen" Grid.Column="4" Click="BtnFullscreen_Click" Margin="2,0,0,0" Height="34"
-                            Style="{StaticResource ModernBtn}" ToolTip="Modo Pantalla Completa: ocupa todo el monitor (o pulsa F11)">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="⛶" FontSize="11" Margin="0,0,3,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="Completa" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                            Style="{StaticResource ModernBtn}" ToolTip="Modo Pantalla Completa: ocupa todo el monitor (F11)">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Path Data="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <TextBlock Text="Completa" FontSize="10.5" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Grid>
@@ -381,7 +410,8 @@
                                 ToolTip="Girar +90° Horario" Margin="2,0">
                             <Border x:Name="BdFsRotate" Background="#1f1f2e" BorderBrush="#4f46e5" BorderThickness="1" CornerRadius="16" Padding="9,4">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="↻" FontSize="13" Foreground="#a5b4fc" Margin="0,0,4,0"/>
+                                    <Path Data="M15.55 5.55L11 1v4.07C7.05 5.56 4 8.92 4 13c0 4.42 3.58 8 8 8s8-3.58 8-8h-2c0 3.31-2.69 6-6 6s-6-2.69-6-6c0-2.97 2.16-5.43 5-5.91V12l4.55-4.55a.996.996 0 0 0 0-1.41z"
+                                          Fill="#a5b4fc" Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,4,0"/>
                                     <TextBlock x:Name="TxtFsAngle" Text="90°" FontSize="11" FontWeight="Bold" Foreground="#f4f4f5"/>
                                 </StackPanel>
                             </Border>
@@ -391,7 +421,8 @@
                         <Button x:Name="BtnFsPin" Click="BtnPin_Click" Style="{StaticResource HudBtn}"
                                 ToolTip="Garantiza que la ventana esté fija encima de todo" Margin="2,0" Width="34" Height="34">
                             <Border x:Name="BdFsPin" Background="#1e1e28" BorderBrush="#383848" BorderThickness="1" CornerRadius="17" Width="34" Height="34">
-                                <TextBlock x:Name="IcoFsPin" Text="📌" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Path x:Name="IcoFsPin" Data="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"
+                                      Fill="#f59e0b" Width="13" Height="13" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                         </Button>
 
@@ -399,7 +430,8 @@
                         <Button x:Name="BtnFsInteract" Click="BtnInteract_Click" Style="{StaticResource HudBtn}"
                                 ToolTip="Activar / Desactivar Clics e Interacción" Margin="2,0" Width="34" Height="34">
                             <Border x:Name="BdFsInteract" Background="#1e1e28" BorderBrush="#383848" BorderThickness="1" CornerRadius="17" Width="34" Height="34">
-                                <TextBlock x:Name="IcoFsInteract" Text="🖱️" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Path x:Name="IcoFsInteract" Data="M13 2a8 8 0 0 1 8 8v4a8 8 0 0 1-16 0v-4a8 8 0 0 1 8-8zm-1 3v4h2V5h-2z"
+                                      Fill="#10b981" Width="13" Height="13" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                         </Button>
 
@@ -407,7 +439,8 @@
                         <Button x:Name="BtnFsGhost" Click="BtnGhost_Click" Style="{StaticResource HudBtn}"
                                 ToolTip="Modo Fantasma: Ocultar ventana original" Margin="2,0" Width="34" Height="34">
                             <Border x:Name="BdFsGhost" Background="#1e1e28" BorderBrush="#383848" BorderThickness="1" CornerRadius="17" Width="34" Height="34">
-                                <TextBlock x:Name="IcoFsGhost" Text="👻" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Path x:Name="IcoFsGhost" Data="M12 2a9 9 0 0 0-9 9v9l3-2 3 2 3-2 3 2 3-2 3 2V11a9 9 0 0 0-9-9zm-3.5 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
+                                      Fill="#c084fc" Width="13" Height="13" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                         </Button>
 
@@ -415,7 +448,8 @@
                         <Button x:Name="BtnFsToggleMode" Click="BtnFsToggleMode_Click" Style="{StaticResource HudBtn}"
                                 Margin="2,0" Width="34" Height="34">
                             <Border x:Name="BdFsToggleMode" Background="#1e1e28" BorderBrush="#383848" BorderThickness="1" CornerRadius="17" Width="34" Height="34">
-                                <TextBlock x:Name="IcoFsToggleMode" Text="⛶" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Path x:Name="IcoFsToggleMode" Data="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"
+                                      Fill="#cbd5e1" Width="13" Height="13" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                         </Button>
 
@@ -445,14 +479,18 @@
                 <!-- Placeholder when no window is selected -->
                 <Border x:Name="PlaceholderOverlay" Background="#0c0c10" Visibility="Visible" Padding="30">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Border Width="64" Height="64" Background="#181824" CornerRadius="16" Margin="0,0,0,16" HorizontalAlignment="Center">
-                            <TextBlock Text="🔄" FontSize="32" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Border Width="64" Height="64" Background="#181824" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="18" Margin="0,0,0,16" HorizontalAlignment="Center">
+                            <Path Data="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"
+                                  Fill="#6366f1" Width="28" Height="28" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <TextBlock Text="Selecciona una ventana" FontWeight="Bold" FontSize="17" Foreground="#f4f4f5" HorizontalAlignment="Center"/>
                         <TextBlock Text="Elige WhatsApp u otra app en el menú superior para empezar a verla rotada."
                                    FontSize="12" Foreground="#71717a" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,6,0,16" TextWrapping="Wrap" MaxWidth="280"/>
                         <Border Background="#1b1b2a" BorderBrush="#312e81" BorderThickness="1" CornerRadius="8" Padding="12,6" HorizontalAlignment="Center">
-                            <TextBlock Text="⚡ Atajo global: Ctrl + Alt + R sobre cualquier ventana" FontSize="11" FontWeight="SemiBold" Foreground="#a5b4fc"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Path Data="M7 2v11h3v9l7-12h-4l4-8z" Fill="#fbbf24" Width="10" Height="10" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Atajo global: Ctrl + Alt + R sobre cualquier ventana" FontSize="11" FontWeight="SemiBold" Foreground="#a5b4fc"/>
+                            </StackPanel>
                         </Border>
                     </StackPanel>
                 </Border>
@@ -499,7 +537,8 @@
                     <Border Grid.Row="0" Background="#181822" BorderBrush="#262635" BorderThickness="0,0,0,1" CornerRadius="14,14,0,0" Padding="16,12">
                         <Grid>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="ℹ️" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+                                      Fill="#818cf8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                 <StackPanel>
                                     <TextBlock Text="Información y Ajustes" FontSize="14" FontWeight="Bold" Foreground="#f4f4f5"/>
                                     <TextBlock Text="AlwaysRotate v3.1 • Guía rápida y atajos" FontSize="11" Foreground="#94a3b8"/>
@@ -528,14 +567,14 @@
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="16,14">
                         <StackPanel Orientation="Vertical">
                             <!-- Section 1: How it works -->
-                            <TextBlock Text="🚀 ¿CÓMO FUNCIONA?" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <TextBlock Text="FUNCIONAMIENTO GENERAL" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
                             <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,14">
                                 <TextBlock Text="AlwaysRotate captura en tiempo real a 30 FPS cualquier ventana activa de tu sistema (como WhatsApp Desktop) y la gira a 90°, 180° o 270°. Además, reenvía de forma matemática y fluida tus clics y la rueda del ratón a la app original, para que puedas chatear y navegar directamente desde la pantalla rotada."
                                            FontSize="11.5" Foreground="#cbd5e1" TextWrapping="Wrap" LineHeight="17"/>
                             </Border>
 
                             <!-- Section 2: Shortcuts Cheat Sheet -->
-                            <TextBlock Text="⌨️ ATAJOS DE TECLADO GLOBALES" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <TextBlock Text="ATAJOS DE TECLADO GLOBALES" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
                             <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,0,0,14">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -604,20 +643,20 @@
                             </Border>
 
                             <!-- Section 3: Buttons explanation -->
-                            <TextBlock Text="🛠️ BOTONES Y MODOS" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <TextBlock Text="ACCIONES Y MODOS" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
                             <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,14">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="• 0° / +90° / 180° / -90°: Rotaciones directas en ángulos fijos." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
-                                    <TextBlock Text="• 📌 Fijo: Mantiene AlwaysRotate visible por encima de cualquier otro programa." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
-                                    <TextBlock Text="• 🖱️ Clics: Activa o desactiva la interacción directa con la app." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
-                                    <TextBlock Text="• 👻 Ocultar: Vuelve 100% invisible la ventana original para no tener duplicados." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
-                                    <TextBlock Text="• 🗖 Ventana: Quita los paneles de botones grandes pero conserva el marco de ventana para moverla y redimensionarla con el ratón." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
-                                    <TextBlock Text="• ⛶ Completa: Modo pantalla completa total con HUD que se auto-oculta tras 2.5s." FontSize="11" Foreground="#cbd5e1"/>
+                                    <TextBlock Text="• 0° / 90° / 180° / 270°: Rotaciones directas en ángulos fijos." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
+                                    <TextBlock Text="• Fijo (Always on Top): Mantiene AlwaysRotate visible por encima de cualquier otro programa." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
+                                    <TextBlock Text="• Clics (Interacción): Activa o desactiva el reenvío de clics y rueda a la app original." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
+                                    <TextBlock Text="• Ocultar (Fantasma): Vuelve 100% invisible la ventana original para no tener duplicados en pantalla." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
+                                    <TextBlock Text="• Ventana: Oculta los controles conservando el marco nativo para mover y redimensionar con el ratón." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
+                                    <TextBlock Text="• Completa: Modo pantalla completa total con HUD flotante que se auto-oculta tras 2.5s." FontSize="11" Foreground="#cbd5e1"/>
                                 </StackPanel>
                             </Border>
 
                             <!-- Section 4: System Settings -->
-                            <TextBlock Text="⚙️ AJUSTES DEL SISTEMA" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <TextBlock Text="AJUSTES DEL SISTEMA" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
                             <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,6">
                                 <StackPanel Orientation="Vertical">
                                     <CheckBox x:Name="ChkAutoStart" Click="ChkAutoStart_Click" Margin="0,0,0,8" Cursor="Hand">

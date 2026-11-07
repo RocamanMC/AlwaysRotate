@@ -409,27 +409,35 @@ namespace AlwaysRotate
             if (_isAlwaysOnTop)
             {
                 BtnPin.Background = new SolidColorBrush(Color.FromRgb(45, 32, 6));
-                BtnPin.BorderBrush = new SolidColorBrush(Color.FromRgb(180, 83, 9));
-                IcoPin.Foreground = new SolidColorBrush(Color.FromRgb(251, 191, 36));
+                BtnPin.BorderBrush = new SolidColorBrush(Color.FromRgb(245, 158, 11));
+                BtnPin.Foreground = new SolidColorBrush(Color.FromRgb(251, 191, 36));
                 TxtPin.Foreground = new SolidColorBrush(Color.FromRgb(251, 191, 36));
-                TxtPin.Text = "Siempre Encima (ON)";
+                TxtPin.Text = "Fijo";
                 if (BdFsPin != null)
                 {
                     BdFsPin.Background = new SolidColorBrush(Color.FromRgb(45, 32, 6));
-                    BdFsPin.BorderBrush = new SolidColorBrush(Color.FromRgb(180, 83, 9));
+                    BdFsPin.BorderBrush = new SolidColorBrush(Color.FromRgb(245, 158, 11));
+                }
+                if (IcoFsPin != null)
+                {
+                    IcoFsPin.Fill = new SolidColorBrush(Color.FromRgb(251, 191, 36));
                 }
             }
             else
             {
                 BtnPin.Background = new SolidColorBrush(Color.FromRgb(30, 30, 38));
                 BtnPin.BorderBrush = new SolidColorBrush(Color.FromRgb(51, 51, 66));
-                IcoPin.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
-                TxtPin.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
-                TxtPin.Text = "Siempre Encima (OFF)";
+                BtnPin.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                TxtPin.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                TxtPin.Text = "Fijo";
                 if (BdFsPin != null)
                 {
                     BdFsPin.Background = new SolidColorBrush(Color.FromRgb(30, 30, 38));
                     BdFsPin.BorderBrush = new SolidColorBrush(Color.FromRgb(51, 51, 66));
+                }
+                if (IcoFsPin != null)
+                {
+                    IcoFsPin.Fill = new SolidColorBrush(Color.FromRgb(148, 163, 184));
                 }
             }
         }
@@ -449,27 +457,35 @@ namespace AlwaysRotate
             if (_isInteractive)
             {
                 BtnInteract.Background = new SolidColorBrush(Color.FromRgb(6, 40, 30));
-                BtnInteract.BorderBrush = new SolidColorBrush(Color.FromRgb(4, 120, 87));
-                IcoInteract.Foreground = new SolidColorBrush(Color.FromRgb(52, 211, 153));
+                BtnInteract.BorderBrush = new SolidColorBrush(Color.FromRgb(16, 185, 129));
+                BtnInteract.Foreground = new SolidColorBrush(Color.FromRgb(52, 211, 153));
                 TxtInteract.Foreground = new SolidColorBrush(Color.FromRgb(52, 211, 153));
-                TxtInteract.Text = "Interactivo (Clics ON)";
+                TxtInteract.Text = "Clics";
                 if (BdFsInteract != null)
                 {
                     BdFsInteract.Background = new SolidColorBrush(Color.FromRgb(6, 40, 30));
-                    BdFsInteract.BorderBrush = new SolidColorBrush(Color.FromRgb(4, 120, 87));
+                    BdFsInteract.BorderBrush = new SolidColorBrush(Color.FromRgb(16, 185, 129));
+                }
+                if (IcoFsInteract != null)
+                {
+                    IcoFsInteract.Fill = new SolidColorBrush(Color.FromRgb(52, 211, 153));
                 }
             }
             else
             {
                 BtnInteract.Background = new SolidColorBrush(Color.FromRgb(30, 30, 38));
                 BtnInteract.BorderBrush = new SolidColorBrush(Color.FromRgb(51, 51, 66));
-                IcoInteract.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
-                TxtInteract.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
-                TxtInteract.Text = "Solo Ver (Clics OFF)";
+                BtnInteract.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                TxtInteract.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                TxtInteract.Text = "Clics";
                 if (BdFsInteract != null)
                 {
                     BdFsInteract.Background = new SolidColorBrush(Color.FromRgb(30, 30, 38));
                     BdFsInteract.BorderBrush = new SolidColorBrush(Color.FromRgb(51, 51, 66));
+                }
+                if (IcoFsInteract != null)
+                {
+                    IcoFsInteract.Fill = new SolidColorBrush(Color.FromRgb(148, 163, 184));
                 }
             }
         }
@@ -509,26 +525,34 @@ namespace AlwaysRotate
             {
                 BtnGhost.Background = new SolidColorBrush(Color.FromRgb(58, 20, 80));
                 BtnGhost.BorderBrush = new SolidColorBrush(Color.FromRgb(168, 85, 247));
-                IcoGhost.Foreground = new SolidColorBrush(Color.FromRgb(216, 180, 254));
+                BtnGhost.Foreground = new SolidColorBrush(Color.FromRgb(216, 180, 254));
                 TxtGhost.Foreground = new SolidColorBrush(Color.FromRgb(216, 180, 254));
-                TxtGhost.Text = "Oculta (ON)";
+                TxtGhost.Text = "Ocultar";
                 if (BdFsGhost != null)
                 {
                     BdFsGhost.Background = new SolidColorBrush(Color.FromRgb(58, 20, 80));
                     BdFsGhost.BorderBrush = new SolidColorBrush(Color.FromRgb(168, 85, 247));
+                }
+                if (IcoFsGhost != null)
+                {
+                    IcoFsGhost.Fill = new SolidColorBrush(Color.FromRgb(216, 180, 254));
                 }
             }
             else
             {
                 BtnGhost.Background = new SolidColorBrush(Color.FromRgb(30, 30, 38));
                 BtnGhost.BorderBrush = new SolidColorBrush(Color.FromRgb(51, 51, 66));
-                IcoGhost.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
-                TxtGhost.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
-                TxtGhost.Text = "Ocultar Real";
+                BtnGhost.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                TxtGhost.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                TxtGhost.Text = "Ocultar";
                 if (BdFsGhost != null)
                 {
                     BdFsGhost.Background = new SolidColorBrush(Color.FromRgb(30, 30, 38));
                     BdFsGhost.BorderBrush = new SolidColorBrush(Color.FromRgb(51, 51, 66));
+                }
+                if (IcoFsGhost != null)
+                {
+                    IcoFsGhost.Fill = new SolidColorBrush(Color.FromRgb(148, 163, 184));
                 }
             }
         }
@@ -718,7 +742,10 @@ namespace AlwaysRotate
                     ResizeMode = ResizeMode.CanResize;
 
                     // Configure HUD toggle button
-                    IcoFsToggleMode.Text = "⛶";
+                    if (IcoFsToggleMode != null)
+                    {
+                        IcoFsToggleMode.Data = Geometry.Parse("M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z");
+                    }
                     BtnFsToggleMode.ToolTip = "Pantalla Completa total (F11)";
 
                     // Show HUD with auto-hide timer
@@ -739,7 +766,10 @@ namespace AlwaysRotate
                     WindowState = WindowState.Maximized;
 
                     // Configure HUD toggle button
-                    IcoFsToggleMode.Text = "🗖";
+                    if (IcoFsToggleMode != null)
+                    {
+                        IcoFsToggleMode.Data = Geometry.Parse("M19 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 14H5V8h14v10z");
+                    }
                     BtnFsToggleMode.ToolTip = "Modo Solo Ventana (F10)";
 
                     // Show HUD with auto-hide timer
