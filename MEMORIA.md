@@ -20,13 +20,14 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v2.5 (Nuevo Icono Oficial: Cristales Orbitantes Púrpura y Azul)
-- **Actualización de Identidad Visual**:
-  - Incorporado el nuevo icono oficial con cristales morados y órbitas rotatorias cian nativo en formato RGBA con transparencia original de alta fidelidad.
-  - Recorte ajustado a los bordes exteriores (*tight bounding box* de 519x519 sin márgenes vacíos) para maximizar el tamaño y visibilidad del icono en la barra de tareas de Windows y barra de título.
-  - Generado paquete multi-resolución en `app_icon.ico` (desde 16x16 hasta 256x256 con remuestreo Lanczos) y `app_icon.png`.
-  - Integración nativa en la barra de tareas de Windows:
-    - Registro de `SetCurrentProcessExplicitAppUserModelID("Rocaman.AlwaysRotate")` en `App.OnStartup` para desvincular el proceso de hosts genéricos y agruparlo con identidad propia en la Shell de Windows.
-    - Soporte dinámico de DPI con `GetSystemMetrics(SM_CXICON)` / `GetSystemMetrics(SM_CYICON)` para envío por `WM_SETICON`.
-    - Incrustación de recurso nativo PE en `AlwaysRotate.exe`.
+### [2026-11-07] - AlwaysRotate v2.6 (Barra de Herramientas Flotante HUD en Pantalla Completa)
+- **HUD Flotante Integrado en Pantalla Completa**:
+  - Sustituido el botón único de salida por una barra flotante (*glassmorphism HUD*) en la esquina superior derecha (`FullscreenHud`) visible exclusivamente en pantalla completa.
+  - Botones funcionales integrados:
+    1. **`↻ +90°`**: Rota en incrementos horarios de 90° mostrando el ángulo actual en vivo.
+    2. **`📌 Fijado`**: Conmuta AlwaysOnTop con respuesta visual (ámbar activo).
+    3. **`🖱️ Clics`**: Conmuta el modo de interacción directa y reenvío de clics/scroll (esmeralda activo).
+    4. **`👻 Fantasma`**: Conmuta el modo de invisibilidad de la ventana original (púrpura activo).
+    5. **`✕ Salir`**: Sale del modo pantalla completa devolviendo el tamaño y controles estándar.
+  - Sincronización bidireccional de estilos y estados reactivos entre la interfaz normal y el HUD de pantalla completa.
 - **Control de Versiones**: Commits realizados en Git `master`.

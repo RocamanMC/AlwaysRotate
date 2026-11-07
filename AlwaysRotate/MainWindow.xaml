@@ -180,6 +180,27 @@
                 </Border>
             </Grid>
         </DataTemplate>
+        <!-- Fullscreen Floating HUD Button Style -->
+        <Style x:Key="HudBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Foreground" Value="#e4e4e7"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="17">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid>
@@ -329,27 +350,78 @@
                     <Image x:Name="RotatedImageHost" RenderOptions.BitmapScalingMode="HighQuality"/>
                 </Viewbox>
 
-                <!-- Floating Exit Fullscreen Button (Only Visible in Fullscreen Mode) -->
-                <Button x:Name="BtnExitFullscreen" Click="BtnExitFullscreen_Click"
+                <!-- Floating Fullscreen HUD Toolbar (Visible only in Fullscreen Mode) -->
+                <Border x:Name="FullscreenHud"
                         HorizontalAlignment="Right" VerticalAlignment="Top"
-                        Margin="0,16,16,0" Width="38" Height="38"
+                        Margin="0,16,16,0"
+                        Background="#e6111118"
+                        BorderBrush="#40ffffff"
+                        BorderThickness="1"
+                        CornerRadius="20"
+                        Padding="6,4"
                         Visibility="Collapsed"
-                        ToolTip="Salir de Pantalla Completa (o pulsa Esc)"
-                        Cursor="Hand">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="bd" Background="#b314141a" CornerRadius="19" BorderBrush="#50ffffff" BorderThickness="1.5">
-                                <TextBlock Text="✕" FontSize="16" FontWeight="Bold" Foreground="#f4f4f5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        Panel.ZIndex="999">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="18" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.75"/>
+                    </Border.Effect>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- 1. Rotate +90° Button -->
+                        <Button x:Name="BtnFsRotate" Click="BtnFsRotate_Click" Style="{StaticResource HudBtn}"
+                                ToolTip="Girar +90° Horario" Margin="2,0">
+                            <Border x:Name="BdFsRotate" Background="#1f1f2e" BorderBrush="#4f46e5" BorderThickness="1" CornerRadius="16" Padding="9,4">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="↻" FontSize="13" Foreground="#a5b4fc" Margin="0,0,4,0"/>
+                                    <TextBlock x:Name="TxtFsAngle" Text="90°" FontSize="11" FontWeight="Bold" Foreground="#f4f4f5"/>
+                                </StackPanel>
                             </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="bd" Property="Background" Value="#e11d48"/>
-                                    <Setter TargetName="bd" Property="BorderBrush" Value="#f43f5e"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
+                        </Button>
+
+                        <!-- 2. Pin Always on Top -->
+                        <Button x:Name="BtnFsPin" Click="BtnPin_Click" Style="{StaticResource HudBtn}"
+                                ToolTip="Garantiza que la ventana esté fija encima de todo" Margin="2,0" Width="34" Height="34">
+                            <Border x:Name="BdFsPin" Background="#1e1e28" BorderBrush="#383848" BorderThickness="1" CornerRadius="17" Width="34" Height="34">
+                                <TextBlock x:Name="IcoFsPin" Text="📌" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Button>
+
+                        <!-- 3. Click / Interact Mode -->
+                        <Button x:Name="BtnFsInteract" Click="BtnInteract_Click" Style="{StaticResource HudBtn}"
+                                ToolTip="Activar / Desactivar Clics e Interacción" Margin="2,0" Width="34" Height="34">
+                            <Border x:Name="BdFsInteract" Background="#1e1e28" BorderBrush="#383848" BorderThickness="1" CornerRadius="17" Width="34" Height="34">
+                                <TextBlock x:Name="IcoFsInteract" Text="🖱️" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Button>
+
+                        <!-- 4. Ghost Mode -->
+                        <Button x:Name="BtnFsGhost" Click="BtnGhost_Click" Style="{StaticResource HudBtn}"
+                                ToolTip="Modo Fantasma: Ocultar ventana original" Margin="2,0" Width="34" Height="34">
+                            <Border x:Name="BdFsGhost" Background="#1e1e28" BorderBrush="#383848" BorderThickness="1" CornerRadius="17" Width="34" Height="34">
+                                <TextBlock x:Name="IcoFsGhost" Text="👻" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Button>
+
+                        <!-- Separator -->
+                        <Rectangle Width="1" Height="18" Fill="#40ffffff" Margin="4,0"/>
+
+                        <!-- 5. Exit Fullscreen (X) -->
+                        <Button x:Name="BtnExitFullscreen" Click="BtnExitFullscreen_Click" Style="{StaticResource HudBtn}"
+                                ToolTip="Salir de Pantalla Completa (o pulsa Esc)" Margin="2,0" Width="34" Height="34">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="bd" Background="#29181f" BorderBrush="#66f43f5e" BorderThickness="1" CornerRadius="17" Width="34" Height="34" Cursor="Hand">
+                                        <TextBlock Text="✕" FontSize="14" FontWeight="Bold" Foreground="#fda4af" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="bd" Property="Background" Value="#e11d48"/>
+                                            <Setter TargetName="bd" Property="BorderBrush" Value="#f43f5e"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+                </Border>
 
                 <!-- Placeholder when no window is selected -->
                 <Border x:Name="PlaceholderOverlay" Background="#0c0c10" Visibility="Visible" Padding="30">

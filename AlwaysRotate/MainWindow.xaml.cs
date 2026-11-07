@@ -346,6 +346,11 @@ namespace AlwaysRotate
                 IcoPin.Foreground = new SolidColorBrush(Color.FromRgb(251, 191, 36));
                 TxtPin.Foreground = new SolidColorBrush(Color.FromRgb(251, 191, 36));
                 TxtPin.Text = "Siempre Encima (ON)";
+                if (BdFsPin != null)
+                {
+                    BdFsPin.Background = new SolidColorBrush(Color.FromRgb(45, 32, 6));
+                    BdFsPin.BorderBrush = new SolidColorBrush(Color.FromRgb(180, 83, 9));
+                }
             }
             else
             {
@@ -354,6 +359,11 @@ namespace AlwaysRotate
                 IcoPin.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
                 TxtPin.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
                 TxtPin.Text = "Siempre Encima (OFF)";
+                if (BdFsPin != null)
+                {
+                    BdFsPin.Background = new SolidColorBrush(Color.FromRgb(30, 30, 38));
+                    BdFsPin.BorderBrush = new SolidColorBrush(Color.FromRgb(51, 51, 66));
+                }
             }
         }
 
@@ -376,6 +386,11 @@ namespace AlwaysRotate
                 IcoInteract.Foreground = new SolidColorBrush(Color.FromRgb(52, 211, 153));
                 TxtInteract.Foreground = new SolidColorBrush(Color.FromRgb(52, 211, 153));
                 TxtInteract.Text = "Interactivo (Clics ON)";
+                if (BdFsInteract != null)
+                {
+                    BdFsInteract.Background = new SolidColorBrush(Color.FromRgb(6, 40, 30));
+                    BdFsInteract.BorderBrush = new SolidColorBrush(Color.FromRgb(4, 120, 87));
+                }
             }
             else
             {
@@ -384,6 +399,11 @@ namespace AlwaysRotate
                 IcoInteract.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
                 TxtInteract.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
                 TxtInteract.Text = "Solo Ver (Clics OFF)";
+                if (BdFsInteract != null)
+                {
+                    BdFsInteract.Background = new SolidColorBrush(Color.FromRgb(30, 30, 38));
+                    BdFsInteract.BorderBrush = new SolidColorBrush(Color.FromRgb(51, 51, 66));
+                }
             }
         }
 
@@ -425,6 +445,11 @@ namespace AlwaysRotate
                 IcoGhost.Foreground = new SolidColorBrush(Color.FromRgb(216, 180, 254));
                 TxtGhost.Foreground = new SolidColorBrush(Color.FromRgb(216, 180, 254));
                 TxtGhost.Text = "Oculta (ON)";
+                if (BdFsGhost != null)
+                {
+                    BdFsGhost.Background = new SolidColorBrush(Color.FromRgb(58, 20, 80));
+                    BdFsGhost.BorderBrush = new SolidColorBrush(Color.FromRgb(168, 85, 247));
+                }
             }
             else
             {
@@ -433,6 +458,11 @@ namespace AlwaysRotate
                 IcoGhost.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
                 TxtGhost.Foreground = new SolidColorBrush(Color.FromRgb(113, 113, 122));
                 TxtGhost.Text = "Ocultar Real";
+                if (BdFsGhost != null)
+                {
+                    BdFsGhost.Background = new SolidColorBrush(Color.FromRgb(30, 30, 38));
+                    BdFsGhost.BorderBrush = new SolidColorBrush(Color.FromRgb(51, 51, 66));
+                }
             }
         }
 
@@ -445,6 +475,11 @@ namespace AlwaysRotate
         private void BtnExitFullscreen_Click(object sender, RoutedEventArgs e)
         {
             ToggleFullscreen(false);
+        }
+
+        private void BtnFsRotate_Click(object sender, RoutedEventArgs e)
+        {
+            ApplyAngle(_currentAngle + 90);
         }
 
         private void ToggleFullscreen(bool enable)
@@ -462,8 +497,8 @@ namespace AlwaysRotate
                 HeaderBorder.Visibility = Visibility.Collapsed;
                 FooterBorder.Visibility = Visibility.Collapsed;
 
-                // Show floating exit button
-                BtnExitFullscreen.Visibility = Visibility.Visible;
+                // Show floating fullscreen HUD
+                FullscreenHud.Visibility = Visibility.Visible;
 
                 // Expand to borderless full screen
                 WindowStyle = WindowStyle.None;
@@ -475,7 +510,7 @@ namespace AlwaysRotate
                 // Restore controls
                 HeaderBorder.Visibility = Visibility.Visible;
                 FooterBorder.Visibility = Visibility.Visible;
-                BtnExitFullscreen.Visibility = Visibility.Collapsed;
+                FullscreenHud.Visibility = Visibility.Collapsed;
 
                 // Restore window
                 WindowStyle = _prevWindowStyle;
@@ -503,6 +538,7 @@ namespace AlwaysRotate
         {
             _currentAngle = ((angle % 360) + 360) % 360;
             TxtAngleBadge.Text = $"{_currentAngle}°";
+            if (TxtFsAngle != null) TxtFsAngle.Text = $"{_currentAngle}°";
             UpdateRotationButtonStyles();
             TxtStatus.Text = $"Rotación fijada en: {_currentAngle}°";
         }
