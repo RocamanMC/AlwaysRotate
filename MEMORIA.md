@@ -23,7 +23,8 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 ### [2026-11-07] - AlwaysRotate v2.5 (Nuevo Icono Oficial: Cristales Orbitantes Púrpura y Azul)
 - **Actualización de Identidad Visual**:
   - Incorporado el nuevo icono oficial con cristales morados y órbitas rotatorias cian nativo en formato RGBA con transparencia original de alta fidelidad.
-  - Generado paquete multi-resolución en `app_icon.ico` (desde 16x16 hasta 256x256) y `app_icon.png`.
+  - Recorte ajustado a los bordes exteriores (*tight bounding box* de 519x519 sin márgenes vacíos) para maximizar el tamaño y visibilidad del icono en la barra de tareas de Windows y barra de título.
+  - Generado paquete multi-resolución en `app_icon.ico` (desde 16x16 hasta 256x256 con remuestreo Lanczos) y `app_icon.png`.
   - Integración nativa en la barra de tareas de Windows:
     - Registro de `SetCurrentProcessExplicitAppUserModelID("Rocaman.AlwaysRotate")` en `App.OnStartup` para desvincular el proceso de hosts genéricos y agruparlo con identidad propia en la Shell de Windows.
     - Soporte dinámico de DPI con `GetSystemMetrics(SM_CXICON)` / `GetSystemMetrics(SM_CYICON)` para envío por `WM_SETICON`.
