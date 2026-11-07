@@ -310,7 +310,8 @@
         <Border Grid.Row="1" Background="#060609" ClipToBounds="True">
             <Grid x:Name="ViewportContainer" Background="Transparent"
                   MouseLeftButtonDown="ViewportContainer_MouseLeftButtonDown"
-                  MouseRightButtonDown="ViewportContainer_MouseRightButtonDown"
+                  MouseLeftButtonUp="ViewportContainer_MouseLeftButtonUp"
+                  MouseRightButtonUp="ViewportContainer_MouseRightButtonUp"
                   MouseWheel="ViewportContainer_MouseWheel">
 
                 <!-- Viewbox with smooth scaling -->

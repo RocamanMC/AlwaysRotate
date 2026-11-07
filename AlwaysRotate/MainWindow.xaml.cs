@@ -499,6 +499,8 @@ namespace AlwaysRotate
             return true;
         }
 
+        private bool _isMouseDownOnImage = false;
+
         private void ForwardMouseClick(Point clickPoint, bool isRightClick)
         {
             if (!CalculateTargetCoordinates(clickPoint, out int tx, out int ty))
@@ -519,16 +521,24 @@ namespace AlwaysRotate
             ThreadPool.QueueUserWorkItem(_ =>
             {
                 Win32.GetCursorPos(out var oldCursor);
+
+                // 1. Activate target window so it receives the click
+                Win32.SetForegroundWindow(_targetHwnd);
+                Thread.Sleep(20);
+
+                // 2. Position cursor exactly over the control in WhatsApp
                 Win32.SetCursorPos(screenX, screenY);
 
                 uint downFlag = isRightClick ? Win32.MOUSEEVENTF_RIGHTDOWN : Win32.MOUSEEVENTF_LEFTDOWN;
                 uint upFlag = isRightClick ? Win32.MOUSEEVENTF_RIGHTUP : Win32.MOUSEEVENTF_LEFTUP;
 
+                // 3. Dispatch real hardware mouse down + hold + up
                 Win32.mouse_event(downFlag, 0, 0, 0, UIntPtr.Zero);
-                Thread.Sleep(35);
+                Thread.Sleep(40);
                 Win32.mouse_event(upFlag, 0, 0, 0, UIntPtr.Zero);
-                Thread.Sleep(15);
+                Thread.Sleep(20);
 
+                // 4. Return cursor to original position
                 Win32.SetCursorPos(oldCursor.X, oldCursor.Y);
             });
         }
@@ -544,6 +554,21 @@ namespace AlwaysRotate
                 return;
             }
 
+            _isMouseDownOnImage = true;
+            e.Handled = true;
+        }
+
+        private void ViewportContainer_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (!_isInteractive || !_isMouseDownOnImage)
+                return;
+
+            _isMouseDownOnImage = false;
+            e.Handled = true;
+
+            // Release capture so mouse is completely free
+            Mouse.Capture(null);
+
             Point pt = e.GetPosition(RotatedImageHost);
             ForwardMouseClick(pt, isRightClick: false);
         }
@@ -552,6 +577,16 @@ namespace AlwaysRotate
         {
             if (_isInteractive)
             {
+                e.Handled = true;
+            }
+        }
+
+        private void ViewportContainer_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_isInteractive)
+            {
+                e.Handled = true;
+                Mouse.Capture(null);
                 Point pt = e.GetPosition(RotatedImageHost);
                 ForwardMouseClick(pt, isRightClick: true);
             }
