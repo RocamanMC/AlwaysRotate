@@ -20,12 +20,12 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v2.2 (Eliminación Total de Parpadeo con HTTRANSPARENT y WS_EX_LAYERED)
-- **Diagnóstico del parpadeo / cierre momentáneo**:
-  - Al desplazar la ventana a $(-15000, -15000)$ para evitar colisiones en la misma pantalla, el Compositor de Windows provocaba que el usuario viera desaparecer y reaparecer la ventana ("como si se cerrara y abriera").
-- **Solución definitiva sin parpadeo (Cero movimiento)**:
-  - **Eliminación del desplazamiento off-screen**: AlwaysRotate ya no se mueve de sus coordenadas en ningún momento.
-  - **Interceptación de mensajes con `WM_NCHITTEST` (`HTTRANSPARENT`)**: Mediante `HwndHook`, durante la simulación de entrada (`_isSimulatingInput` o `_isForwardingWheel`), AlwaysRotate responde a `WM_NCHITTEST` devolviendo `-1` (`HTTRANSPARENT`) y a `WM_MOUSEACTIVATE` devolviendo `MA_NOACTIVATE`. Esto instruye al subsistema de entrada de Windows a ignorar por completo AlwaysRotate y transferir el evento de ratón a la ventana inmediatamente inferior (WhatsApp).
-  - **Capa transparente nativa (`WS_EX_LAYERED | WS_EX_TRANSPARENT`)**: En conjunto con `SWP_FRAMECHANGED`, asegura una colisión transparente nativa en el compositor sin redibujar ni mover la ventana.
-  - **Resultado**: Clics y scroll 100% operativos en la misma pantalla con **cero parpadeo** y estabilidad visual perfecta.
+### [2026-11-07] - AlwaysRotate v2.3 (Modo Pantalla Completa / Vista Zen con Botón Flotante 'X')
+- **Nueva Funcionalidad de Pantalla Completa**:
+  - Incorporado botón `⛶ Pantalla` en la barra de herramientas superior y atajos globales `F11` y `Esc`.
+  - Al activarse:
+    1. Se ocultan por completo todas las barras de herramientas (selector, rotación, opacidad, botones) y la barra de estado inferior.
+    2. La ventana se expande a pantalla completa sin bordes (*borderless fullscreen*), permitiendo que la ventana clonada ocupe el 100% del monitor con escalado limpio.
+    3. Aparece un **botón flotante '✕'** elegante y translúcido en la esquina superior derecha (`BtnExitFullscreen`).
+    4. Al hacer clic en la '✕' o pulsar la tecla `Esc` (o `F11`), se sale instantáneamente de pantalla completa, restaurando todos los botones y dimensiones originales.
 - **Control de Versiones**: Commits realizados en Git `master`.

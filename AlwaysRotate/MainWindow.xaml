@@ -15,7 +15,8 @@
         FontFamily="Segoe UI Variable, Segoe UI, sans-serif"
         Loaded="Window_Loaded"
         Closing="Window_Closing"
-        Deactivated="Window_Deactivated">
+        Deactivated="Window_Deactivated"
+        KeyDown="Window_KeyDown">
 
     <Window.Resources>
         <!-- Modern Button Base Style -->
@@ -192,7 +193,7 @@
         </Grid.RowDefinitions>
 
         <!-- 1. Header Toolbar Card -->
-        <Border Grid.Row="0" Background="#14141a" BorderBrush="#262633" BorderThickness="0,0,0,1" Padding="14,12">
+        <Border x:Name="HeaderBorder" Grid.Row="0" Background="#14141a" BorderBrush="#262633" BorderThickness="0,0,0,1" Padding="14,12">
             <StackPanel Orientation="Vertical">
 
                 <!-- Row 1: Target Window Selector (Wide & Clean, Auto-Refreshes on Click) -->
@@ -266,10 +267,10 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- Row 3: Always on Top & Click Interaction Mode -->
-                <!-- Row 3: Always on Top, Click Interaction Mode & Ghost Original -->
+                <!-- Row 3: Always on Top, Click Interaction, Ghost Original & Fullscreen Mode -->
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
@@ -294,11 +295,20 @@
                     </Button>
 
                     <!-- Ghost Mode: Hide Original Window Toggle -->
-                    <Button x:Name="BtnGhost" Grid.Column="2" Click="BtnGhost_Click" Margin="3,0,0,0" Height="34"
+                    <Button x:Name="BtnGhost" Grid.Column="2" Click="BtnGhost_Click" Margin="3,0,3,0" Height="34"
                             Style="{StaticResource ModernBtn}" ToolTip="Vuelve 100% invisible la ventana original para que solo veas la rotada">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock x:Name="IcoGhost" Text="👻" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
                             <TextBlock x:Name="TxtGhost" Text="Ocultar Real" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Fullscreen / Zen Mode Toggle -->
+                    <Button x:Name="BtnFullscreen" Grid.Column="3" Click="BtnFullscreen_Click" Margin="3,0,0,0" Height="34"
+                            Style="{StaticResource ModernBtn}" ToolTip="Modo Pantalla Completa: quita todos los botones para máxima visión (o pulsa F11)">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="⛶" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Pantalla" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Grid>
@@ -319,6 +329,28 @@
                     <Image x:Name="RotatedImageHost" RenderOptions.BitmapScalingMode="HighQuality"/>
                 </Viewbox>
 
+                <!-- Floating Exit Fullscreen Button (Only Visible in Fullscreen Mode) -->
+                <Button x:Name="BtnExitFullscreen" Click="BtnExitFullscreen_Click"
+                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Margin="0,16,16,0" Width="38" Height="38"
+                        Visibility="Collapsed"
+                        ToolTip="Salir de Pantalla Completa (o pulsa Esc)"
+                        Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="bd" Background="#b314141a" CornerRadius="19" BorderBrush="#50ffffff" BorderThickness="1.5">
+                                <TextBlock Text="✕" FontSize="16" FontWeight="Bold" Foreground="#f4f4f5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="bd" Property="Background" Value="#e11d48"/>
+                                    <Setter TargetName="bd" Property="BorderBrush" Value="#f43f5e"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
                 <!-- Placeholder when no window is selected -->
                 <Border x:Name="PlaceholderOverlay" Background="#0c0c10" Visibility="Visible" Padding="30">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -337,7 +369,7 @@
         </Border>
 
         <!-- 3. Bottom Status Bar -->
-        <Border Grid.Row="2" Background="#101015" BorderBrush="#202029" BorderThickness="0,1,0,0" Padding="14,6">
+        <Border x:Name="FooterBorder" Grid.Row="2" Background="#101015" BorderBrush="#202029" BorderThickness="0,1,0,0" Padding="14,6">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

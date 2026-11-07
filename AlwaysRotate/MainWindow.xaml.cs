@@ -30,6 +30,11 @@ namespace AlwaysRotate
         private IntPtr _ghostedHwnd = IntPtr.Zero;
         private volatile bool _isSimulatingInput = false;
 
+        private bool _isFullscreen = false;
+        private WindowState _prevWindowState = WindowState.Normal;
+        private WindowStyle _prevWindowStyle = WindowStyle.SingleBorderWindow;
+        private ResizeMode _prevResizeMode = ResizeMode.CanResize;
+
         private HwndSource? _hwndSource;
 
         public MainWindow()
@@ -439,6 +444,69 @@ namespace AlwaysRotate
                 TxtGhost.Text = "Ocultar Real";
             }
         }
+
+        #region Fullscreen / Zen Mode
+        private void BtnFullscreen_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleFullscreen(true);
+        }
+
+        private void BtnExitFullscreen_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleFullscreen(false);
+        }
+
+        private void ToggleFullscreen(bool enable)
+        {
+            if (_isFullscreen == enable) return;
+            _isFullscreen = enable;
+
+            if (_isFullscreen)
+            {
+                _prevWindowState = WindowState;
+                _prevWindowStyle = WindowStyle;
+                _prevResizeMode = ResizeMode;
+
+                // Hide Header and Footer toolbars
+                HeaderBorder.Visibility = Visibility.Collapsed;
+                FooterBorder.Visibility = Visibility.Collapsed;
+
+                // Show floating exit button
+                BtnExitFullscreen.Visibility = Visibility.Visible;
+
+                // Expand to borderless full screen
+                WindowStyle = WindowStyle.None;
+                ResizeMode = ResizeMode.NoResize;
+                WindowState = WindowState.Maximized;
+            }
+            else
+            {
+                // Restore controls
+                HeaderBorder.Visibility = Visibility.Visible;
+                FooterBorder.Visibility = Visibility.Visible;
+                BtnExitFullscreen.Visibility = Visibility.Collapsed;
+
+                // Restore window
+                WindowStyle = _prevWindowStyle;
+                ResizeMode = _prevResizeMode;
+                WindowState = _prevWindowState;
+            }
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape && _isFullscreen)
+            {
+                ToggleFullscreen(false);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.F11)
+            {
+                ToggleFullscreen(!_isFullscreen);
+                e.Handled = true;
+            }
+        }
+        #endregion
 
         private void ApplyAngle(int angle)
         {
