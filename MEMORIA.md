@@ -32,4 +32,6 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
        - *Recordar última aplicación y rotación*: Almacenamiento y restauración automática de preferencias en `config.json`.
     5. **Créditos Oficiales**: Autoría Rocaman con enlace a https://rocaman.vercel.app/.
   - El modal se puede cerrar con el botón `✕`, el botón `Cerrar` o pulsando `Esc`.
+- **Repositorio Remoto en GitHub**:
+  - Repositorio privado creado en https://github.com/RocamanMC/Utilidades con rama principal `master` vinculada y sincronizada.
 - **Control de Versiones**: Commits realizados en Git `master`.
