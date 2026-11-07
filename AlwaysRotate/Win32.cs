@@ -54,6 +54,7 @@ namespace AlwaysRotate
 
         public const int GWL_EXSTYLE = -20;
         public const int WS_EX_TOPMOST = 0x00000008;
+        public const int WS_EX_TRANSPARENT = 0x00000020;
         public const int WS_EX_TOOLWINDOW = 0x00000080;
 
         public const int DWMWA_CLOAKED = 14;
@@ -176,6 +177,7 @@ namespace AlwaysRotate
 
         public const uint LWA_ALPHA = 0x00000002;
         public const int WS_EX_LAYERED = 0x00080000;
+        public const uint SWP_NOZORDER = 0x0004;
 
         public static void SetWindowGhost(IntPtr hwnd, bool ghost)
         {
@@ -186,7 +188,7 @@ namespace AlwaysRotate
                 if (ghost)
                 {
                     SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED);
-                    SetLayeredWindowAttributes(hwnd, 0, 1, LWA_ALPHA); // Alpha = 1: invisible to human eye, active for Win32
+                    SetLayeredWindowAttributes(hwnd, 0, 1, LWA_ALPHA); // Alpha = 1: invisible to human eye, perfectly capturable and interactive
                 }
                 else
                 {
@@ -236,6 +238,17 @@ namespace AlwaysRotate
             public override string ToString() => $"{DisplayTitle} ({ProcessName})";
         }
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr OpenProcess(uint processAccess, bool bInheritHandle, int processId);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool QueryFullProcessImageName(IntPtr hProcess, int flags, StringBuilder lpExeName, ref int lpdwSize);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool CloseHandle(IntPtr hObject);
+
+        public const uint PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;
+
         public static ImageSource? ExtractRealIcon(IntPtr hWnd, uint processId)
         {
             try
@@ -252,9 +265,36 @@ namespace AlwaysRotate
                     return bmp;
                 }
 
-                // 2. Extract from Process Executable
-                using var proc = Process.GetProcessById((int)processId);
-                string? exePath = proc.MainModule?.FileName;
+                // 2. Query full exe path via OpenProcess with PROCESS_QUERY_LIMITED_INFORMATION
+                string? exePath = null;
+                IntPtr hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, (int)processId);
+                if (hProcess != IntPtr.Zero)
+                {
+                    try
+                    {
+                        var sb = new StringBuilder(1024);
+                        int size = sb.Capacity;
+                        if (QueryFullProcessImageName(hProcess, 0, sb, ref size))
+                        {
+                            exePath = sb.ToString();
+                        }
+                    }
+                    finally
+                    {
+                        CloseHandle(hProcess);
+                    }
+                }
+
+                if (string.IsNullOrEmpty(exePath))
+                {
+                    try
+                    {
+                        using var proc = Process.GetProcessById((int)processId);
+                        exePath = proc.MainModule?.FileName;
+                    }
+                    catch { }
+                }
+
                 if (!string.IsNullOrEmpty(exePath) && System.IO.File.Exists(exePath))
                 {
                     using var sysIcon = System.Drawing.Icon.ExtractAssociatedIcon(exePath);
@@ -288,6 +328,13 @@ namespace AlwaysRotate
                 int exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
                 if ((exStyle & WS_EX_TOOLWINDOW) != 0) return true;
 
+                // 3. Filter out zero/tiny windows
+                if (GetWindowRect(hWnd, out var rc))
+                {
+                    if (!IsIconic(hWnd) && (rc.Width <= 20 || rc.Height <= 20))
+                        return true;
+                }
+
                 int length = GetWindowTextLength(hWnd);
                 if (length == 0) return true;
 
@@ -308,6 +355,13 @@ namespace AlwaysRotate
                     procName = proc.ProcessName;
                 }
                 catch { }
+
+                // Filter out WhatsApp hidden sub-windows like "Video call"
+                if (procName.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase) &&
+                    (title.Equals("Video call", StringComparison.OrdinalIgnoreCase) || title.Contains("Call", StringComparison.OrdinalIgnoreCase)))
+                {
+                    return true;
+                }
 
                 // Filter out internal background windows
                 if (procName.Equals("ApplicationFrameHost", StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace(title))

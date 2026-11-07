@@ -28,6 +28,7 @@ namespace AlwaysRotate
         private bool _isUpdatingSelection = false;
         private bool _isGhostEnabled = false;
         private IntPtr _ghostedHwnd = IntPtr.Zero;
+        private volatile bool _isSimulatingInput = false;
 
         private HwndSource? _hwndSource;
 
@@ -52,6 +53,19 @@ namespace AlwaysRotate
             try
             {
                 string icoPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app_icon.ico");
+                if (!System.IO.File.Exists(icoPath))
+                {
+                    var resUri = new Uri("pack://application:,,,/app_icon.ico", UriKind.RelativeOrAbsolute);
+                    var streamInfo = Application.GetResourceStream(resUri);
+                    if (streamInfo != null)
+                    {
+                        using (var fs = System.IO.File.Create(icoPath))
+                        {
+                            streamInfo.Stream.CopyTo(fs);
+                        }
+                    }
+                }
+
                 if (System.IO.File.Exists(icoPath))
                 {
                     IntPtr hIconBig = Win32.LoadImage(IntPtr.Zero, icoPath, 1, 32, 32, 0x0010);
@@ -500,9 +514,12 @@ namespace AlwaysRotate
         }
 
         private bool _isMouseDownOnImage = false;
+        private readonly object _clickLock = new object();
 
         private void ForwardMouseClick(Point clickPoint, bool isRightClick)
         {
+            if (_targetHwnd == IntPtr.Zero) return;
+
             if (!CalculateTargetCoordinates(clickPoint, out int tx, out int ty))
                 return;
 
@@ -518,33 +535,64 @@ namespace AlwaysRotate
             int screenX = rect.Left + tx;
             int screenY = rect.Top + ty;
 
+            IntPtr myHwnd = new WindowInteropHelper(this).Handle;
+            Win32.GetWindowRect(myHwnd, out var myRect);
+            bool isCoveredByMe = (screenX >= myRect.Left && screenX <= myRect.Right && screenY >= myRect.Top && screenY <= myRect.Bottom);
+
             ThreadPool.QueueUserWorkItem(_ =>
             {
-                Win32.GetCursorPos(out var oldCursor);
+                lock (_clickLock)
+                {
+                    _isSimulatingInput = true;
+                    int originalExStyle = 0;
+                    try
+                    {
+                        if (isCoveredByMe)
+                        {
+                            // If AlwaysRotate is physically sitting on top of the target, make it click-transparent
+                            originalExStyle = Win32.GetWindowLong(myHwnd, Win32.GWL_EXSTYLE);
+                            Win32.SetWindowLong(myHwnd, Win32.GWL_EXSTYLE, originalExStyle | Win32.WS_EX_TRANSPARENT);
+                        }
 
-                // 1. Activate target window so it receives the click
-                Win32.SetForegroundWindow(_targetHwnd);
-                Thread.Sleep(20);
+                        Win32.GetCursorPos(out var oldCursor);
 
-                // 2. Position cursor exactly over the control in WhatsApp
-                Win32.SetCursorPos(screenX, screenY);
+                        // 1. Activate target window so it receives the click
+                        Win32.SetForegroundWindow(_targetHwnd);
+                        Thread.Sleep(25);
 
-                uint downFlag = isRightClick ? Win32.MOUSEEVENTF_RIGHTDOWN : Win32.MOUSEEVENTF_LEFTDOWN;
-                uint upFlag = isRightClick ? Win32.MOUSEEVENTF_RIGHTUP : Win32.MOUSEEVENTF_LEFTUP;
+                        // 2. Position cursor exactly over the control in target window
+                        Win32.SetCursorPos(screenX, screenY);
+                        Thread.Sleep(15);
 
-                // 3. Dispatch real hardware mouse down + hold + up
-                Win32.mouse_event(downFlag, 0, 0, 0, UIntPtr.Zero);
-                Thread.Sleep(40);
-                Win32.mouse_event(upFlag, 0, 0, 0, UIntPtr.Zero);
-                Thread.Sleep(20);
+                        uint downFlag = isRightClick ? Win32.MOUSEEVENTF_RIGHTDOWN : Win32.MOUSEEVENTF_LEFTDOWN;
+                        uint upFlag = isRightClick ? Win32.MOUSEEVENTF_RIGHTUP : Win32.MOUSEEVENTF_LEFTUP;
 
-                // 4. Return cursor to original position
-                Win32.SetCursorPos(oldCursor.X, oldCursor.Y);
+                        // 3. Dispatch real hardware mouse down + hold + up
+                        Win32.mouse_event(downFlag, 0, 0, 0, UIntPtr.Zero);
+                        Thread.Sleep(45);
+                        Win32.mouse_event(upFlag, 0, 0, 0, UIntPtr.Zero);
+                        Thread.Sleep(25);
+
+                        // 4. Return cursor to original position
+                        Win32.SetCursorPos(oldCursor.X, oldCursor.Y);
+                    }
+                    finally
+                    {
+                        if (isCoveredByMe)
+                        {
+                            Win32.SetWindowLong(myHwnd, Win32.GWL_EXSTYLE, originalExStyle);
+                        }
+                        Thread.Sleep(20);
+                        _isSimulatingInput = false;
+                    }
+                }
             });
         }
 
         private void ViewportContainer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (_isSimulatingInput) return;
+
             if (!_isInteractive)
             {
                 if (e.ButtonState == MouseButtonState.Pressed)
@@ -560,7 +608,7 @@ namespace AlwaysRotate
 
         private void ViewportContainer_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (!_isInteractive || !_isMouseDownOnImage)
+            if (_isSimulatingInput || !_isInteractive || !_isMouseDownOnImage)
                 return;
 
             _isMouseDownOnImage = false;
@@ -583,17 +631,19 @@ namespace AlwaysRotate
 
         private void ViewportContainer_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (_isInteractive)
-            {
-                e.Handled = true;
-                Mouse.Capture(null);
-                Point pt = e.GetPosition(RotatedImageHost);
-                ForwardMouseClick(pt, isRightClick: true);
-            }
+            if (_isSimulatingInput || !_isInteractive)
+                return;
+
+            e.Handled = true;
+            Mouse.Capture(null);
+            Point pt = e.GetPosition(RotatedImageHost);
+            ForwardMouseClick(pt, isRightClick: true);
         }
 
         private void ViewportContainer_MouseWheel(object sender, MouseWheelEventArgs e)
         {
+            if (_isSimulatingInput) return;
+
             if (_isInteractive && _targetHwnd != IntPtr.Zero)
             {
                 Point pt = e.GetPosition(RotatedImageHost);
@@ -602,15 +652,20 @@ namespace AlwaysRotate
                     int screenX = rect.Left + tx;
                     int screenY = rect.Top + ty;
 
-                    ThreadPool.QueueUserWorkItem(_ =>
+                    // Direct message posting: zero lag, zero cursor jitter, zero thread collisions
+                    IntPtr wParam = (IntPtr)((e.Delta << 16) & 0xFFFF0000);
+                    IntPtr lParam = Win32.MakeLParam((short)screenX, (short)screenY);
+
+                    Win32.PostMessage(_targetHwnd, Win32.WM_MOUSEWHEEL, wParam, lParam);
+
+                    // Also check for specific child control at coordinates (e.g., chat list in WhatsApp)
+                    IntPtr ptChild = Win32.WindowFromPoint(new Win32.POINT { X = screenX, Y = screenY });
+                    if (ptChild != IntPtr.Zero && ptChild != _targetHwnd)
                     {
-                        Win32.GetCursorPos(out var oldCursor);
-                        Win32.SetCursorPos(screenX, screenY);
-                        Win32.mouse_event(Win32.MOUSEEVENTF_WHEEL, 0, 0, (uint)e.Delta, UIntPtr.Zero);
-                        Thread.Sleep(15);
-                        Win32.SetCursorPos(oldCursor.X, oldCursor.Y);
-                    });
+                        Win32.PostMessage(ptChild, Win32.WM_MOUSEWHEEL, wParam, lParam);
+                    }
                 }
+                e.Handled = true;
             }
         }
         #endregion

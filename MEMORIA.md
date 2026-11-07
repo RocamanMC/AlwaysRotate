@@ -20,13 +20,16 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v1.7 (Corrección Definitiva del Clic de Ratón)
-- **Diagnóstico del problema de clics**:
-  - El scroll funcionaba porque en Windows la rueda del ratón no requiere foco ni captura; se despacha a la ventana bajo el cursor.
-  - El clic fallaba porque se enviaba durante el evento `MouseDown`: en ese instante, el dedo del usuario seguía físicamente presionando el botón izquierdo sobre AlwaysRotate. AlwaysRotate mantenía la captura del ratón en Windows (`MouseCapture`), absorbiendo la simulación e impidiendo que WhatsApp la procesara. Además, WhatsApp requería activación de foco en primer plano para registrar clics en sus controles WinUI.
-- **Solución implementada**:
-  - Los clics interactivos ahora se despachan en `MouseLeftButtonUp` (al soltar el botón, cuando el ratón físico está liberado y sin captura).
-  - Liberación explícita de captura con `Mouse.Capture(null)`.
-  - Activación instantánea de la ventana de destino con `Win32.SetForegroundWindow`.
-  - Simulación física con temporización de 40ms y restauración de cursor.
+### [2026-11-07] - AlwaysRotate v1.8 (Estabilidad en Misma Pantalla, Scroll sin Jitter y Clics en Modo Fantasma)
+- **Problema 1: Se petaba al tener ambas ventanas en la misma pantalla**:
+  - Al girar una ventana en la misma pantalla y hacer scroll, `mouse_event(WHEEL)` situaba el cursor sobre la pantalla física donde AlwaysRotate estaba como Topmost. Windows reenviaba el evento a AlwaysRotate, generando un bucle infinito recursivo y bloqueando la UI.
+  - Al hacer clic en la misma pantalla, AlwaysRotate interceptaba el propio clic simulado.
+- **Problema 2: Los clics no se detectaban en Modo Fantasma**:
+  - Al activar el Modo Fantasma se movía la ventana original a $X = -5000$. Windows restringe la posición física del cursor de ratón a los límites de las pantallas activas (Virtual Desktop), por lo que `SetCursorPos` no podía alcanzar $-5000$ y el clic caía en un punto arbitrario.
+- **Solución implementada en v1.8**:
+  - **Scroll directo por mensajes (`WM_MOUSEWHEEL`)**: Se sustituyó la simulación por hilos físicos por `Win32.PostMessage(WM_MOUSEWHEEL, ...)`, transmitiendo el delta y coordenadas exactas tanto a la ventana principal como a los controles hijos (`WindowFromPoint`). Se eliminó por completo el jitter del cursor, la contención de hilos y la posibilidad de bucles recursivos.
+  - **Transparencia temporal al clic (`WS_EX_TRANSPARENT`)**: Si AlwaysRotate y la ventana original se solapan físicamente en la misma pantalla, AlwaysRotate se vuelve momentáneamente transparente a los clics mediante su estilo extendido, asegurando que el clic atraviese limpiamente hasta la app original.
+  - **Modo Fantasma en coordenadas reales**: La ventana original se oculta mediante `WS_EX_LAYERED` y opacidad 1/255 (100% invisible para el ojo humano) en su ubicación real, permitiendo que las coordenadas de pantalla para clics y scroll sean siempre válidas y exactas.
+  - **Extracción robusta de iconos nativos y filtrado**: Uso de `QueryFullProcessImageName` (con permisos de consulta limitados) para obtener iconos reales de procesos protegidos y UWP (WhatsApp, Herdr, Discord, Chrome, etc.), filtrando además subventanas invisibles como "Video call".
+  - **Icono oficial en barra de tareas**: Icono multi-resolución `app_icon.ico` asignado mediante `WM_SETICON` y `ApplicationIcon`.
 - **Control de Versiones**: Commits realizados en Git `master`.
