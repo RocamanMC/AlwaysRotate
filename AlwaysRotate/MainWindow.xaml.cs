@@ -515,6 +515,8 @@ namespace AlwaysRotate
 
         private bool _isMouseDownOnImage = false;
         private readonly object _clickLock = new object();
+        private readonly object _wheelLock = new object();
+        private volatile bool _isForwardingWheel = false;
 
         private void ForwardMouseClick(Point clickPoint, bool isRightClick)
         {
@@ -545,6 +547,7 @@ namespace AlwaysRotate
                 {
                     _isSimulatingInput = true;
                     int originalExStyle = 0;
+                    int targetOriginalExStyle = 0;
                     try
                     {
                         if (isCoveredByMe)
@@ -552,6 +555,13 @@ namespace AlwaysRotate
                             // If AlwaysRotate is physically sitting on top of the target, make it click-transparent
                             originalExStyle = Win32.GetWindowLong(myHwnd, Win32.GWL_EXSTYLE);
                             Win32.SetWindowLong(myHwnd, Win32.GWL_EXSTYLE, originalExStyle | Win32.WS_EX_TRANSPARENT);
+                        }
+
+                        if (_isGhostEnabled)
+                        {
+                            // Temporarily allow target to receive mouse click (target is otherwise click-through so user can use the screen)
+                            targetOriginalExStyle = Win32.GetWindowLong(_targetHwnd, Win32.GWL_EXSTYLE);
+                            Win32.SetWindowLong(_targetHwnd, Win32.GWL_EXSTYLE, targetOriginalExStyle & ~Win32.WS_EX_TRANSPARENT);
                         }
 
                         Win32.GetCursorPos(out var oldCursor);
@@ -578,6 +588,10 @@ namespace AlwaysRotate
                     }
                     finally
                     {
+                        if (_isGhostEnabled)
+                        {
+                            Win32.SetWindowLong(_targetHwnd, Win32.GWL_EXSTYLE, targetOriginalExStyle | Win32.WS_EX_TRANSPARENT);
+                        }
                         if (isCoveredByMe)
                         {
                             Win32.SetWindowLong(myHwnd, Win32.GWL_EXSTYLE, originalExStyle);
@@ -642,7 +656,8 @@ namespace AlwaysRotate
 
         private void ViewportContainer_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (_isSimulatingInput) return;
+            // Reentrancy guard: drop any event triggered by our own wheel simulation
+            if (_isForwardingWheel || _isSimulatingInput) return;
 
             if (_isInteractive && _targetHwnd != IntPtr.Zero)
             {
@@ -651,19 +666,59 @@ namespace AlwaysRotate
                 {
                     int screenX = rect.Left + tx;
                     int screenY = rect.Top + ty;
+                    int delta = e.Delta;
 
-                    // Direct message posting: zero lag, zero cursor jitter, zero thread collisions
-                    IntPtr wParam = (IntPtr)((e.Delta << 16) & 0xFFFF0000);
-                    IntPtr lParam = Win32.MakeLParam((short)screenX, (short)screenY);
+                    IntPtr myHwnd = new WindowInteropHelper(this).Handle;
+                    Win32.GetWindowRect(myHwnd, out var myRect);
+                    bool isCoveredByMe = (screenX >= myRect.Left && screenX <= myRect.Right && screenY >= myRect.Top && screenY <= myRect.Bottom);
 
-                    Win32.PostMessage(_targetHwnd, Win32.WM_MOUSEWHEEL, wParam, lParam);
-
-                    // Also check for specific child control at coordinates (e.g., chat list in WhatsApp)
-                    IntPtr ptChild = Win32.WindowFromPoint(new Win32.POINT { X = screenX, Y = screenY });
-                    if (ptChild != IntPtr.Zero && ptChild != _targetHwnd)
+                    ThreadPool.QueueUserWorkItem(_ =>
                     {
-                        Win32.PostMessage(ptChild, Win32.WM_MOUSEWHEEL, wParam, lParam);
-                    }
+                        lock (_wheelLock)
+                        {
+                            _isForwardingWheel = true;
+                            int myOriginalExStyle = 0;
+                            int targetOriginalExStyle = 0;
+                            try
+                            {
+                                if (isCoveredByMe)
+                                {
+                                    // Make AlwaysRotate click/wheel transparent so the wheel passes straight down to the target
+                                    myOriginalExStyle = Win32.GetWindowLong(myHwnd, Win32.GWL_EXSTYLE);
+                                    Win32.SetWindowLong(myHwnd, Win32.GWL_EXSTYLE, myOriginalExStyle | Win32.WS_EX_TRANSPARENT);
+                                }
+
+                                if (_isGhostEnabled)
+                                {
+                                    // Temporarily remove transparency so target receives hardware wheel event
+                                    targetOriginalExStyle = Win32.GetWindowLong(_targetHwnd, Win32.GWL_EXSTYLE);
+                                    Win32.SetWindowLong(_targetHwnd, Win32.GWL_EXSTYLE, targetOriginalExStyle & ~Win32.WS_EX_TRANSPARENT);
+                                }
+
+                                Win32.GetCursorPos(out var oldCursor);
+                                Win32.SetCursorPos(screenX, screenY);
+                                Thread.Sleep(8);
+
+                                Win32.mouse_event(Win32.MOUSEEVENTF_WHEEL, 0, 0, (uint)delta, UIntPtr.Zero);
+                                Thread.Sleep(12);
+
+                                Win32.SetCursorPos(oldCursor.X, oldCursor.Y);
+                            }
+                            finally
+                            {
+                                if (_isGhostEnabled)
+                                {
+                                    Win32.SetWindowLong(_targetHwnd, Win32.GWL_EXSTYLE, targetOriginalExStyle | Win32.WS_EX_TRANSPARENT);
+                                }
+                                if (isCoveredByMe)
+                                {
+                                    Win32.SetWindowLong(myHwnd, Win32.GWL_EXSTYLE, myOriginalExStyle);
+                                }
+                                Thread.Sleep(8);
+                                _isForwardingWheel = false;
+                            }
+                        }
+                    });
                 }
                 e.Handled = true;
             }

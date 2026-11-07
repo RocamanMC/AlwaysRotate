@@ -20,16 +20,14 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v1.8 (Estabilidad en Misma Pantalla, Scroll sin Jitter y Clics en Modo Fantasma)
-- **Problema 1: Se petaba al tener ambas ventanas en la misma pantalla**:
-  - Al girar una ventana en la misma pantalla y hacer scroll, `mouse_event(WHEEL)` situaba el cursor sobre la pantalla física donde AlwaysRotate estaba como Topmost. Windows reenviaba el evento a AlwaysRotate, generando un bucle infinito recursivo y bloqueando la UI.
-  - Al hacer clic en la misma pantalla, AlwaysRotate interceptaba el propio clic simulado.
-- **Problema 2: Los clics no se detectaban en Modo Fantasma**:
-  - Al activar el Modo Fantasma se movía la ventana original a $X = -5000$. Windows restringe la posición física del cursor de ratón a los límites de las pantallas activas (Virtual Desktop), por lo que `SetCursorPos` no podía alcanzar $-5000$ y el clic caía en un punto arbitrario.
-- **Solución implementada en v1.8**:
-  - **Scroll directo por mensajes (`WM_MOUSEWHEEL`)**: Se sustituyó la simulación por hilos físicos por `Win32.PostMessage(WM_MOUSEWHEEL, ...)`, transmitiendo el delta y coordenadas exactas tanto a la ventana principal como a los controles hijos (`WindowFromPoint`). Se eliminó por completo el jitter del cursor, la contención de hilos y la posibilidad de bucles recursivos.
-  - **Transparencia temporal al clic (`WS_EX_TRANSPARENT`)**: Si AlwaysRotate y la ventana original se solapan físicamente en la misma pantalla, AlwaysRotate se vuelve momentáneamente transparente a los clics mediante su estilo extendido, asegurando que el clic atraviese limpiamente hasta la app original.
-  - **Modo Fantasma en coordenadas reales**: La ventana original se oculta mediante `WS_EX_LAYERED` y opacidad 1/255 (100% invisible para el ojo humano) en su ubicación real, permitiendo que las coordenadas de pantalla para clics y scroll sean siempre válidas y exactas.
-  - **Extracción robusta de iconos nativos y filtrado**: Uso de `QueryFullProcessImageName` (con permisos de consulta limitados) para obtener iconos reales de procesos protegidos y UWP (WhatsApp, Herdr, Discord, Chrome, etc.), filtrando además subventanas invisibles como "Video call".
-  - **Icono oficial en barra de tareas**: Icono multi-resolución `app_icon.ico` asignado mediante `WM_SETICON` y `ApplicationIcon`.
+### [2026-11-07] - AlwaysRotate v1.9 (Ventana Fantasma Click-Through y Scroll Hardware Serializado)
+- **Problema 1: La app oculta bloqueaba la segunda pantalla**:
+  - Al ocultar la ventana original (WhatsApp), esta quedaba como una capa invisible (`alpha = 1`) ocupando espacio físico en el segundo monitor, bloqueando cualquier clic del usuario en su navegador, escritorio o carpetas.
+  - **Solución**: Se añadió el estilo extendido `WS_EX_TRANSPARENT` a la ventana original en modo fantasma. Ahora es **100% traspasable al ratón**, permitiendo utilizar la segunda pantalla sin ninguna interferencia. Al interactuar desde AlwaysRotate, se desactiva la transparencia durante 30ms para transferir clics/scroll y se vuelve a reactivar de inmediato.
+- **Problema 2: El scroll no funcionaba en WhatsApp y se saturaba en la misma pantalla**:
+  - WhatsApp Desktop (WinUI 3) descarta mensajes sintéticos `WM_MOUSEWHEEL` por `PostMessage` si no proceden de un evento de hardware. Al volver a simular `mouse_event(WHEEL)` en la misma pantalla, se producía un bucle infinito de eventos en AlwaysRotate.
+  - **Solución**:
+    - **Candado Antirrecurrencia (`_isForwardingWheel`)**: Corta de inmediato cualquier eco o retorno de evento generado por la propia simulación de la rueda.
+    - **Serialización con `lock (_wheelLock)`**: Evita saturación de hilos compitiendo por mover el cursor.
+    - **Transparencia dinámica cruzada**: AlwaysRotate se vuelve transparente durante el scroll si se solapa con el destino, y la ventana fantasma recibe el evento de forma instantánea y limpia.
 - **Control de Versiones**: Commits realizados en Git `master`.

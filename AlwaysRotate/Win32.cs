@@ -187,13 +187,13 @@ namespace AlwaysRotate
                 int exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
                 if (ghost)
                 {
-                    SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED);
-                    SetLayeredWindowAttributes(hwnd, 0, 1, LWA_ALPHA); // Alpha = 1: invisible to human eye, perfectly capturable and interactive
+                    SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED | WS_EX_TRANSPARENT);
+                    SetLayeredWindowAttributes(hwnd, 0, 1, LWA_ALPHA); // Alpha = 1: invisible, WS_EX_TRANSPARENT: click-through so user can use their monitor!
                 }
                 else
                 {
                     SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
-                    SetWindowLong(hwnd, GWL_EXSTYLE, exStyle & ~WS_EX_LAYERED);
+                    SetWindowLong(hwnd, GWL_EXSTYLE, exStyle & ~(WS_EX_LAYERED | WS_EX_TRANSPARENT));
                 }
             }
             catch { }
