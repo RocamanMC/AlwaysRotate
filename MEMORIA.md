@@ -20,7 +20,20 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v3.2 (Rediseño de Iconos a Vectores SVG Nítidos y Corrección de Truncamiento)
+### [2026-11-07] - AlwaysRotate v3.3 (Rediseño Estético de Información y Ajustes con Logo Rocaman y Monocraft)
+- **Cabecera de Marca con Logo Oficial**:
+  - Incorporado el logotipo 3D "ROCAMAN" centrado en alta definición (`rocaman_banner.png`), eliminando texto genérico de autoría.
+  - Integrada la tipografía pixelada `Monocraft` tanto como recurso embebido como fuente instalada en el sistema para títulos, insignias y teclas.
+- **Tarjetas de Ajustes Modernas**:
+  - Toggles visuales de configuración del sistema ("Iniciar con Windows" y "Recordar última ventana y rotación") en tarjetas elevadas y nítidas.
+- **Teclas de Atajos Estilo Gaming**:
+  - Teclas representadas con insignia `KeyCap` (`Esc`, `F10`, `F11`, `Ctrl+Alt+R`, etc.) con tipografía Monocraft.
+- **Tarjetas del Ecosistema Rocaman Interactivas**:
+  - 3 accesos directos clickeables con iconos vectoriales y apertura en navegador por defecto:
+    1. **Rocaman**: `rocaman.vercel.app` (Portfolio y web principal).
+    2. **RocaStore**: `rocastore.vercel.app` (Catálogo y tienda de apps).
+    3. **Ziroka**: `ziroka.vercel.app` (Plataforma y proyectos).
+- **Control de Versiones**: Commits realizados y sincronizados con GitHub `master`.
 - **Eliminación Total de Emojis Obsoletos**:
   - Reemplazados todos los emojis del sistema (`📌`, `🖱️`, `👻`, `⛶`, `🔄`, `⚡`, `ℹ️`, etc.) por vectores `Path` SVG nítidos, estilizados y escalables sin distorsión.
   - El color de los iconos se adapta dinámicamente mediante enlace (`RelativeSource AncestorType=Button`) al estado activo/inactivo de cada control.

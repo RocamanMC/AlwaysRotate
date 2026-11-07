@@ -570,6 +570,23 @@ namespace AlwaysRotate
             InfoOverlay.Visibility = Visibility.Collapsed;
         }
 
+        private void OpenUrl(string url)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+            catch { }
+        }
+
+        private void LnkRocaman_Click(object sender, RoutedEventArgs e) => OpenUrl("https://rocaman.vercel.app/");
+        private void LnkRocaStore_Click(object sender, RoutedEventArgs e) => OpenUrl("https://rocastore.vercel.app/");
+        private void LnkZiroka_Click(object sender, RoutedEventArgs e) => OpenUrl("https://ziroka.vercel.app/");
+
         private void ChkAutoStart_Click(object sender, RoutedEventArgs e)
         {
             SetAutoStart(ChkAutoStart.IsChecked == true);

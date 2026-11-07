@@ -15,10 +15,18 @@
   <ItemGroup>
     <Resource Include="app_icon.png" />
     <Resource Include="app_icon.ico" />
+    <Resource Include="Assets\rocaman_banner.png" />
+    <Resource Include="Assets\Monocraft.ttf" />
     <None Update="app_icon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="app_icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\rocaman_banner.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Monocraft.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
