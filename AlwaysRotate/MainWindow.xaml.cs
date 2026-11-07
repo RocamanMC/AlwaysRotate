@@ -584,8 +584,6 @@ namespace AlwaysRotate
         }
 
         private void LnkRocaman_Click(object sender, RoutedEventArgs e) => OpenUrl("https://rocaman.vercel.app/");
-        private void LnkRocaStore_Click(object sender, RoutedEventArgs e) => OpenUrl("https://rocastore.vercel.app/");
-        private void LnkZiroka_Click(object sender, RoutedEventArgs e) => OpenUrl("https://ziroka.vercel.app/");
 
         private void ChkAutoStart_Click(object sender, RoutedEventArgs e)
         {

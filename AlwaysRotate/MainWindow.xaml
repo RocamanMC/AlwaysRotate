@@ -20,41 +20,6 @@
         PreviewMouseMove="Window_PreviewMouseMove">
 
     <Window.Resources>
-        <!-- Monocraft Font -->
-        <FontFamily x:Key="MonocraftFont">pack://application:,,,/Assets/#Monocraft, Monocraft, Minecraft, Consolas, Segoe UI</FontFamily>
-
-        <!-- Ecosystem Link Card Button Style -->
-        <Style x:Key="EcosystemCardBtn" TargetType="Button">
-            <Setter Property="Background" Value="#171724"/>
-            <Setter Property="Foreground" Value="#f4f4f5"/>
-            <Setter Property="BorderBrush" Value="#2d2d40"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="8,10"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="bd" Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="10" Padding="{TemplateBinding Padding}"
-                                SnapsToDevicePixels="True">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="#222235"/>
-                                <Setter TargetName="bd" Property="BorderBrush" Value="#6366f1"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="#12121a"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
         <!-- Keycap Badge Style -->
         <Style x:Key="KeyCap" TargetType="Border">
             <Setter Property="Background" Value="#1f1f2e"/>
@@ -562,16 +527,16 @@
             </Grid>
         </Border>
         <!-- 4. Information, Shortcuts & Settings Modal Overlay -->
-        <Border x:Name="InfoOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#e808080d"
-                Visibility="Collapsed" Panel.ZIndex="2000" Padding="14,12">
-            <Border Background="#12121a" BorderBrush="#2d2d3e" BorderThickness="1" CornerRadius="16"
-                    MaxWidth="480" MaxHeight="620" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Border x:Name="InfoOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#e009090d"
+                Visibility="Collapsed" Panel.ZIndex="2000" Padding="16,14">
+            <Border Background="#13131a" BorderBrush="#2e2e40" BorderThickness="1" CornerRadius="14"
+                    MaxWidth="480" MaxHeight="600" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border.Effect>
-                    <DropShadowEffect BlurRadius="28" ShadowDepth="8" Direction="270" Color="#000000" Opacity="0.9"/>
+                    <DropShadowEffect BlurRadius="24" ShadowDepth="6" Direction="270" Color="#000000" Opacity="0.85"/>
                 </Border.Effect>
                 <Grid>
                     <Grid.RowDefinitions>
-                        <!-- Header with Rocaman Banner -->
+                        <!-- Header -->
                         <RowDefinition Height="Auto"/>
                         <!-- Content -->
                         <RowDefinition Height="*"/>
@@ -580,11 +545,18 @@
                     </Grid.RowDefinitions>
 
                     <!-- Modal Header -->
-                    <Border Grid.Row="0" Background="#161622" BorderBrush="#252535" BorderThickness="0,0,0,1" CornerRadius="16,16,0,0" Padding="16,14">
+                    <Border Grid.Row="0" Background="#181822" BorderBrush="#262635" BorderThickness="0,0,0,1" CornerRadius="14,14,0,0" Padding="16,12">
                         <Grid>
-                            <!-- Close Button Top-Right -->
-                            <Button Click="BtnCloseInfo_Click" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                    Width="28" Height="28" Cursor="Hand" Background="#242434" BorderBrush="#38384d" BorderThickness="1" Margin="0,-4,-4,0" Panel.ZIndex="10">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+                                      Fill="#818cf8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <StackPanel>
+                                    <TextBlock Text="Información y Ajustes" FontSize="14" FontWeight="Bold" Foreground="#f4f4f5"/>
+                                    <TextBlock Text="AlwaysRotate • Guía rápida y atajos" FontSize="11" Foreground="#94a3b8"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <Button Click="BtnCloseInfo_Click" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Width="28" Height="28" Cursor="Hand" Background="#262635" BorderBrush="#38384d" BorderThickness="1">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="14">
@@ -599,55 +571,22 @@
                                     </ControlTemplate>
                                 </Button.Template>
                             </Button>
-
-                            <!-- Centered Rocaman Brand Banner -->
-                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,4,0,2">
-                                <Image Source="Assets/rocaman_banner.png" Height="36" Stretch="Uniform"
-                                       RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center" Margin="0,0,0,6"/>
-                                <TextBlock Text="ALWAYSROTATE" FontFamily="{StaticResource MonocraftFont}" FontSize="12" FontWeight="Bold"
-                                           Foreground="#4ade80" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Utilidad de Rotación y Control • Guía y Ajustes" FontSize="10.5" Foreground="#94a3b8" HorizontalAlignment="Center" Margin="0,2,0,0"/>
-                            </StackPanel>
                         </Grid>
                     </Border>
 
                     <!-- Scrollable Content -->
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="16,14">
                         <StackPanel Orientation="Vertical">
-
-                            <!-- Section 1: Ajustes del Sistema -->
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
-                                <Path Data="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
-                                      Fill="#818cf8" Width="13" Height="13" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="AJUSTES DEL SISTEMA" FontFamily="{StaticResource MonocraftFont}" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" VerticalAlignment="Center"/>
-                            </StackPanel>
-
-                            <Border Background="#171724" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="10" Padding="12,10" Margin="0,0,0,6">
-                                <CheckBox x:Name="ChkAutoStart" Click="ChkAutoStart_Click" Cursor="Hand">
-                                    <StackPanel Orientation="Vertical" Margin="8,0,0,0">
-                                        <TextBlock Text="Iniciar AlwaysRotate con Windows" FontFamily="{StaticResource MonocraftFont}" FontSize="11" FontWeight="Bold" Foreground="#f4f4f5"/>
-                                        <TextBlock Text="Abre la utilidad automáticamente en segundo plano al encender el PC" FontSize="10.5" Foreground="#94a3b8" Margin="0,2,0,0"/>
-                                    </StackPanel>
-                                </CheckBox>
-                            </Border>
-
-                            <Border Background="#171724" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="10" Padding="12,10" Margin="0,0,0,16">
-                                <CheckBox x:Name="ChkRemember" Click="ChkRemember_Click" Cursor="Hand">
-                                    <StackPanel Orientation="Vertical" Margin="8,0,0,0">
-                                        <TextBlock Text="Recordar última ventana y rotación" FontFamily="{StaticResource MonocraftFont}" FontSize="11" FontWeight="Bold" Foreground="#f4f4f5"/>
-                                        <TextBlock Text="Restaura la app y el ángulo seleccionados al arrancar" FontSize="10.5" Foreground="#94a3b8" Margin="0,2,0,0"/>
-                                    </StackPanel>
-                                </CheckBox>
+                            <!-- Section 1: How it works -->
+                            <TextBlock Text="FUNCIONAMIENTO GENERAL" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,14">
+                                <TextBlock Text="AlwaysRotate captura en tiempo real a 30 FPS cualquier ventana activa de tu sistema (como WhatsApp Desktop) y la gira a 90°, 180° o 270°. Además, reenvía de forma matemática y fluida tus clics y la rueda del ratón a la app original, para que puedas chatear y navegar directamente desde la pantalla rotada."
+                                           FontSize="11.5" Foreground="#cbd5e1" TextWrapping="Wrap" LineHeight="17"/>
                             </Border>
 
                             <!-- Section 2: Shortcuts Cheat Sheet -->
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
-                                <Path Data="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"
-                                      Fill="#fbbf24" Width="13" Height="13" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="ATAJOS DE TECLADO GLOBALES" FontFamily="{StaticResource MonocraftFont}" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" VerticalAlignment="Center"/>
-                            </StackPanel>
-
-                            <Border Background="#161622" BorderBrush="#2a2a3c" BorderThickness="1" CornerRadius="10" Padding="10,8" Margin="0,0,0,16">
+                            <TextBlock Text="ATAJOS DE TECLADO GLOBALES" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,0,0,14">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -666,130 +605,105 @@
 
                                     <!-- Esc -->
                                     <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="Esc" FontFamily="{StaticResource MonocraftFont}" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                        <TextBlock Text="Esc" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
-                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Salir de Pantalla Completa o Modo Ventana" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Salir de Pantalla Completa o Modo Ventana Zen" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
 
                                     <!-- F10 -->
                                     <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="F10" FontFamily="{StaticResource MonocraftFont}" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                        <TextBlock Text="F10" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Modo Solo Ventana (sin menús y redimensionable)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Alternar Modo Solo Ventana (sin menús y redimensionable)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
 
                                     <!-- F11 -->
                                     <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="F11" FontFamily="{StaticResource MonocraftFont}" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                        <TextBlock Text="F11" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Modo Pantalla Completa total con HUD flotante" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Alternar Pantalla Completa total (monitor completo)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
 
                                     <!-- Ctrl + Alt + R -->
                                     <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="Ctrl + Alt + R" FontFamily="{StaticResource MonocraftFont}" FontSize="10" FontWeight="Bold" Foreground="#a5b4fc"/>
+                                        <TextBlock Text="Ctrl + Alt + R" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
                                     <TextBlock Grid.Row="3" Grid.Column="1" Text="Capturar y rotar la ventana activa actual" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
 
                                     <!-- Ctrl + Alt + G -->
                                     <Border Grid.Row="4" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="Ctrl + Alt + G" FontFamily="{StaticResource MonocraftFont}" FontSize="10" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                        <TextBlock Text="Ctrl + Alt + G" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
                                     <TextBlock Grid.Row="4" Grid.Column="1" Text="Modo Fantasma (ocultar / mostrar ventana original)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
 
                                     <!-- Ctrl + Alt + Right / Space -->
                                     <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="Ctrl+Alt+→ / Espacio" FontFamily="{StaticResource MonocraftFont}" FontSize="9.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                        <TextBlock Text="Ctrl+Alt+→ / Espacio" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
                                     <TextBlock Grid.Row="5" Grid.Column="1" Text="Rotar +90° en sentido horario al vuelo" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
 
                                     <!-- Ctrl + Alt + P -->
                                     <Border Grid.Row="6" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="Ctrl + Alt + P" FontFamily="{StaticResource MonocraftFont}" FontSize="10" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                        <TextBlock Text="Ctrl + Alt + P" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
                                     <TextBlock Grid.Row="6" Grid.Column="1" Text="Fijar Always on Top (Siempre encima)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
 
                                     <!-- Alt + Clic -->
                                     <Border Grid.Row="7" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="Alt + Clic" FontFamily="{StaticResource MonocraftFont}" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                        <TextBlock Text="Alt + Clic arrastre" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
-                                    <TextBlock Grid.Row="7" Grid.Column="1" Text="Mover la ventana libremente arrastrando el ratón" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="7" Grid.Column="1" Text="Mover la ventana libremente desde cualquier punto" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
                                 </Grid>
                             </Border>
 
-                            <!-- Section 3: Modos y Funciones -->
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
-                                <Path Data="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                                      Fill="#38bdf8" Width="13" Height="13" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="MODOS Y FUNCIONES" FontFamily="{StaticResource MonocraftFont}" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" VerticalAlignment="Center"/>
-                            </StackPanel>
-
-                            <Border Background="#161622" BorderBrush="#2a2a3c" BorderThickness="1" CornerRadius="10" Padding="12,10" Margin="0,0,0,16">
+                            <!-- Section 3: Buttons explanation -->
+                            <TextBlock Text="ACCIONES Y MODOS" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,14">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="• Fijo: Mantiene AlwaysRotate sobre cualquier otra ventana abierta." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
-                                    <TextBlock Text="• Clics: Mapea tus clics y scroll hacia la app original para escribir o navegar." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
-                                    <TextBlock Text="• Ocultar: Vuelve invisible la ventana física para tener una vista 100% limpia." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
-                                    <TextBlock Text="• Ventana: Oculta la barra de menús pero conserva el marco nativo para redimensionar." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
-                                    <TextBlock Text="• Completa: Llena el monitor con HUD flotante auto-ocultable tras 2.5s." FontSize="11" Foreground="#cbd5e1"/>
+                                    <TextBlock Text="• 0° / 90° / 180° / 270°: Rotaciones directas en ángulos fijos." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
+                                    <TextBlock Text="• Fijo (Always on Top): Mantiene AlwaysRotate visible por encima de cualquier otro programa." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
+                                    <TextBlock Text="• Clics (Interacción): Activa o desactiva el reenvío de clics y rueda a la app original." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
+                                    <TextBlock Text="• Ocultar (Fantasma): Vuelve 100% invisible la ventana original para no tener duplicados en pantalla." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
+                                    <TextBlock Text="• Ventana: Oculta los controles conservando el marco nativo para mover y redimensionar con el ratón." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
+                                    <TextBlock Text="• Completa: Modo pantalla completa total con HUD flotante que se auto-oculta tras 2.5s." FontSize="11" Foreground="#cbd5e1"/>
                                 </StackPanel>
                             </Border>
 
-                            <!-- Section 4: Ecosistema Rocaman Links -->
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
-                                <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
-                                      Fill="#4ade80" Width="13" Height="13" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="ECOSISTEMA ROCAMAN" FontFamily="{StaticResource MonocraftFont}" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" VerticalAlignment="Center"/>
-                            </StackPanel>
+                            <!-- Section 4: System Settings -->
+                            <TextBlock Text="AJUSTES DEL SISTEMA" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,6">
+                                <StackPanel Orientation="Vertical">
+                                    <CheckBox x:Name="ChkAutoStart" Click="ChkAutoStart_Click" Margin="0,0,0,8" Cursor="Hand">
+                                        <StackPanel Orientation="Vertical" Margin="4,0,0,0">
+                                            <TextBlock Text="Iniciar AlwaysRotate con Windows" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                            <TextBlock Text="Abre la utilidad automáticamente al encender tu PC" FontSize="10.5" Foreground="#71717a"/>
+                                        </StackPanel>
+                                    </CheckBox>
 
-                            <Grid Margin="0,0,0,6">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Rocaman Web -->
-                                <Button Grid.Column="0" Click="LnkRocaman_Click" Style="{StaticResource EcosystemCardBtn}" Margin="0,0,3,0" ToolTip="Visitar web oficial de Rocaman">
-                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Path Data="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-                                              Fill="#4ade80" Width="14" Height="14" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,6"/>
-                                        <TextBlock Text="Rocaman" FontFamily="{StaticResource MonocraftFont}" FontSize="11" FontWeight="Bold" Foreground="#f4f4f5" HorizontalAlignment="Center"/>
-                                        <TextBlock Text="rocaman.vercel.app" FontSize="8.5" Foreground="#71717a" HorizontalAlignment="Center" Margin="0,3,0,0"/>
-                                    </StackPanel>
-                                </Button>
-
-                                <!-- RocaStore -->
-                                <Button Grid.Column="1" Click="LnkRocaStore_Click" Style="{StaticResource EcosystemCardBtn}" Margin="2,0" ToolTip="Visitar RocaStore App Store">
-                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Path Data="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"
-                                              Fill="#38bdf8" Width="14" Height="14" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,6"/>
-                                        <TextBlock Text="RocaStore" FontFamily="{StaticResource MonocraftFont}" FontSize="11" FontWeight="Bold" Foreground="#f4f4f5" HorizontalAlignment="Center"/>
-                                        <TextBlock Text="rocastore.vercel.app" FontSize="8.5" Foreground="#71717a" HorizontalAlignment="Center" Margin="0,3,0,0"/>
-                                    </StackPanel>
-                                </Button>
-
-                                <!-- Ziroka -->
-                                <Button Grid.Column="2" Click="LnkZiroka_Click" Style="{StaticResource EcosystemCardBtn}" Margin="3,0,0,0" ToolTip="Visitar Ziroka">
-                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Path Data="M13 2.05v3.03c3.39.49 6 3.39 6 6.92 0 .9-.18 1.75-.48 2.54l2.6 1.53c.56-1.24.88-2.62.88-4.07 0-5.18-3.95-9.45-9-9.95zM12 19c-3.87 0-7-3.13-7-7 0-3.53 2.61-6.43 6-6.92V2.05c-5.06.5-9 4.76-9 9.95 0 5.52 4.47 10 9.99 10 3.31 0 6.24-1.61 8.01-4.09l-2.45-1.45C16.27 18.06 14.28 19 12 19z"
-                                              Fill="#c084fc" Width="14" Height="14" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,6"/>
-                                        <TextBlock Text="Ziroka" FontFamily="{StaticResource MonocraftFont}" FontSize="11" FontWeight="Bold" Foreground="#f4f4f5" HorizontalAlignment="Center"/>
-                                        <TextBlock Text="ziroka.vercel.app" FontSize="8.5" Foreground="#71717a" HorizontalAlignment="Center" Margin="0,3,0,0"/>
-                                    </StackPanel>
-                                </Button>
-                            </Grid>
-
+                                    <CheckBox x:Name="ChkRemember" Click="ChkRemember_Click" Margin="0,4,0,0" Cursor="Hand">
+                                        <StackPanel Orientation="Vertical" Margin="4,0,0,0">
+                                            <TextBlock Text="Recordar última ventana y rotación" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                            <TextBlock Text="Restaura la app y el ángulo seleccionados al arrancar" FontSize="10.5" Foreground="#71717a"/>
+                                        </StackPanel>
+                                    </CheckBox>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </ScrollViewer>
 
                     <!-- Modal Footer -->
-                    <Border Grid.Row="2" Background="#14141e" BorderBrush="#242434" BorderThickness="0,1,0,0" CornerRadius="0,0,16,16" Padding="16,12">
+                    <Border Grid.Row="2" Background="#161620" BorderBrush="#262635" BorderThickness="0,1,0,0" CornerRadius="0,0,14,14" Padding="16,10">
                         <Grid>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border Background="#1e1e2c" BorderBrush="#35354a" BorderThickness="1" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
-                                    <TextBlock Text="v3.2" FontFamily="{StaticResource MonocraftFont}" FontSize="10" FontWeight="Bold" Foreground="#a5b4fc"/>
-                                </Border>
-                                <TextBlock Text="Ecosistema Rocaman • Windows Utilities" FontSize="10.5" Foreground="#64748b" VerticalAlignment="Center"/>
-                            </StackPanel>
-                            <Button Click="BtnCloseInfo_Click" HorizontalAlignment="Right" Style="{StaticResource ModernBtn}" Height="30" Padding="18,0">
-                                <TextBlock Text="Cerrar" FontFamily="{StaticResource MonocraftFont}" FontSize="11" FontWeight="Bold"/>
+                            <Button Click="LnkRocaman_Click" Background="Transparent" BorderThickness="0" Cursor="Hand" VerticalAlignment="Center" Padding="0" ToolTip="Visitar rocaman.vercel.app">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+                                                  Fill="#6366f1" Width="12" Height="12" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="rocaman.vercel.app" FontSize="11" FontWeight="SemiBold" Foreground="#818cf8" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button Click="BtnCloseInfo_Click" HorizontalAlignment="Right" Style="{StaticResource ModernBtn}" Height="30" Padding="16,0">
+                                <TextBlock Text="Cerrar" FontSize="11" FontWeight="Bold"/>
                             </Button>
                         </Grid>
                     </Border>

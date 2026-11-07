@@ -20,20 +20,7 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v3.3 (Rediseño Estético de Información y Ajustes con Logo Rocaman y Monocraft)
-- **Cabecera de Marca con Logo Oficial**:
-  - Incorporado el logotipo 3D "ROCAMAN" centrado en alta definición (`rocaman_banner.png`), eliminando texto genérico de autoría.
-  - Integrada la tipografía pixelada `Monocraft` tanto como recurso embebido como fuente instalada en el sistema para títulos, insignias y teclas.
-- **Tarjetas de Ajustes Modernas**:
-  - Toggles visuales de configuración del sistema ("Iniciar con Windows" y "Recordar última ventana y rotación") en tarjetas elevadas y nítidas.
-- **Teclas de Atajos Estilo Gaming**:
-  - Teclas representadas con insignia `KeyCap` (`Esc`, `F10`, `F11`, `Ctrl+Alt+R`, etc.) con tipografía Monocraft.
-- **Tarjetas del Ecosistema Rocaman Interactivas**:
-  - 3 accesos directos clickeables con iconos vectoriales y apertura en navegador por defecto:
-    1. **Rocaman**: `rocaman.vercel.app` (Portfolio y web principal).
-    2. **RocaStore**: `rocastore.vercel.app` (Catálogo y tienda de apps).
-    3. **Ziroka**: `ziroka.vercel.app` (Plataforma y proyectos).
-- **Control de Versiones**: Commits realizados y sincronizados con GitHub `master`.
+### [2026-11-07] - AlwaysRotate v3.2 (Estilo Limpio Nativo, Iconos SVG y Corrección de Truncamiento)
 - **Eliminación Total de Emojis Obsoletos**:
   - Reemplazados todos los emojis del sistema (`📌`, `🖱️`, `👻`, `⛶`, `🔄`, `⚡`, `ℹ️`, etc.) por vectores `Path` SVG nítidos, estilizados y escalables sin distorsión.
   - El color de los iconos se adapta dinámicamente mediante enlace (`RelativeSource AncestorType=Button`) al estado activo/inactivo de cada control.
@@ -44,6 +31,13 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - **HUD Flotante y Placeholder Vectorizados**:
   - Iconos del HUD (`IcoFsPin`, `IcoFsInteract`, `IcoFsGhost`, `IcoFsToggleMode`) rediseñados en vectores modernos.
   - Placeholder de bienvenida rediseñado con contenedor vectorizado moderno.
+- **Panel Modal de Información y Ajustes (`InfoOverlay`)**:
+  - Diseño sobrio, moderno y nativo de Windows (tipografía del sistema `Segoe UI Variable / Segoe UI`, sin fuentes externas ni bloques innecesarios).
+  - Secciones organizadas:
+    1. **Ajustes del Sistema**: Toggles integrados para *Iniciar con Windows* y *Recordar última ventana y rotación*.
+    2. **Atajos Globales de Teclado**: Tabla de accesos directos con teclas visuales (`KeyCap`).
+    3. **Modos y Funciones**: Explicación de los botones de interacción y vistas.
+    4. **Pie de Ventana**: Enlace directo y limpio a `rocaman.vercel.app` que abre el navegador predeterminado.
 - **Compilación y Despliegue**: Compilado con 0 errores y 0 advertencias; binarios publicados en `bin/AlwaysRotate`.
 - **Panel Modal de Información y Ajustes (`InfoOverlay`)**:
   - Incorporado botón `ℹ️ Ayuda` en la barra superior junto al selector de ventana.
