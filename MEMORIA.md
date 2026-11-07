@@ -9,25 +9,28 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 1. **Fiabilidad ante todo**: Cada utilidad debe ser ligera, estable y no dejar procesos colgados ni fugas de memoria.
 2. **Modularidad**: Cada utilidad o módulo debe poder funcionar de manera independiente o bajo un lanzador/bandeja del sistema central.
 3. **Registro continuo**: Mantener esta memoria actualizada con decisiones técnicas, componentes implementados y roadmap.
+4. **Control de Versiones (Git)**: Control de versiones activo en el repositorio local.
 
 ---
 
 ## 🛠️ Registro de Actividades y Decisiones
 
-### [2026-11-07] - Inicialización del Proyecto
+### [2026-11-07] - Inicialización del Proyecto y Repositorio Git
 - Creación de la estructura base del repositorio y memoria privada.
 - Definición de objetivo: alternativa propia y estable a PowerToys.
+- Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v1.4 (Iconos Nativos Reales, Filtrado Alt-Tab y Corrección de Clics)
-- **Iconos Nativos de Cada Aplicación**:
-  - Reemplazados los emojis por extracción directa del icono nativo de cada programa (`ExtractAssociatedIcon` + `WM_GETICON` + `GetClassLongPtr`). Ahora WhatsApp, Chrome, Discord, Obsidian, Spotify, etc., muestran su icono oficial original en alta resolución.
-- **Filtrado de Ventanas Fantasma / Ocultas (DWM Cloaking)**:
-  - Implementado filtro con `DwmGetWindowAttribute(DWMWA_CLOAKED)`. Se eliminan todas las ventanas en segundo plano o servicios UWP invisibles ("Video call", interfaces fantasma de configuración, etc.). Solo aparecen las ventanas reales abiertas estilo Alt+Tab.
-- **Auto-Restauración de Ventanas**:
-  - Si una ventana seleccionada está minimizada o no visible físicamente, AlwaysRotate la restaura automáticamente con `SW_RESTORE` para que se abra y esté lista para capturarse.
-- **Corrección Definitiva del Modo Interactivo**:
-  - Descubierto y corregido error en la transformación de coordenadas: `LayoutTransform` en WPF ya invierte la rotación en `GetPosition()`, por lo que re-aplicar la rotación invertía dos veces las coordenadas. Ahora el mapeo es 1:1 exacto al píxel.
-  - Implementado clic físico suave en segundo plano con temporización de 35ms para evitar cancelaciones de Windows/Chromium.
-- **Icono Oficial de Barra de Tareas**:
-  - Reconstruido el archivo `.ico` con las 7 resoluciones estándar de Windows (16x16 hasta 256x256).
-  - Forzado mediante `WM_SETICON` y `BitmapFrame` para que Windows no muestre los dos cuadrados blancos por defecto.
+### [2026-11-07] - AlwaysRotate v1.5 (Arreglo Total de la Interacción y Rotación por Bitmap)
+- **Causa raíz del fallo en interacción identificada**:
+  - `LayoutTransform` en WPF causaba que `GetPosition()` arrojara coordenadas negativas al rotar 90°, provocando que la validación de límites descartara el 100% de los clics.
+  - Además, se estaban enviando mensajes `PostMessage` duplicados simultáneamente con `mouse_event`, causando conflicto de eventos en Chromium/WhatsApp.
+- **Solución implementada**:
+  - Migración a rotación física por tarjeta gráfica en el bitmap (`TransformedBitmap`).
+  - El control de imagen en WPF opera en coordenadas estándar sin distorsión de matriz.
+  - Mapeo trigonométrico directo y limpio:
+    - 90°: `X = v * W`, `Y = (1 - u) * H`.
+    - 180°: `X = (1 - u) * W`, `Y = (1 - v) * H`.
+    - 270°: `X = (1 - v) * W`, `Y = u * H`.
+    - 0°: `X = u * W`, `Y = v * H`.
+  - Despacho de clics físicos puros con temporización de 35ms y desplazamiento de rueda (`MOUSEEVENTF_WHEEL`).
+- **Control de Versiones**: Commits realizados en Git `master`.
