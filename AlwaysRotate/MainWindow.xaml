@@ -218,10 +218,11 @@
         <Border x:Name="HeaderBorder" Grid.Row="0" Background="#14141a" BorderBrush="#262633" BorderThickness="0,0,0,1" Padding="14,12">
             <StackPanel Orientation="Vertical">
 
-                <!-- Row 1: Target Window Selector (Wide & Clean, Auto-Refreshes on Click) -->
+                <!-- Row 1: Target Window Selector, Refresh & Info -->
                 <Grid Margin="0,0,0,12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
@@ -235,8 +236,16 @@
                     <Button Grid.Column="1" Click="BtnRefreshWindows_Click" ToolTip="Refrescar lista de ventanas"
                             Style="{StaticResource ModernBtn}" Height="36" Padding="10,0" Margin="8,0,0,0">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🔄" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="🔄" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Actualizar" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="BtnInfo" Grid.Column="2" Click="BtnInfo_Click" ToolTip="Información, Atajos y Ajustes"
+                            Style="{StaticResource ModernBtn}" Height="36" Padding="10,0" Margin="6,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="ℹ️" FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Ayuda" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Grid>
@@ -467,6 +476,183 @@
 
                 <TextBlock Text="Atajo: Ctrl + Alt + R" FontSize="10" FontWeight="SemiBold" Foreground="#6366f1" Grid.Column="2" VerticalAlignment="Center"/>
             </Grid>
+        </Border>
+        <!-- 4. Information, Shortcuts & Settings Modal Overlay -->
+        <Border x:Name="InfoOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#e009090d"
+                Visibility="Collapsed" Panel.ZIndex="2000" Padding="16,14">
+            <Border Background="#13131a" BorderBrush="#2e2e40" BorderThickness="1" CornerRadius="14"
+                    MaxWidth="480" MaxHeight="600" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="24" ShadowDepth="6" Direction="270" Color="#000000" Opacity="0.85"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <!-- Header -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Content -->
+                        <RowDefinition Height="*"/>
+                        <!-- Footer -->
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Modal Header -->
+                    <Border Grid.Row="0" Background="#181822" BorderBrush="#262635" BorderThickness="0,0,0,1" CornerRadius="14,14,0,0" Padding="16,12">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="ℹ️" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <StackPanel>
+                                    <TextBlock Text="Información y Ajustes" FontSize="14" FontWeight="Bold" Foreground="#f4f4f5"/>
+                                    <TextBlock Text="AlwaysRotate v3.1 • Guía rápida y atajos" FontSize="11" Foreground="#94a3b8"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <Button Click="BtnCloseInfo_Click" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Width="28" Height="28" Cursor="Hand" Background="#262635" BorderBrush="#38384d" BorderThickness="1">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="14">
+                                            <TextBlock Text="✕" FontSize="11" FontWeight="Bold" Foreground="#cbd5e1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="bd" Property="Background" Value="#e11d48"/>
+                                                <Setter TargetName="bd" Property="BorderBrush" Value="#f43f5e"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <!-- Scrollable Content -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="16,14">
+                        <StackPanel Orientation="Vertical">
+                            <!-- Section 1: How it works -->
+                            <TextBlock Text="🚀 ¿CÓMO FUNCIONA?" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,14">
+                                <TextBlock Text="AlwaysRotate captura en tiempo real a 30 FPS cualquier ventana activa de tu sistema (como WhatsApp Desktop) y la gira a 90°, 180° o 270°. Además, reenvía de forma matemática y fluida tus clics y la rueda del ratón a la app original, para que puedas chatear y navegar directamente desde la pantalla rotada."
+                                           FontSize="11.5" Foreground="#cbd5e1" TextWrapping="Wrap" LineHeight="17"/>
+                            </Border>
+
+                            <!-- Section 2: Shortcuts Cheat Sheet -->
+                            <TextBlock Text="⌨️ ATAJOS DE TECLADO GLOBALES" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,0,0,14">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Esc -->
+                                    <Border Grid.Row="0" Grid.Column="0" Background="#262638" CornerRadius="4" Padding="6,2" Margin="0,2,8,2">
+                                        <TextBlock Text="Esc" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    </Border>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Salir de Pantalla Completa o Modo Ventana Zen" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+
+                                    <!-- F10 -->
+                                    <Border Grid.Row="1" Grid.Column="0" Background="#262638" CornerRadius="4" Padding="6,2" Margin="0,2,8,2">
+                                        <TextBlock Text="F10" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    </Border>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Alternar Modo Solo Ventana (sin menús y redimensionable)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+
+                                    <!-- F11 -->
+                                    <Border Grid.Row="2" Grid.Column="0" Background="#262638" CornerRadius="4" Padding="6,2" Margin="0,2,8,2">
+                                        <TextBlock Text="F11" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    </Border>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Alternar Pantalla Completa total (monitor completo)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+
+                                    <!-- Ctrl + Alt + R -->
+                                    <Border Grid.Row="3" Grid.Column="0" Background="#262638" CornerRadius="4" Padding="6,2" Margin="0,2,8,2">
+                                        <TextBlock Text="Ctrl + Alt + R" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    </Border>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Capturar y rotar la ventana activa actual" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+
+                                    <!-- Ctrl + Alt + G -->
+                                    <Border Grid.Row="4" Grid.Column="0" Background="#262638" CornerRadius="4" Padding="6,2" Margin="0,2,8,2">
+                                        <TextBlock Text="Ctrl + Alt + G" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    </Border>
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Modo Fantasma (ocultar / mostrar ventana original)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+
+                                    <!-- Ctrl + Alt + Right / Space -->
+                                    <Border Grid.Row="5" Grid.Column="0" Background="#262638" CornerRadius="4" Padding="6,2" Margin="0,2,8,2">
+                                        <TextBlock Text="Ctrl+Alt+→ / Espacio" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    </Border>
+                                    <TextBlock Grid.Row="5" Grid.Column="1" Text="Rotar +90° en sentido horario al vuelo" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+
+                                    <!-- Ctrl + Alt + P -->
+                                    <Border Grid.Row="6" Grid.Column="0" Background="#262638" CornerRadius="4" Padding="6,2" Margin="0,2,8,2">
+                                        <TextBlock Text="Ctrl + Alt + P" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    </Border>
+                                    <TextBlock Grid.Row="6" Grid.Column="1" Text="Fijar Always on Top (Siempre encima)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+
+                                    <!-- Alt + Clic -->
+                                    <Border Grid.Row="7" Grid.Column="0" Background="#262638" CornerRadius="4" Padding="6,2" Margin="0,2,8,2">
+                                        <TextBlock Text="Alt + Clic arrastre" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    </Border>
+                                    <TextBlock Grid.Row="7" Grid.Column="1" Text="Mover la ventana libremente desde cualquier punto" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Section 3: Buttons explanation -->
+                            <TextBlock Text="🛠️ BOTONES Y MODOS" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,14">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="• 0° / +90° / 180° / -90°: Rotaciones directas en ángulos fijos." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
+                                    <TextBlock Text="• 📌 Fijo: Mantiene AlwaysRotate visible por encima de cualquier otro programa." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
+                                    <TextBlock Text="• 🖱️ Clics: Activa o desactiva la interacción directa con la app." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
+                                    <TextBlock Text="• 👻 Ocultar: Vuelve 100% invisible la ventana original para no tener duplicados." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
+                                    <TextBlock Text="• 🗖 Ventana: Quita los paneles de botones grandes pero conserva el marco de ventana para moverla y redimensionarla con el ratón." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,4"/>
+                                    <TextBlock Text="• ⛶ Completa: Modo pantalla completa total con HUD que se auto-oculta tras 2.5s." FontSize="11" Foreground="#cbd5e1"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Section 4: System Settings -->
+                            <TextBlock Text="⚙️ AJUSTES DEL SISTEMA" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,6">
+                                <StackPanel Orientation="Vertical">
+                                    <CheckBox x:Name="ChkAutoStart" Click="ChkAutoStart_Click" Margin="0,0,0,8" Cursor="Hand">
+                                        <StackPanel Orientation="Vertical" Margin="4,0,0,0">
+                                            <TextBlock Text="Iniciar AlwaysRotate con Windows" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                            <TextBlock Text="Abre la utilidad automáticamente al encender tu PC" FontSize="10.5" Foreground="#71717a"/>
+                                        </StackPanel>
+                                    </CheckBox>
+
+                                    <CheckBox x:Name="ChkRemember" Click="ChkRemember_Click" Margin="0,4,0,0" Cursor="Hand">
+                                        <StackPanel Orientation="Vertical" Margin="4,0,0,0">
+                                            <TextBlock Text="Recordar última ventana y rotación" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                            <TextBlock Text="Restaura la app y el ángulo seleccionados al arrancar" FontSize="10.5" Foreground="#71717a"/>
+                                        </StackPanel>
+                                    </CheckBox>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- Modal Footer -->
+                    <Border Grid.Row="2" Background="#161620" BorderBrush="#262635" BorderThickness="0,1,0,0" CornerRadius="0,0,14,14" Padding="16,10">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Desarrollado por " FontSize="10.5" Foreground="#71717a" VerticalAlignment="Center"/>
+                                <TextBlock Text="Rocaman" FontSize="10.5" FontWeight="Bold" Foreground="#a5b4fc" VerticalAlignment="Center"/>
+                                <TextBlock Text=" • rocaman.vercel.app" FontSize="10" Foreground="#6366f1" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                            </StackPanel>
+                            <Button Click="BtnCloseInfo_Click" HorizontalAlignment="Right" Style="{StaticResource ModernBtn}" Height="30" Padding="16,0">
+                                <TextBlock Text="Cerrar" FontSize="11" FontWeight="Bold"/>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
         </Border>
     </Grid>
 </Window>

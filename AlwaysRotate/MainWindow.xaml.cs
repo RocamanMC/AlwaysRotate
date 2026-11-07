@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,12 +13,16 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Microsoft.Win32;
 
 namespace AlwaysRotate
 {
     public partial class MainWindow : Window
     {
         private const int HOTKEY_ID = 9001;
+        private const string RUN_REG_KEY = @"Software\Microsoft\Windows\CurrentVersion\Run";
+        private const string APP_NAME = "AlwaysRotate";
+        private static readonly string ConfigPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
 
         private readonly WindowCaptureEngine _engine = new WindowCaptureEngine();
         private readonly DispatcherTimer _captureTimer = new DispatcherTimer();
@@ -33,6 +39,8 @@ namespace AlwaysRotate
         private bool _isGhostEnabled = false;
         private IntPtr _ghostedHwnd = IntPtr.Zero;
         private volatile bool _isSimulatingInput = false;
+        private bool _rememberState = true;
+        private string _lastRememberedTarget = string.Empty;
 
         public enum ViewState
         {
@@ -122,6 +130,14 @@ namespace AlwaysRotate
 
                     this.Icon = BitmapFrame.Create(new Uri(icoPath, UriKind.Absolute));
                 }
+            }
+            catch { }
+
+            LoadConfig();
+            try
+            {
+                ChkAutoStart.IsChecked = IsAutoStartEnabled();
+                ChkRemember.IsChecked = _rememberState;
             }
             catch { }
 
@@ -238,6 +254,18 @@ namespace AlwaysRotate
         {
             if (CmbWindows.ItemsSource is IEnumerable<Win32.WindowItem> items)
             {
+                if (_rememberState && !string.IsNullOrWhiteSpace(_lastRememberedTarget))
+                {
+                    var rem = items.FirstOrDefault(w =>
+                        w.Title.Contains(_lastRememberedTarget, StringComparison.OrdinalIgnoreCase) ||
+                        w.ProcessName.Contains(_lastRememberedTarget, StringComparison.OrdinalIgnoreCase));
+                    if (rem != null)
+                    {
+                        SetTarget(rem.Handle);
+                        return;
+                    }
+                }
+
                 var wa = items.FirstOrDefault(w =>
                     w.Title.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase) ||
                     w.ProcessName.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase));
@@ -306,6 +334,7 @@ namespace AlwaysRotate
 
             TxtStatus.Text = $"Conectado a: {_targetTitle}";
             PlaceholderOverlay.Visibility = Visibility.Collapsed;
+            SaveConfig();
         }
 
         private void CaptureTimer_Tick(object? sender, EventArgs e)
@@ -504,6 +533,105 @@ namespace AlwaysRotate
             }
         }
 
+        #region Info & Settings Modal
+        private void BtnInfo_Click(object sender, RoutedEventArgs e)
+        {
+            ChkAutoStart.IsChecked = IsAutoStartEnabled();
+            ChkRemember.IsChecked = _rememberState;
+            InfoOverlay.Visibility = Visibility.Visible;
+        }
+
+        private void BtnCloseInfo_Click(object sender, RoutedEventArgs e)
+        {
+            InfoOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void ChkAutoStart_Click(object sender, RoutedEventArgs e)
+        {
+            SetAutoStart(ChkAutoStart.IsChecked == true);
+        }
+
+        private void ChkRemember_Click(object sender, RoutedEventArgs e)
+        {
+            _rememberState = ChkRemember.IsChecked == true;
+            SaveConfig();
+        }
+
+        private bool IsAutoStartEnabled()
+        {
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(RUN_REG_KEY, false);
+                return key?.GetValue(APP_NAME) != null;
+            }
+            catch { return false; }
+        }
+
+        private void SetAutoStart(bool enable)
+        {
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(RUN_REG_KEY, true);
+                if (key == null) return;
+                if (enable)
+                {
+                    string exePath = Process.GetCurrentProcess().MainModule?.FileName ?? System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AlwaysRotate.exe");
+                    key.SetValue(APP_NAME, $"\"{exePath}\"");
+                }
+                else
+                {
+                    key.DeleteValue(APP_NAME, false);
+                }
+            }
+            catch { }
+        }
+
+        private void LoadConfig()
+        {
+            try
+            {
+                if (System.IO.File.Exists(ConfigPath))
+                {
+                    string json = System.IO.File.ReadAllText(ConfigPath);
+                    using var doc = JsonDocument.Parse(json);
+                    if (doc.RootElement.TryGetProperty("rememberState", out var rElem))
+                    {
+                        _rememberState = rElem.GetBoolean();
+                    }
+                    if (_rememberState)
+                    {
+                        if (doc.RootElement.TryGetProperty("lastAngle", out var aElem))
+                        {
+                            _currentAngle = aElem.GetInt32();
+                        }
+                        if (doc.RootElement.TryGetProperty("lastTarget", out var tElem))
+                        {
+                            _lastRememberedTarget = tElem.GetString() ?? string.Empty;
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void SaveConfig()
+        {
+            if (!_rememberState) return;
+            try
+            {
+                var obj = new
+                {
+                    rememberState = _rememberState,
+                    lastAngle = _currentAngle,
+                    lastTarget = _targetTitle
+                };
+                string json = JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
+                System.IO.File.WriteAllText(ConfigPath, json);
+            }
+            catch { }
+        }
+        #endregion
+
         #region Fullscreen & Window Zen Modes
         private void BtnFullscreen_Click(object sender, RoutedEventArgs e)
         {
@@ -660,10 +788,19 @@ namespace AlwaysRotate
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape && _currentView != ViewState.Normal)
+            if (e.Key == Key.Escape)
             {
-                SetViewState(ViewState.Normal);
-                e.Handled = true;
+                if (InfoOverlay.Visibility == Visibility.Visible)
+                {
+                    InfoOverlay.Visibility = Visibility.Collapsed;
+                    e.Handled = true;
+                    return;
+                }
+                if (_currentView != ViewState.Normal)
+                {
+                    SetViewState(ViewState.Normal);
+                    e.Handled = true;
+                }
             }
             else if (e.Key == Key.F10)
             {
@@ -687,11 +824,19 @@ namespace AlwaysRotate
                 bool isCtrl = (Win32.GetAsyncKeyState(0x11) & 0x8000) != 0;
                 bool isAlt = (Win32.GetAsyncKeyState(0x12) & 0x8000) != 0;
 
-                // Escape: Always restore normal menus if in Zen or Fullscreen
-                if (vk == 0x1B && _currentView != ViewState.Normal) // VK_ESCAPE
+                // Escape: Close Info overlay or restore normal menus
+                if (vk == 0x1B) // VK_ESCAPE
                 {
-                    Dispatcher.BeginInvoke(() => SetViewState(ViewState.Normal));
-                    return (IntPtr)1; // swallow
+                    if (InfoOverlay.Visibility == Visibility.Visible)
+                    {
+                        Dispatcher.BeginInvoke(() => InfoOverlay.Visibility = Visibility.Collapsed);
+                        return (IntPtr)1; // swallow
+                    }
+                    if (_currentView != ViewState.Normal)
+                    {
+                        Dispatcher.BeginInvoke(() => SetViewState(ViewState.Normal));
+                        return (IntPtr)1; // swallow
+                    }
                 }
 
                 // F10: Toggle Window Zen (Solo Ventana)
@@ -776,6 +921,7 @@ namespace AlwaysRotate
             if (TxtFsAngle != null) TxtFsAngle.Text = $"{_currentAngle}°";
             UpdateRotationButtonStyles();
             TxtStatus.Text = $"Rotación fijada en: {_currentAngle}°";
+            SaveConfig();
         }
 
         private void UpdateRotationButtonStyles()

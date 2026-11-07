@@ -20,13 +20,16 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v3.0 (Marco Nativo de Ventana en Modo Zen y Eliminación de Borde Retro DWM)
-- **Corrección del Borde Clásico Retro (Fallback DWM)**:
-  - Eliminada la manipulación dinámica de `WindowChrome` en tiempo de ejecución, la cual causaba que Windows perdiera la composición moderna de DWM y dibujara el marco básico clásico de Windows 95/98.
-- **Modo Solo Ventana con Marco Nativo Completo**:
-  - En **Modo Solo Ventana** (`🗖 Ventana` / `F10`), la ventana conserva 100% su marco nativo moderno de Windows 11 (`WindowStyle.SingleBorderWindow`):
-    - Permite agarrar la barra de título superior para mover la ventana con total naturalidad como cualquier app del sistema.
-    - Los 4 bordes y esquinas permiten redimensionar de forma nativa fluida.
-    - Se ocultan por completo los menús interiores (`HeaderBorder` y `FooterBorder`), dedicando el 100% del área de cliente al contenido rotado sin estorbos.
-    - Transición perfecta y sin glitches entre Modo Normal, Modo Solo Ventana y Pantalla Completa.
+### [2026-11-07] - AlwaysRotate v3.1 (Pestaña Completa de Información, Atajos y Ajustes del Sistema)
+- **Panel Modal de Información y Ajustes (`InfoOverlay`)**:
+  - Incorporado botón `ℹ️ Ayuda` en la barra superior junto al selector de ventana.
+  - Diseño moderno y desplazable con fondo atenuado (*backdrop blur/dim*):
+    1. **¿Cómo funciona?**: Explicación del motor de captura en vivo a 30 FPS y reenvío matemático de ratón y scroll.
+    2. **Atajos de Teclado Globales**: Tabla visual con distintivos de teclas (`Esc`, `F10`, `F11`, `Ctrl+Alt+R`, `Ctrl+Alt+G`, `Ctrl+Alt+→/Espacio`, `Ctrl+Alt+P`, `Alt+Clic`).
+    3. **¿Para qué sirve cada botón?**: Guía clara de cada función (`0°/90°/180°/-90°`, `Fijo`, `Clics`, `Ocultar Real`, `Ventana Zen`, `Pantalla Completa`).
+    4. **Ajustes del Sistema Integrados**:
+       - *Iniciar AlwaysRotate al encender Windows*: Persistencia nativa en el registro de Windows (`HKCU\Software\Microsoft\Windows\CurrentVersion\Run`).
+       - *Recordar última aplicación y rotación*: Almacenamiento y restauración automática de preferencias en `config.json`.
+    5. **Créditos Oficiales**: Autoría Rocaman con enlace a https://rocaman.vercel.app/.
+  - El modal se puede cerrar con el botón `✕`, el botón `Cerrar` o pulsando `Esc`.
 - **Control de Versiones**: Commits realizados en Git `master`.
