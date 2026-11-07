@@ -20,17 +20,10 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
-### [2026-11-07] - AlwaysRotate v1.5 (Arreglo Total de la Interacción y Rotación por Bitmap)
-- **Causa raíz del fallo en interacción identificada**:
-  - `LayoutTransform` en WPF causaba que `GetPosition()` arrojara coordenadas negativas al rotar 90°, provocando que la validación de límites descartara el 100% de los clics.
-  - Además, se estaban enviando mensajes `PostMessage` duplicados simultáneamente con `mouse_event`, causando conflicto de eventos en Chromium/WhatsApp.
-- **Solución implementada**:
-  - Migración a rotación física por tarjeta gráfica en el bitmap (`TransformedBitmap`).
-  - El control de imagen en WPF opera en coordenadas estándar sin distorsión de matriz.
-  - Mapeo trigonométrico directo y limpio:
-    - 90°: `X = v * W`, `Y = (1 - u) * H`.
-    - 180°: `X = (1 - u) * W`, `Y = (1 - v) * H`.
-    - 270°: `X = (1 - v) * W`, `Y = u * H`.
-    - 0°: `X = u * W`, `Y = v * H`.
-  - Despacho de clics físicos puros con temporización de 35ms y desplazamiento de rueda (`MOUSEEVENTF_WHEEL`).
+### [2026-11-07] - AlwaysRotate v1.6 (Modo Fantasma: Ocultar Original Invisible)
+- **Implementación del Modo Fantasma (`👻 Ocultar Real`)**:
+  - Permite volver 100% invisible la ventana original de WhatsApp en pantalla (`SetLayeredWindowAttributes` con `Alpha = 1`).
+  - Para los ojos humanos es completamente invisible (no estorba en ningún monitor).
+  - Para Windows y la tarjeta gráfica sigue activa y sólida: AlwaysRotate la sigue capturando en tiempo real y puede enviarle clics y eventos de ratón.
+  - Al desactivar el botón o al cerrar AlwaysRotate, la ventana original recupera su visibilidad normal (`Alpha = 255`) automáticamente.
 - **Control de Versiones**: Commits realizados en Git `master`.
