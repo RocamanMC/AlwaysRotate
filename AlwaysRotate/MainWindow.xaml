@@ -304,11 +304,7 @@
 
                 <!-- Viewbox with smooth scaling -->
                 <Viewbox Stretch="Uniform">
-                    <Image x:Name="RotatedImageHost" RenderOptions.BitmapScalingMode="HighQuality">
-                        <Image.LayoutTransform>
-                            <RotateTransform x:Name="ImageRotationTransform" Angle="90"/>
-                        </Image.LayoutTransform>
-                    </Image>
+                    <Image x:Name="RotatedImageHost" RenderOptions.BitmapScalingMode="HighQuality"/>
                 </Viewbox>
 
                 <!-- Placeholder when no window is selected -->

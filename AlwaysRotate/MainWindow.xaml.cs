@@ -238,7 +238,7 @@ namespace AlwaysRotate
                 Win32.ShowWindow(_targetHwnd, Win32.SW_RESTORE);
             }
 
-            bool captured = _engine.Capture(_targetHwnd);
+            bool captured = _engine.Capture(_targetHwnd, _currentAngle);
             if (captured && _engine.CurrentBitmap != null)
             {
                 if (RotatedImageHost.Source != _engine.CurrentBitmap)
@@ -336,7 +336,6 @@ namespace AlwaysRotate
         private void ApplyAngle(int angle)
         {
             _currentAngle = ((angle % 360) + 360) % 360;
-            ImageRotationTransform.Angle = _currentAngle;
             TxtAngleBadge.Text = $"{_currentAngle}°";
             UpdateRotationButtonStyles();
             TxtStatus.Text = $"Rotación fijada en: {_currentAngle}°";
@@ -395,16 +394,34 @@ namespace AlwaysRotate
             if (actualW <= 0 || actualH <= 0)
                 return false;
 
-            // If click is outside the bounds of the image, return false
+            // If click is outside the bounds of the image (in letterbox margins), return false
             if (clickPoint.X < 0 || clickPoint.X > actualW || clickPoint.Y < 0 || clickPoint.Y > actualH)
                 return false;
 
-            // LayoutTransform has already inverted the rotation on GetPosition!
-            double ratioX = clickPoint.X / actualW;
-            double ratioY = clickPoint.Y / actualH;
+            double u = Math.Clamp(clickPoint.X / actualW, 0.0, 1.0);
+            double v = Math.Clamp(clickPoint.Y / actualH, 0.0, 1.0);
 
-            targetX = (int)(ratioX * _engine.TargetWidth);
-            targetY = (int)(ratioY * _engine.TargetHeight);
+            switch (_currentAngle)
+            {
+                case 90:
+                    targetX = (int)(v * _engine.TargetWidth);
+                    targetY = (int)((1.0 - u) * _engine.TargetHeight);
+                    break;
+                case 180:
+                    targetX = (int)((1.0 - u) * _engine.TargetWidth);
+                    targetY = (int)((1.0 - v) * _engine.TargetHeight);
+                    break;
+                case 270:
+                    targetX = (int)((1.0 - v) * _engine.TargetWidth);
+                    targetY = (int)(u * _engine.TargetHeight);
+                    break;
+                case 0:
+                default:
+                    targetX = (int)(u * _engine.TargetWidth);
+                    targetY = (int)(v * _engine.TargetHeight);
+                    break;
+            }
+
             return true;
         }
 

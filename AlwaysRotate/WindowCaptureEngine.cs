@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace AlwaysRotate
@@ -16,7 +17,7 @@ namespace AlwaysRotate
         public int TargetHeight => _targetHeight;
         public BitmapSource? CurrentBitmap => _currentBitmap;
 
-        public bool Capture(IntPtr hwnd)
+        public bool Capture(IntPtr hwnd, int rotationAngle)
         {
             if (hwnd == IntPtr.Zero || !Win32.IsWindowVisible(hwnd))
                 return false;
@@ -38,7 +39,6 @@ namespace AlwaysRotate
             IntPtr hdcScreen = Win32.GetDC(IntPtr.Zero);
             IntPtr hdcMem = Win32.CreateCompatibleDC(hdcScreen);
 
-            // Use CreateCompatibleBitmap
             IntPtr hBmp = CreateCompatibleBitmap(hdcScreen, width, height);
             if (hBmp == IntPtr.Zero)
             {
@@ -49,7 +49,7 @@ namespace AlwaysRotate
 
             IntPtr hOldBmp = Win32.SelectObject(hdcMem, hBmp);
 
-            // Capture
+            // Capture window content
             bool success = Win32.PrintWindow(hwnd, hdcMem, Win32.PW_RENDERFULLCONTENT);
             if (!success)
             {
@@ -72,12 +72,21 @@ namespace AlwaysRotate
                         Int32Rect.Empty,
                         BitmapSizeOptions.FromEmptyOptions()
                     );
-                    bmpSource.Freeze();
-                    _currentBitmap = bmpSource;
+
+                    if (rotationAngle != 0)
+                    {
+                        var tb = new TransformedBitmap(bmpSource, new RotateTransform(rotationAngle));
+                        tb.Freeze();
+                        _currentBitmap = tb;
+                    }
+                    else
+                    {
+                        bmpSource.Freeze();
+                        _currentBitmap = bmpSource;
+                    }
                 }
-                catch (Exception ex)
+                catch
                 {
-                    System.IO.File.AppendAllText("E:\\anti\\Utilidades\\bin\\AlwaysRotate\\run.log", $"Imaging error: {ex.Message}\n");
                     success = false;
                 }
             }
