@@ -20,6 +20,18 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
+### [2026-11-08] - AlwaysRotate v3.6 (Detección Completa y Captura de Videollamadas de WhatsApp)
+- **Corrección de Filtro Oculto**:
+  - Eliminado el filtro previo en `Win32.cs` que descartaba intencionalmente las ventanas con "Video call" o "Call" de WhatsApp.
+  - Implementada resolución nativa de UWP para `ApplicationFrameHost` mediante inspección de `Windows.UI.Core.CoreWindow` y mapeo al proceso real `WhatsApp.Root`.
+  - Excepción de estilo `WS_EX_TOOLWINDOW`: Se permite capturar ventanas de llamada flotantes y paneles de videollamada de WhatsApp aunque tengan estilo de herramienta.
+- **Identificación y Priorización de Videollamadas**:
+  - Detección automática y renombrado descriptivo como `WhatsApp - Videollamada` o `WhatsApp (Llamada)`.
+  - Ordenación inteligente: si hay una videollamada activa de WhatsApp, aparece en el primer puesto de la lista y se auto-selecciona automáticamente al abrir.
+- **Motor de Captura Multi-Tier**:
+  - Integrado soporte de captura fallback con `BitBlt` de pantalla directa sobre las coordenadas de la ventana para garantizar que los flujos de vídeo por hardware (GPU / DirectComposition / MediaFoundation) no salgan en negro.
+- **Control de Versiones**: Commits realizados y sincronizados con GitHub `master`.
+
 ### [2026-11-07] - AlwaysRotate v3.5 (Rediseño Profesional Estilo Fluent con Pestañas y Switches Modernos)
 - **Eliminación Total de Listas Tipo IA y Scrollbar Incómodo**:
   - Reemplazado el antiguo modal estrecho y vertical por un panel de dimensiones amplias y proporcionadas (`650x510 px`) sin barras de scroll que corten el texto.

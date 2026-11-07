@@ -49,10 +49,24 @@ namespace AlwaysRotate
 
             IntPtr hOldBmp = Win32.SelectObject(hdcMem, hBmp);
 
-            // Capture window content
+            // Capture window content with multi-tier fallback for video calls and accelerated graphics
             bool success = Win32.PrintWindow(hwnd, hdcMem, Win32.PW_RENDERFULLCONTENT);
             if (!success)
             {
+                // Fallback 1: PrintWindow standard (flag 0)
+                success = Win32.PrintWindow(hwnd, hdcMem, 0);
+            }
+
+            if (!success && Win32.IsWindowVisible(hwnd) && !Win32.IsIconic(hwnd))
+            {
+                // Fallback 2: Screen BitBlt (guarantees capturing live video streams & hardware overlays)
+                Win32.BitBlt(hdcMem, 0, 0, width, height, hdcScreen, rect.Left, rect.Top, Win32.SRCCOPY);
+                success = true;
+            }
+
+            if (!success)
+            {
+                // Fallback 3: Window DC BitBlt
                 IntPtr hdcWnd = Win32.GetDC(hwnd);
                 if (hdcWnd != IntPtr.Zero)
                 {

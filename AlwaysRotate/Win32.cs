@@ -112,6 +112,12 @@ namespace AlwaysRotate
         [DllImport("user32.dll")]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
 
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string? className, string? windowTitle);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
         [DllImport("user32.dll")]
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
@@ -362,34 +368,23 @@ namespace AlwaysRotate
                 if (hWnd == excludeHwnd) return true;
                 if (!IsWindowVisible(hWnd)) return true;
 
-                // 1. Filter out cloaked/invisible UWP windows
+                // 1. Filter out cloaked/invisible UWP virtual windows
                 int cloaked = 0;
                 DwmGetWindowAttribute(hWnd, DWMWA_CLOAKED, out cloaked, sizeof(int));
                 if (cloaked != 0) return true;
 
-                // 2. Filter out tool windows
-                int exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
-                if ((exStyle & WS_EX_TOOLWINDOW) != 0) return true;
-
-                // 3. Filter out zero/tiny windows
+                // 2. Filter out zero/tiny windows
                 if (GetWindowRect(hWnd, out var rc))
                 {
-                    if (!IsIconic(hWnd) && (rc.Width <= 20 || rc.Height <= 20))
+                    if (!IsIconic(hWnd) && (rc.Width <= 30 || rc.Height <= 30))
                         return true;
                 }
-
-                int length = GetWindowTextLength(hWnd);
-                if (length == 0) return true;
-
-                StringBuilder sb = new StringBuilder(length + 1);
-                GetWindowText(hWnd, sb, sb.Capacity);
-                string title = sb.ToString().Trim();
-
-                if (string.IsNullOrWhiteSpace(title)) return true;
-
-                if (title == "Program Manager" || title == "Windows Input Experience" || title.StartsWith("AlwaysRotate"))
+                else
+                {
                     return true;
+                }
 
+                // 3. Resolve Process ID and Process Name (handling UWP ApplicationFrameHost)
                 GetWindowThreadProcessId(hWnd, out uint pid);
                 string procName = "App";
                 try
@@ -399,16 +394,76 @@ namespace AlwaysRotate
                 }
                 catch { }
 
-                // Filter out WhatsApp hidden sub-windows like "Video call"
-                if (procName.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase) &&
-                    (title.Equals("Video call", StringComparison.OrdinalIgnoreCase) || title.Contains("Call", StringComparison.OrdinalIgnoreCase)))
+                if (procName.Equals("ApplicationFrameHost", StringComparison.OrdinalIgnoreCase))
                 {
-                    return true;
+                    IntPtr childCore = FindWindowEx(hWnd, IntPtr.Zero, "Windows.UI.Core.CoreWindow", null);
+                    if (childCore != IntPtr.Zero)
+                    {
+                        GetWindowThreadProcessId(childCore, out uint childPid);
+                        try
+                        {
+                            using var cProc = Process.GetProcessById((int)childPid);
+                            procName = cProc.ProcessName;
+                            pid = childPid;
+                        }
+                        catch { }
+                    }
                 }
 
-                // Filter out internal background windows
-                if (procName.Equals("ApplicationFrameHost", StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace(title))
+                // 4. Check tool windows (allow WhatsApp call windows even if tool style is set)
+                bool isWhatsApp = procName.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase);
+                int exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
+                bool isToolWindow = (exStyle & WS_EX_TOOLWINDOW) != 0;
+
+                if (isToolWindow && (!isWhatsApp || rc.Width < 100 || rc.Height < 100))
                     return true;
+
+                // 5. Get window title
+                int length = GetWindowTextLength(hWnd);
+                string title = string.Empty;
+                if (length > 0)
+                {
+                    StringBuilder sb = new StringBuilder(length + 1);
+                    GetWindowText(hWnd, sb, sb.Capacity);
+                    title = sb.ToString().Trim();
+                }
+
+                // If WhatsApp window has no title but is visible and large enough, name it!
+                if (string.IsNullOrWhiteSpace(title))
+                {
+                    if (isWhatsApp && rc.Width >= 120 && rc.Height >= 120)
+                    {
+                        var clsSb = new StringBuilder(256);
+                        GetClassName(hWnd, clsSb, clsSb.Capacity);
+                        string className = clsSb.ToString();
+                        title = className.Contains("Call", StringComparison.OrdinalIgnoreCase) || className.Contains("Video", StringComparison.OrdinalIgnoreCase)
+                            ? "WhatsApp - Videollamada"
+                            : "WhatsApp (Llamada / Vídeo)";
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+
+                if (title == "Program Manager" || title == "Windows Input Experience" || title.StartsWith("AlwaysRotate"))
+                    return true;
+
+                // 6. Explicitly identify and format WhatsApp Call & Video Call windows
+                if (isWhatsApp || title.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase))
+                {
+                    procName = "WhatsApp";
+                    if (title.Contains("Video call", StringComparison.OrdinalIgnoreCase) ||
+                        title.Contains("Videollamada", StringComparison.OrdinalIgnoreCase) ||
+                        title.Contains("Llamada", StringComparison.OrdinalIgnoreCase) ||
+                        title.Contains("Call", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (!title.StartsWith("WhatsApp", StringComparison.OrdinalIgnoreCase))
+                        {
+                            title = $"WhatsApp - {title}";
+                        }
+                    }
+                }
 
                 var realIcon = ExtractRealIcon(hWnd, pid);
 
@@ -423,6 +478,30 @@ namespace AlwaysRotate
 
                 return true;
             }, IntPtr.Zero);
+
+            // Sort so WhatsApp Video Call and WhatsApp appear at the top!
+            list.Sort((a, b) =>
+            {
+                bool aIsCall = a.Title.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase) &&
+                              (a.Title.Contains("Call", StringComparison.OrdinalIgnoreCase) ||
+                               a.Title.Contains("Llamada", StringComparison.OrdinalIgnoreCase) ||
+                               a.Title.Contains("Video", StringComparison.OrdinalIgnoreCase));
+                bool bIsCall = b.Title.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase) &&
+                              (b.Title.Contains("Call", StringComparison.OrdinalIgnoreCase) ||
+                               b.Title.Contains("Llamada", StringComparison.OrdinalIgnoreCase) ||
+                               b.Title.Contains("Video", StringComparison.OrdinalIgnoreCase));
+
+                if (aIsCall && !bIsCall) return -1;
+                if (!aIsCall && bIsCall) return 1;
+
+                bool aIsWa = a.ProcessName.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase) || a.Title.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase);
+                bool bIsWa = b.ProcessName.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase) || b.Title.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase);
+
+                if (aIsWa && !bIsWa) return -1;
+                if (!aIsWa && bIsWa) return 1;
+
+                return string.Compare(a.DisplayTitle, b.DisplayTitle, StringComparison.OrdinalIgnoreCase);
+            });
 
             return list;
         }

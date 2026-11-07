@@ -270,6 +270,16 @@ namespace AlwaysRotate
                     }
                 }
 
+                var waCall = items.FirstOrDefault(w =>
+                    (w.Title.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase) || w.ProcessName.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase)) &&
+                    (w.Title.Contains("Call", StringComparison.OrdinalIgnoreCase) || w.Title.Contains("Llamada", StringComparison.OrdinalIgnoreCase) || w.Title.Contains("Video", StringComparison.OrdinalIgnoreCase)));
+
+                if (waCall != null)
+                {
+                    SetTarget(waCall.Handle);
+                    return;
+                }
+
                 var wa = items.FirstOrDefault(w =>
                     w.Title.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase) ||
                     w.ProcessName.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase));
