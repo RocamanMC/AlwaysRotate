@@ -241,53 +241,42 @@
                     </Button>
                 </Grid>
 
-                <!-- Row 2: Rotation Segmented Controls & Opacity Slider -->
-                <Grid Margin="0,0,0,10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                <!-- Row 2: Rotation Controls (Balanced 4-Column Layout) -->
+                <Border Margin="0,0,0,10" Background="#1a1a22" BorderBrush="#2e2e3d" BorderThickness="1" CornerRadius="8" Padding="3">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <!-- Segmented Rotation Controls -->
-                    <Border Grid.Column="0" Background="#1a1a22" BorderBrush="#2e2e3d" BorderThickness="1" CornerRadius="8" Padding="3">
-                        <StackPanel Orientation="Horizontal">
-                            <Button x:Name="BtnRot0" Click="BtnRotate0_Click" Style="{StaticResource SegmentBtn}" ToolTip="Normal (0°)">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="⟲" Margin="0,0,4,0"/>
-                                    <TextBlock Text="0° Normal"/>
-                                </StackPanel>
-                            </Button>
-                            <Button x:Name="BtnRotCW" Click="BtnRotateCW_Click" Style="{StaticResource SegmentBtn}" ToolTip="Girar 90° en sentido horario (WhatsApp vertical)">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="↻" Margin="0,0,4,0"/>
-                                    <TextBlock Text="+90° Horario"/>
-                                </StackPanel>
-                            </Button>
-                            <Button x:Name="BtnRot180" Click="BtnRotate180_Click" Style="{StaticResource SegmentBtn}" ToolTip="Invertir 180°">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="⇅" Margin="0,0,4,0"/>
-                                    <TextBlock Text="180°"/>
-                                </StackPanel>
-                            </Button>
-                            <Button x:Name="BtnRotCCW" Click="BtnRotateCCW_Click" Style="{StaticResource SegmentBtn}" Margin="0" ToolTip="Girar -90° (Antihorario)">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="↺" Margin="0,0,4,0"/>
-                                    <TextBlock Text="-90°"/>
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Opacity Slider with percentage badge -->
-                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="👁️" FontSize="13" Foreground="#94a3b8" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <Slider x:Name="SliderOpacity" Width="68" Minimum="0.25" Maximum="1.0" Value="1.0"
-                                ValueChanged="SliderOpacity_ValueChanged" SmallChange="0.05"
-                                VerticalAlignment="Center" ToolTip="Regular opacidad / transparencia"/>
-                        <TextBlock x:Name="TxtOpacityVal" Text="100%" FontSize="10" FontWeight="Bold" Foreground="#a5b4fc" Width="34" Margin="6,0,0,0" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Grid>
+                        <Button x:Name="BtnRot0" Grid.Column="0" Click="BtnRotate0_Click" Style="{StaticResource SegmentBtn}" Margin="0,0,2,0" ToolTip="Normal (0°)">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="⟲" Margin="0,0,4,0"/>
+                                <TextBlock Text="0° Normal"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="BtnRotCW" Grid.Column="1" Click="BtnRotateCW_Click" Style="{StaticResource SegmentBtn}" Margin="2,0" ToolTip="Girar 90° en sentido horario (WhatsApp vertical)">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="↻" Margin="0,0,4,0"/>
+                                <TextBlock Text="+90° Horario"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="BtnRot180" Grid.Column="2" Click="BtnRotate180_Click" Style="{StaticResource SegmentBtn}" Margin="2,0" ToolTip="Invertir 180°">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="⇅" Margin="0,0,4,0"/>
+                                <TextBlock Text="180°"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="BtnRotCCW" Grid.Column="3" Click="BtnRotateCCW_Click" Style="{StaticResource SegmentBtn}" Margin="2,0,0,0" ToolTip="Girar -90° (Antihorario)">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="↺" Margin="0,0,4,0"/>
+                                <TextBlock Text="-90°"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Border>
 
                 <!-- Row 3: Always on Top, Click Interaction, Ghost Original & Fullscreen Mode -->
                 <Grid>

@@ -722,15 +722,6 @@ namespace AlwaysRotate
         private void BtnRotate0_Click(object sender, RoutedEventArgs e) => ApplyAngle(0);
         private void BtnRotate180_Click(object sender, RoutedEventArgs e) => ApplyAngle(180);
 
-        private void SliderOpacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            Opacity = e.NewValue;
-            if (TxtOpacityVal != null)
-            {
-                TxtOpacityVal.Text = $"{(int)(e.NewValue * 100)}%";
-            }
-        }
-
         #region Interaction & Click Forwarding
         private bool CalculateTargetCoordinates(Point clickPoint, out int targetX, out int targetY)
         {
