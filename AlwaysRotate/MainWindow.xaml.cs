@@ -41,6 +41,8 @@ namespace AlwaysRotate
         private volatile bool _isSimulatingInput = false;
         private bool _rememberState = true;
         private string _lastRememberedTarget = string.Empty;
+        private int _targetFps = 60;
+        private string _scalingMode = "HighQuality";
 
         public enum ViewState
         {
@@ -61,7 +63,7 @@ namespace AlwaysRotate
         {
             InitializeComponent();
 
-            _captureTimer.Interval = TimeSpan.FromMilliseconds(33); // ~30 FPS
+            _captureTimer.Interval = TimeSpan.FromMilliseconds(16); // 60 FPS por defecto
             _captureTimer.Tick += CaptureTimer_Tick;
 
             _hudFadeTimer.Interval = TimeSpan.FromSeconds(2.5);
@@ -141,6 +143,8 @@ namespace AlwaysRotate
             }
             catch { }
 
+            SetFps(_targetFps);
+            SetQuality(_scalingMode);
             ApplyAngle(_currentAngle);
             UpdatePinButtonStyle();
             UpdateInteractButtonStyle();
@@ -562,6 +566,8 @@ namespace AlwaysRotate
         {
             ChkAutoStart.IsChecked = IsAutoStartEnabled();
             ChkRemember.IsChecked = _rememberState;
+            UpdateFpsButtonStyles();
+            UpdateQualityButtonStyles();
             InfoOverlay.Visibility = Visibility.Visible;
         }
 
@@ -569,6 +575,99 @@ namespace AlwaysRotate
         {
             InfoOverlay.Visibility = Visibility.Collapsed;
         }
+
+        private void SetFps(int fps)
+        {
+            _targetFps = fps switch
+            {
+                <= 30 => 30,
+                <= 60 => 60,
+                _ => 120
+            };
+
+            int intervalMs = _targetFps switch
+            {
+                30 => 33,
+                60 => 16,
+                120 => 8,
+                _ => 16
+            };
+
+            _captureTimer.Interval = TimeSpan.FromMilliseconds(intervalMs);
+            UpdateFpsButtonStyles();
+            SaveConfig();
+        }
+
+        private void UpdateFpsButtonStyles()
+        {
+            void StyleBtn(Button? btn, bool isActive)
+            {
+                if (btn == null) return;
+                if (isActive)
+                {
+                    btn.Background = new SolidColorBrush(Color.FromRgb(79, 70, 229));
+                    btn.BorderBrush = new SolidColorBrush(Color.FromRgb(99, 102, 241));
+                    btn.Foreground = Brushes.White;
+                }
+                else
+                {
+                    btn.Background = new SolidColorBrush(Color.FromRgb(26, 26, 36));
+                    btn.BorderBrush = new SolidColorBrush(Color.FromRgb(45, 45, 60));
+                    btn.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                }
+            }
+
+            StyleBtn(BtnFps30, _targetFps == 30);
+            StyleBtn(BtnFps60, _targetFps == 60);
+            StyleBtn(BtnFps120, _targetFps == 120);
+        }
+
+        private void BtnFps30_Click(object sender, RoutedEventArgs e) => SetFps(30);
+        private void BtnFps60_Click(object sender, RoutedEventArgs e) => SetFps(60);
+        private void BtnFps120_Click(object sender, RoutedEventArgs e) => SetFps(120);
+
+        private void SetQuality(string mode)
+        {
+            _scalingMode = mode;
+            BitmapScalingMode scaling = mode switch
+            {
+                "Linear" => BitmapScalingMode.Linear,
+                "NearestNeighbor" => BitmapScalingMode.NearestNeighbor,
+                _ => BitmapScalingMode.HighQuality
+            };
+
+            RenderOptions.SetBitmapScalingMode(RotatedImageHost, scaling);
+            UpdateQualityButtonStyles();
+            SaveConfig();
+        }
+
+        private void UpdateQualityButtonStyles()
+        {
+            void StyleBtn(Button? btn, bool isActive)
+            {
+                if (btn == null) return;
+                if (isActive)
+                {
+                    btn.Background = new SolidColorBrush(Color.FromRgb(79, 70, 229));
+                    btn.BorderBrush = new SolidColorBrush(Color.FromRgb(99, 102, 241));
+                    btn.Foreground = Brushes.White;
+                }
+                else
+                {
+                    btn.Background = new SolidColorBrush(Color.FromRgb(26, 26, 36));
+                    btn.BorderBrush = new SolidColorBrush(Color.FromRgb(45, 45, 60));
+                    btn.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                }
+            }
+
+            StyleBtn(BtnQualityHigh, _scalingMode == "HighQuality");
+            StyleBtn(BtnQualityLinear, _scalingMode == "Linear");
+            StyleBtn(BtnQualityNearest, _scalingMode == "NearestNeighbor");
+        }
+
+        private void BtnQualityHigh_Click(object sender, RoutedEventArgs e) => SetQuality("HighQuality");
+        private void BtnQualityLinear_Click(object sender, RoutedEventArgs e) => SetQuality("Linear");
+        private void BtnQualityNearest_Click(object sender, RoutedEventArgs e) => SetQuality("NearestNeighbor");
 
         private void OpenUrl(string url)
         {
@@ -637,6 +736,14 @@ namespace AlwaysRotate
                     {
                         _rememberState = rElem.GetBoolean();
                     }
+                    if (doc.RootElement.TryGetProperty("targetFps", out var fpsElem))
+                    {
+                        _targetFps = fpsElem.GetInt32();
+                    }
+                    if (doc.RootElement.TryGetProperty("scalingMode", out var scElem))
+                    {
+                        _scalingMode = scElem.GetString() ?? "HighQuality";
+                    }
                     if (_rememberState)
                     {
                         if (doc.RootElement.TryGetProperty("lastAngle", out var aElem))
@@ -655,14 +762,15 @@ namespace AlwaysRotate
 
         private void SaveConfig()
         {
-            if (!_rememberState) return;
             try
             {
                 var obj = new
                 {
                     rememberState = _rememberState,
-                    lastAngle = _currentAngle,
-                    lastTarget = _targetTitle
+                    lastAngle = _rememberState ? _currentAngle : 90,
+                    lastTarget = _rememberState ? _targetTitle : string.Empty,
+                    targetFps = _targetFps,
+                    scalingMode = _scalingMode
                 };
                 string json = JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
                 System.IO.File.WriteAllText(ConfigPath, json);

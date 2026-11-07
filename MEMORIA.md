@@ -20,6 +20,22 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
+### [2026-11-07] - AlwaysRotate v3.4 (60 FPS por Defecto y Selector de Calidad y Fluidez en Ajustes)
+- **Tasa de Refresco a 60 FPS**:
+  - Actualizado el motor de captura a 60 FPS por defecto (intervalo de 16 ms) para garantizar scroll ultra suave y respuesta instantánea en WhatsApp y demás ventanas.
+- **Selector de Fluidez / FPS en Ajustes**:
+  - Incorporado control segmentado en la sección de Ajustes para elegir entre:
+    1. `30 FPS (Ahorro)`: Menor consumo de CPU y batería (33 ms).
+    2. `60 FPS (Fluido)`: Configuración recomendada y suave (16 ms).
+    3. `120 FPS (Ultra)`: Máxima fluidez para monitores gaming de alto refresco (8 ms).
+- **Selector de Calidad de Renderizado / Escalado**:
+  - Control para alternar el algoritmo de escalado de imagen de WPF en tiempo real:
+    1. `Alta (Bicúbica)`: Suavizado Fant/Bicúbico de alta calidad.
+    2. `Bilineal`: Escalado estándar rápido.
+    3. `Píxel Puro`: Escalado NearestNeighbor con bordes nítidos sin desenfoque.
+- **Persistencia en Configuración**: Ambas opciones se guardan en `config.json` y se restauran automáticamente al iniciar.
+- **Compilación y Control de Versiones**: Compilado con 0 errores y sincronizado con GitHub `master`.
+
 ### [2026-11-07] - AlwaysRotate v3.2 (Estilo Limpio Nativo, Iconos SVG y Corrección de Truncamiento)
 - **Eliminación Total de Emojis Obsoletos**:
   - Reemplazados todos los emojis del sistema (`📌`, `🖱️`, `👻`, `⛶`, `🔄`, `⚡`, `ℹ️`, etc.) por vectores `Path` SVG nítidos, estilizados y escalables sin distorsión.

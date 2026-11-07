@@ -666,8 +666,82 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- Section 4: System Settings -->
-                            <TextBlock Text="AJUSTES DEL SISTEMA" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+                            <!-- Section 4: System Settings & Performance Quality -->
+                            <TextBlock Text="AJUSTES Y CALIDAD" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
+
+                            <!-- Card 1: FPS / Tasa de Refresco -->
+                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Row="0" Margin="0,0,0,8">
+                                        <TextBlock Text="Tasa de Refresco (Fluidez / FPS)" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                        <TextBlock Text="Ajusta la fluidez de captura según tus necesidades de rendimiento" FontSize="10.5" Foreground="#71717a" Margin="0,2,0,0"/>
+                                    </StackPanel>
+
+                                    <!-- Segmented FPS Buttons -->
+                                    <Border Grid.Row="1" Background="#111118" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="7" Padding="2">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Button x:Name="BtnFps30" Grid.Column="0" Click="BtnFps30_Click" Style="{StaticResource SegmentBtn}" ToolTip="30 FPS: Menor consumo de CPU y ahorro de batería">
+                                                <TextBlock Text="30 FPS (Ahorro)" FontSize="10.5" FontWeight="Bold"/>
+                                            </Button>
+                                            <Button x:Name="BtnFps60" Grid.Column="1" Click="BtnFps60_Click" Style="{StaticResource SegmentBtn}" ToolTip="60 FPS: Recomendado, movimiento y scroll suaves">
+                                                <TextBlock Text="60 FPS (Fluido)" FontSize="10.5" FontWeight="Bold"/>
+                                            </Button>
+                                            <Button x:Name="BtnFps120" Grid.Column="2" Click="BtnFps120_Click" Style="{StaticResource SegmentBtn}" Margin="0" ToolTip="120 FPS: Máxima fluidez en monitores de alta frecuencia">
+                                                <TextBlock Text="120 FPS (Ultra)" FontSize="10.5" FontWeight="Bold"/>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <!-- Card 2: Calidad de Renderizado / Escalado -->
+                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Row="0" Margin="0,0,0,8">
+                                        <TextBlock Text="Calidad de Renderizado / Escalado" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                        <TextBlock Text="Algoritmo de suavizado gráfico aplicado sobre la ventana rotada" FontSize="10.5" Foreground="#71717a" Margin="0,2,0,0"/>
+                                    </StackPanel>
+
+                                    <!-- Segmented Quality Buttons -->
+                                    <Border Grid.Row="1" Background="#111118" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="7" Padding="2">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Button x:Name="BtnQualityHigh" Grid.Column="0" Click="BtnQualityHigh_Click" Style="{StaticResource SegmentBtn}" ToolTip="Alta Calidad: Suavizado bicúbico nítido de alta precisión">
+                                                <TextBlock Text="Alta (Bicúbica)" FontSize="10.5" FontWeight="Bold"/>
+                                            </Button>
+                                            <Button x:Name="BtnQualityLinear" Grid.Column="1" Click="BtnQualityLinear_Click" Style="{StaticResource SegmentBtn}" ToolTip="Bilineal: Procesamiento rápido y estándar">
+                                                <TextBlock Text="Bilineal" FontSize="10.5" FontWeight="Bold"/>
+                                            </Button>
+                                            <Button x:Name="BtnQualityNearest" Grid.Column="2" Click="BtnQualityNearest_Click" Style="{StaticResource SegmentBtn}" Margin="0" ToolTip="Píxel Puro: Bordes 100% afilados sin ningún desenfoque">
+                                                <TextBlock Text="Píxel Puro" FontSize="10.5" FontWeight="Bold"/>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <!-- Card 3: Opciones del Sistema -->
                             <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,6">
                                 <StackPanel Orientation="Vertical">
                                     <CheckBox x:Name="ChkAutoStart" Click="ChkAutoStart_Click" Margin="0,0,0,8" Cursor="Hand">
