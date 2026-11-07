@@ -20,6 +20,23 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
+### [2026-11-07] - AlwaysRotate v3.5 (Rediseño Profesional Estilo Fluent con Pestañas y Switches Modernos)
+- **Eliminación Total de Listas Tipo IA y Scrollbar Incómodo**:
+  - Reemplazado el antiguo modal estrecho y vertical por un panel de dimensiones amplias y proporcionadas (`650x510 px`) sin barras de scroll que corten el texto.
+- **Sistema de Pestañas Integrado**:
+  - Pestañas modernas en la cabecera: `Ajustes`, `Atajos de Teclado` y `Modos y Guía`.
+- **Diseño de Filas Estilo Windows 11**:
+  - En la pestaña *Ajustes*, cada opción está en una tarjeta horizontal con título y descripción a la izquierda, y su control a la derecha:
+    1. `Fluidez (FPS)`: Segmentado con `30 FPS`, `60 FPS` y `120 FPS`.
+    2. `Calidad de Renderizado`: Segmentado con `Alta`, `Bilineal` y `Nítida`.
+    3. `Iniciar con Windows`: Toggle Switch estilo Fluent/iOS.
+    4. `Recordar Sesión`: Toggle Switch estilo Fluent/iOS.
+- **Tabla de Atajos Espaciosa**:
+  - Presentación clara en 2 columnas con insignias `KeyCap` para cada atajo sin cortes ni truncamientos.
+- **Tarjetas de Modos y Guía**:
+  - Cuadrícula de 4 tarjetas dedicadas para *Solo Ventana (F10)*, *Pantalla Completa (F11)*, *Interacción y Clics* y *Modo Fantasma*.
+- **Control de Versiones**: Commits realizados y sincronizados con GitHub `master`.
+
 ### [2026-11-07] - AlwaysRotate v3.4 (60 FPS por Defecto y Selector de Calidad y Fluidez en Ajustes)
 - **Tasa de Refresco a 60 FPS**:
   - Actualizado el motor de captura a 60 FPS por defecto (intervalo de 16 ms) para garantizar scroll ultra suave y respuesta instantánea en WhatsApp y demás ventanas.

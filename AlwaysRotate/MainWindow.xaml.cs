@@ -568,6 +568,7 @@ namespace AlwaysRotate
             ChkRemember.IsChecked = _rememberState;
             UpdateFpsButtonStyles();
             UpdateQualityButtonStyles();
+            SetActiveTab(0);
             InfoOverlay.Visibility = Visibility.Visible;
         }
 
@@ -575,6 +576,38 @@ namespace AlwaysRotate
         {
             InfoOverlay.Visibility = Visibility.Collapsed;
         }
+
+        private void SetActiveTab(int tabIndex)
+        {
+            if (TabSettingsView != null) TabSettingsView.Visibility = tabIndex == 0 ? Visibility.Visible : Visibility.Collapsed;
+            if (TabShortcutsView != null) TabShortcutsView.Visibility = tabIndex == 1 ? Visibility.Visible : Visibility.Collapsed;
+            if (TabAboutView != null) TabAboutView.Visibility = tabIndex == 2 ? Visibility.Visible : Visibility.Collapsed;
+
+            void StyleTab(Button? btn, bool active)
+            {
+                if (btn == null) return;
+                if (active)
+                {
+                    btn.Background = new SolidColorBrush(Color.FromRgb(49, 46, 129));
+                    btn.BorderBrush = new SolidColorBrush(Color.FromRgb(99, 102, 241));
+                    btn.Foreground = Brushes.White;
+                }
+                else
+                {
+                    btn.Background = Brushes.Transparent;
+                    btn.BorderBrush = Brushes.Transparent;
+                    btn.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                }
+            }
+
+            StyleTab(BtnTabSettings, tabIndex == 0);
+            StyleTab(BtnTabShortcuts, tabIndex == 1);
+            StyleTab(BtnTabAbout, tabIndex == 2);
+        }
+
+        private void BtnTabSettings_Click(object sender, RoutedEventArgs e) => SetActiveTab(0);
+        private void BtnTabShortcuts_Click(object sender, RoutedEventArgs e) => SetActiveTab(1);
+        private void BtnTabAbout_Click(object sender, RoutedEventArgs e) => SetActiveTab(2);
 
         private void SetFps(int fps)
         {

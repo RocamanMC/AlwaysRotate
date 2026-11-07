@@ -20,6 +20,66 @@
         PreviewMouseMove="Window_PreviewMouseMove">
 
     <Window.Resources>
+        <!-- Modern Fluent ToggleSwitch Style -->
+        <Style x:Key="ModernToggleSwitch" TargetType="CheckBox">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid SnapsToDevicePixels="True" VerticalAlignment="Center">
+                            <Border x:Name="track" Width="44" Height="24" CornerRadius="12"
+                                    Background="#252536" BorderBrush="#3f3f58" BorderThickness="1">
+                                <Ellipse x:Name="thumb" Width="16" Height="16" Margin="3,0,0,0"
+                                         HorizontalAlignment="Left" Fill="#94a3b8"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="track" Property="Background" Value="#4f46e5"/>
+                                <Setter TargetName="track" Property="BorderBrush" Value="#6366f1"/>
+                                <Setter TargetName="thumb" Property="HorizontalAlignment" Value="Right"/>
+                                <Setter TargetName="thumb" Property="Margin" Value="0,0,3,0"/>
+                                <Setter TargetName="thumb" Property="Fill" Value="#ffffff"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="track" Property="BorderBrush" Value="#818cf8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Tab Navigation Button Style -->
+        <Style x:Key="TabNavBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#94a3b8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Padding" Value="12,5"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="7" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#1e1e2d"/>
+                                <Setter Property="Foreground" Value="#f4f4f5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Keycap Badge Style -->
         <Style x:Key="KeyCap" TargetType="Border">
             <Setter Property="Background" Value="#1f1f2e"/>
@@ -526,41 +586,67 @@
                 <TextBlock Text="Atajo: Ctrl + Alt + R" FontSize="10" FontWeight="SemiBold" Foreground="#6366f1" Grid.Column="2" VerticalAlignment="Center"/>
             </Grid>
         </Border>
-        <!-- 4. Information, Shortcuts & Settings Modal Overlay -->
-        <Border x:Name="InfoOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#e009090d"
-                Visibility="Collapsed" Panel.ZIndex="2000" Padding="16,14">
-            <Border Background="#13131a" BorderBrush="#2e2e40" BorderThickness="1" CornerRadius="14"
-                    MaxWidth="480" MaxHeight="600" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <!-- 4. Information, Shortcuts & Settings Modal Overlay (Pro Fluent Style) -->
+        <Border x:Name="InfoOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#cc07070b"
+                Visibility="Collapsed" Panel.ZIndex="2000" Padding="20">
+            <Border Background="#12121a" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="16"
+                    Width="650" Height="510" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border.Effect>
-                    <DropShadowEffect BlurRadius="24" ShadowDepth="6" Direction="270" Color="#000000" Opacity="0.85"/>
+                    <DropShadowEffect BlurRadius="32" ShadowDepth="10" Direction="270" Color="#000000" Opacity="0.9"/>
                 </Border.Effect>
                 <Grid>
                     <Grid.RowDefinitions>
-                        <!-- Header -->
+                        <!-- Header with Tabs -->
                         <RowDefinition Height="Auto"/>
-                        <!-- Content -->
+                        <!-- Tab Content Body -->
                         <RowDefinition Height="*"/>
                         <!-- Footer -->
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <!-- Modal Header -->
-                    <Border Grid.Row="0" Background="#181822" BorderBrush="#262635" BorderThickness="0,0,0,1" CornerRadius="14,14,0,0" Padding="16,12">
+                    <Border Grid.Row="0" Background="#161622" BorderBrush="#262638" BorderThickness="0,0,0,1" CornerRadius="16,16,0,0" Padding="20,14,16,12">
                         <Grid>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
-                                      Fill="#818cf8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                <StackPanel>
-                                    <TextBlock Text="Información y Ajustes" FontSize="14" FontWeight="Bold" Foreground="#f4f4f5"/>
-                                    <TextBlock Text="AlwaysRotate • Guía rápida y atajos" FontSize="11" Foreground="#94a3b8"/>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Title & Badge -->
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border Width="34" Height="34" Background="#1f1f30" BorderBrush="#363650" BorderThickness="1" CornerRadius="8" Margin="0,0,12,0">
+                                    <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+                                          Fill="#818cf8" Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Configuración y Ayuda" FontSize="14" FontWeight="Bold" Foreground="#f4f4f5"/>
+                                    <TextBlock Text="AlwaysRotate Utility" FontSize="11" Foreground="#94a3b8" Margin="0,1,0,0"/>
                                 </StackPanel>
                             </StackPanel>
-                            <Button Click="BtnCloseInfo_Click" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                    Width="28" Height="28" Cursor="Hand" Background="#262635" BorderBrush="#38384d" BorderThickness="1">
+
+                            <!-- Navigation Tabs -->
+                            <Border Grid.Column="1" HorizontalAlignment="Center" Background="#0f0f16" BorderBrush="#262638" BorderThickness="1" CornerRadius="8" Padding="3" Margin="16,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Button x:Name="BtnTabSettings" Click="BtnTabSettings_Click" Style="{StaticResource TabNavBtn}">
+                                        <TextBlock Text="Ajustes" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </Button>
+                                    <Button x:Name="BtnTabShortcuts" Click="BtnTabShortcuts_Click" Style="{StaticResource TabNavBtn}">
+                                        <TextBlock Text="Atajos de Teclado" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </Button>
+                                    <Button x:Name="BtnTabAbout" Click="BtnTabAbout_Click" Style="{StaticResource TabNavBtn}">
+                                        <TextBlock Text="Modos y Guía" FontSize="11.5" FontWeight="SemiBold"/>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Close Button -->
+                            <Button Grid.Column="2" Click="BtnCloseInfo_Click" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Width="30" Height="30" Cursor="Hand" Background="#222232" BorderBrush="#35354a" BorderThickness="1">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
-                                        <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="14">
-                                            <TextBlock Text="✕" FontSize="11" FontWeight="Bold" Foreground="#cbd5e1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="15">
+                                            <TextBlock Text="✕" FontSize="12" FontWeight="Bold" Foreground="#cbd5e1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
@@ -574,211 +660,262 @@
                         </Grid>
                     </Border>
 
-                    <!-- Scrollable Content -->
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="16,14">
-                        <StackPanel Orientation="Vertical">
-                            <!-- Section 1: How it works -->
-                            <TextBlock Text="FUNCIONAMIENTO GENERAL" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
-                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,14">
-                                <TextBlock Text="AlwaysRotate captura en tiempo real a 30 FPS cualquier ventana activa de tu sistema (como WhatsApp Desktop) y la gira a 90°, 180° o 270°. Además, reenvía de forma matemática y fluida tus clics y la rueda del ratón a la app original, para que puedas chatear y navegar directamente desde la pantalla rotada."
-                                           FontSize="11.5" Foreground="#cbd5e1" TextWrapping="Wrap" LineHeight="17"/>
-                            </Border>
+                    <!-- Tab Views Body -->
+                    <Grid Grid.Row="1" Margin="20,16">
 
-                            <!-- Section 2: Shortcuts Cheat Sheet -->
-                            <TextBlock Text="ATAJOS DE TECLADO GLOBALES" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
-                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,0,0,14">
+                        <!-- TAB 1: AJUSTES (Settings) -->
+                        <Grid x:Name="TabSettingsView" Visibility="Visible">
+                            <StackPanel Orientation="Vertical">
+
+                                <!-- Row 1: Tasa de Refresco (FPS) -->
+                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,0,0,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <TextBlock Text="Fluidez de Captura (FPS)" FontSize="12.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                            <TextBlock Text="Tasa de refresco por segundo del motor de captura" FontSize="11" Foreground="#94a3b8" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <Border Grid.Column="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="3" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button x:Name="BtnFps30" Click="BtnFps30_Click" Style="{StaticResource SegmentBtn}" Width="78" ToolTip="30 FPS: Modo económico de batería y baja CPU">
+                                                    <TextBlock Text="30 FPS" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                                <Button x:Name="BtnFps60" Click="BtnFps60_Click" Style="{StaticResource SegmentBtn}" Width="78" ToolTip="60 FPS: Modo recomendado, movimiento suave">
+                                                    <TextBlock Text="60 FPS" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                                <Button x:Name="BtnFps120" Click="BtnFps120_Click" Style="{StaticResource SegmentBtn}" Width="78" Margin="0" ToolTip="120 FPS: Máxima fluidez para monitores gaming">
+                                                    <TextBlock Text="120 FPS" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Row 2: Calidad de Renderizado / Escalado -->
+                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,0,0,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <TextBlock Text="Calidad de Renderizado" FontSize="12.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                            <TextBlock Text="Algoritmo de interpolación y suavizado de imagen" FontSize="11" Foreground="#94a3b8" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <Border Grid.Column="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="3" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button x:Name="BtnQualityHigh" Click="BtnQualityHigh_Click" Style="{StaticResource SegmentBtn}" Width="78" ToolTip="Alta: Suavizado bicúbico nítido">
+                                                    <TextBlock Text="Alta" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                                <Button x:Name="BtnQualityLinear" Click="BtnQualityLinear_Click" Style="{StaticResource SegmentBtn}" Width="78" ToolTip="Bilineal: Escalado rápido estándar">
+                                                    <TextBlock Text="Bilineal" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                                <Button x:Name="BtnQualityNearest" Click="BtnQualityNearest_Click" Style="{StaticResource SegmentBtn}" Width="78" Margin="0" ToolTip="Nítida: Píxel puro sin desenfoque">
+                                                    <TextBlock Text="Nítida" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Row 3: Iniciar con Windows -->
+                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,0,0,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <TextBlock Text="Iniciar con Windows" FontSize="12.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                            <TextBlock Text="Abrir AlwaysRotate automáticamente al iniciar sesión en el PC" FontSize="11" Foreground="#94a3b8" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <CheckBox x:Name="ChkAutoStart" Grid.Column="1" Click="ChkAutoStart_Click" Style="{StaticResource ModernToggleSwitch}" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Row 4: Recordar Estado -->
+                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="16,12">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <TextBlock Text="Recordar Sesión" FontSize="12.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                            <TextBlock Text="Restaurar automáticamente la última ventana capturada y su ángulo" FontSize="11" Foreground="#94a3b8" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <CheckBox x:Name="ChkRemember" Grid.Column="1" Click="ChkRemember_Click" Style="{StaticResource ModernToggleSwitch}" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- TAB 2: ATAJOS DE TECLADO (Shortcuts) -->
+                        <Grid x:Name="TabShortcutsView" Visibility="Collapsed">
+                            <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="16,12">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="150"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
 
                                     <!-- Esc -->
-                                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="Esc" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
+                                        <TextBlock Text="Esc" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
-                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Salir de Pantalla Completa o Modo Ventana Zen" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Salir de Pantalla Completa o Modo Solo Ventana" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
 
                                     <!-- F10 -->
-                                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="F10" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
+                                        <TextBlock Text="F10" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Alternar Modo Solo Ventana (sin menús y redimensionable)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Alternar Modo Solo Ventana (sin menús y redimensionable)" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
 
                                     <!-- F11 -->
-                                    <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="F11" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
+                                        <TextBlock Text="F11" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Alternar Pantalla Completa total (monitor completo)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Alternar Pantalla Completa total (monitor entero)" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
 
                                     <!-- Ctrl + Alt + R -->
-                                    <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="Ctrl + Alt + R" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
+                                        <TextBlock Text="Ctrl + Alt + R" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc"/>
                                     </Border>
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Capturar y rotar la ventana activa actual" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Capturar y rotar la ventana activa actual" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
 
                                     <!-- Ctrl + Alt + G -->
-                                    <Border Grid.Row="4" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="Ctrl + Alt + G" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    <Border Grid.Row="4" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
+                                        <TextBlock Text="Ctrl + Alt + G" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Modo Fantasma (ocultar / mostrar ventana original)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Modo Fantasma (ocultar / mostrar ventana original de Windows)" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
 
                                     <!-- Ctrl + Alt + Right / Space -->
-                                    <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource KeyCap}">
+                                    <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
                                         <TextBlock Text="Ctrl+Alt+→ / Espacio" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
-                                    <TextBlock Grid.Row="5" Grid.Column="1" Text="Rotar +90° en sentido horario al vuelo" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="5" Grid.Column="1" Text="Rotar 90° en sentido horario al vuelo" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
 
                                     <!-- Ctrl + Alt + P -->
-                                    <Border Grid.Row="6" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="Ctrl + Alt + P" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    <Border Grid.Row="6" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
+                                        <TextBlock Text="Ctrl + Alt + P" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
-                                    <TextBlock Grid.Row="6" Grid.Column="1" Text="Fijar Always on Top (Siempre encima)" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="6" Grid.Column="1" Text="Fijar Always on Top (Siempre encima de otras apps)" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
 
                                     <!-- Alt + Clic -->
-                                    <Border Grid.Row="7" Grid.Column="0" Style="{StaticResource KeyCap}">
-                                        <TextBlock Text="Alt + Clic arrastre" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                    <Border Grid.Row="7" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
+                                        <TextBlock Text="Alt + Clic Arrastre" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
                                     </Border>
-                                    <TextBlock Grid.Row="7" Grid.Column="1" Text="Mover la ventana libremente desde cualquier punto" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="7" Grid.Column="1" Text="Mover la ventana libremente arrastrando desde el visor" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
                                 </Grid>
                             </Border>
+                        </Grid>
 
-                            <!-- Section 3: Buttons explanation -->
-                            <TextBlock Text="ACCIONES Y MODOS" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
-                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,14">
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="• 0° / 90° / 180° / 270°: Rotaciones directas en ángulos fijos." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
-                                    <TextBlock Text="• Fijo (Always on Top): Mantiene AlwaysRotate visible por encima de cualquier otro programa." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
-                                    <TextBlock Text="• Clics (Interacción): Activa o desactiva el reenvío de clics y rueda a la app original." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
-                                    <TextBlock Text="• Ocultar (Fantasma): Vuelve 100% invisible la ventana original para no tener duplicados en pantalla." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
-                                    <TextBlock Text="• Ventana: Oculta los controles conservando el marco nativo para mover y redimensionar con el ratón." FontSize="11" Foreground="#cbd5e1" Margin="0,0,0,5"/>
-                                    <TextBlock Text="• Completa: Modo pantalla completa total con HUD flotante que se auto-oculta tras 2.5s." FontSize="11" Foreground="#cbd5e1"/>
-                                </StackPanel>
-                            </Border>
+                        <!-- TAB 3: MODOS Y GUÍA (About & Modes) -->
+                        <Grid x:Name="TabAboutView" Visibility="Collapsed">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                            <!-- Section 4: System Settings & Performance Quality -->
-                            <TextBlock Text="AJUSTES Y CALIDAD" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc" Margin="0,0,0,6"/>
-
-                            <!-- Card 1: FPS / Tasa de Refresco -->
-                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,8">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-
-                                    <StackPanel Grid.Row="0" Margin="0,0,0,8">
-                                        <TextBlock Text="Tasa de Refresco (Fluidez / FPS)" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
-                                        <TextBlock Text="Ajusta la fluidez de captura según tus necesidades de rendimiento" FontSize="10.5" Foreground="#71717a" Margin="0,2,0,0"/>
-                                    </StackPanel>
-
-                                    <!-- Segmented FPS Buttons -->
-                                    <Border Grid.Row="1" Background="#111118" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="7" Padding="2">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <Button x:Name="BtnFps30" Grid.Column="0" Click="BtnFps30_Click" Style="{StaticResource SegmentBtn}" ToolTip="30 FPS: Menor consumo de CPU y ahorro de batería">
-                                                <TextBlock Text="30 FPS (Ahorro)" FontSize="10.5" FontWeight="Bold"/>
-                                            </Button>
-                                            <Button x:Name="BtnFps60" Grid.Column="1" Click="BtnFps60_Click" Style="{StaticResource SegmentBtn}" ToolTip="60 FPS: Recomendado, movimiento y scroll suaves">
-                                                <TextBlock Text="60 FPS (Fluido)" FontSize="10.5" FontWeight="Bold"/>
-                                            </Button>
-                                            <Button x:Name="BtnFps120" Grid.Column="2" Click="BtnFps120_Click" Style="{StaticResource SegmentBtn}" Margin="0" ToolTip="120 FPS: Máxima fluidez en monitores de alta frecuencia">
-                                                <TextBlock Text="120 FPS (Ultra)" FontSize="10.5" FontWeight="Bold"/>
-                                            </Button>
-                                        </Grid>
-                                    </Border>
-                                </Grid>
-                            </Border>
-
-                            <!-- Card 2: Calidad de Renderizado / Escalado -->
-                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,8">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-
-                                    <StackPanel Grid.Row="0" Margin="0,0,0,8">
-                                        <TextBlock Text="Calidad de Renderizado / Escalado" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
-                                        <TextBlock Text="Algoritmo de suavizado gráfico aplicado sobre la ventana rotada" FontSize="10.5" Foreground="#71717a" Margin="0,2,0,0"/>
-                                    </StackPanel>
-
-                                    <!-- Segmented Quality Buttons -->
-                                    <Border Grid.Row="1" Background="#111118" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="7" Padding="2">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <Button x:Name="BtnQualityHigh" Grid.Column="0" Click="BtnQualityHigh_Click" Style="{StaticResource SegmentBtn}" ToolTip="Alta Calidad: Suavizado bicúbico nítido de alta precisión">
-                                                <TextBlock Text="Alta (Bicúbica)" FontSize="10.5" FontWeight="Bold"/>
-                                            </Button>
-                                            <Button x:Name="BtnQualityLinear" Grid.Column="1" Click="BtnQualityLinear_Click" Style="{StaticResource SegmentBtn}" ToolTip="Bilineal: Procesamiento rápido y estándar">
-                                                <TextBlock Text="Bilineal" FontSize="10.5" FontWeight="Bold"/>
-                                            </Button>
-                                            <Button x:Name="BtnQualityNearest" Grid.Column="2" Click="BtnQualityNearest_Click" Style="{StaticResource SegmentBtn}" Margin="0" ToolTip="Píxel Puro: Bordes 100% afilados sin ningún desenfoque">
-                                                <TextBlock Text="Píxel Puro" FontSize="10.5" FontWeight="Bold"/>
-                                            </Button>
-                                        </Grid>
-                                    </Border>
-                                </Grid>
-                            </Border>
-
-                            <!-- Card 3: Opciones del Sistema -->
-                            <Border Background="#1a1a26" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,6">
-                                <StackPanel Orientation="Vertical">
-                                    <CheckBox x:Name="ChkAutoStart" Click="ChkAutoStart_Click" Margin="0,0,0,8" Cursor="Hand">
-                                        <StackPanel Orientation="Vertical" Margin="4,0,0,0">
-                                            <TextBlock Text="Iniciar AlwaysRotate con Windows" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
-                                            <TextBlock Text="Abre la utilidad automáticamente al encender tu PC" FontSize="10.5" Foreground="#71717a"/>
+                                <!-- Card 1: Solo Ventana -->
+                                <Border Grid.Row="0" Grid.Column="0" Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,12" Margin="0,0,6,6">
+                                    <StackPanel Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                            <Path Data="M19 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 14H5V8h14v10z"
+                                                  Fill="#818cf8" Width="14" Height="14" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Modo Solo Ventana (F10)" FontSize="12" FontWeight="Bold" Foreground="#f4f4f5" VerticalAlignment="Center"/>
                                         </StackPanel>
-                                    </CheckBox>
+                                        <TextBlock Text="Oculta los menús grandes conservando el marco nativo de Windows. Ideal para moverla o redimensionarla libremente por tu escritorio."
+                                                   FontSize="11" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="16"/>
+                                    </StackPanel>
+                                </Border>
 
-                                    <CheckBox x:Name="ChkRemember" Click="ChkRemember_Click" Margin="0,4,0,0" Cursor="Hand">
-                                        <StackPanel Orientation="Vertical" Margin="4,0,0,0">
-                                            <TextBlock Text="Recordar última ventana y rotación" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
-                                            <TextBlock Text="Restaura la app y el ángulo seleccionados al arrancar" FontSize="10.5" Foreground="#71717a"/>
+                                <!-- Card 2: Pantalla Completa -->
+                                <Border Grid.Row="0" Grid.Column="1" Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,12" Margin="6,0,0,6">
+                                    <StackPanel Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                            <Path Data="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"
+                                                  Fill="#38bdf8" Width="14" Height="14" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Pantalla Completa (F11)" FontSize="12" FontWeight="Bold" Foreground="#f4f4f5" VerticalAlignment="Center"/>
                                         </StackPanel>
-                                    </CheckBox>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </ScrollViewer>
+                                        <TextBlock Text="Ocupa todo el monitor sin distracciones. Incluye una barra flotante (HUD) con controles que se oculta automáticamente tras 2.5s."
+                                                   FontSize="11" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="16"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Card 3: Interacción Directa -->
+                                <Border Grid.Row="1" Grid.Column="0" Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,12" Margin="0,6,6,0">
+                                    <StackPanel Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                            <Path Data="M13 2a8 8 0 0 1 8 8v4a8 8 0 0 1-16 0v-4a8 8 0 0 1 8-8zm-1 3v4h2V5h-2z"
+                                                  Fill="#34d399" Width="14" Height="14" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Interacción y Clics" FontSize="12" FontWeight="Bold" Foreground="#f4f4f5" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Reenvío matemático en tiempo real de tus clics y rueda del ratón hacia la app original para escribir y navegar sin cambiar de ventana."
+                                                   FontSize="11" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="16"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Card 4: Modo Fantasma -->
+                                <Border Grid.Row="1" Grid.Column="1" Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,12" Margin="6,6,0,0">
+                                    <StackPanel Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                            <Path Data="M12 2a9 9 0 0 0-9 9v9l3-2 3 2 3-2 3 2 3-2 3 2V11a9 9 0 0 0-9-9zm-3.5 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
+                                                  Fill="#c084fc" Width="14" Height="14" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Modo Fantasma (Ocultar)" FontSize="12" FontWeight="Bold" Foreground="#f4f4f5" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Vuelve 100% invisible la ventana original de Windows para eliminar duplicados en pantalla mientras continúas interactuando."
+                                                   FontSize="11" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="16"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Grid>
+
+                    </Grid>
 
                     <!-- Modal Footer -->
-                    <Border Grid.Row="2" Background="#161620" BorderBrush="#262635" BorderThickness="0,1,0,0" CornerRadius="0,0,14,14" Padding="16,10">
+                    <Border Grid.Row="2" Background="#14141e" BorderBrush="#262638" BorderThickness="0,1,0,0" CornerRadius="0,0,16,16" Padding="20,12">
                         <Grid>
-                            <Button Click="LnkRocaman_Click" Background="Transparent" BorderThickness="0" Cursor="Hand" VerticalAlignment="Center" Padding="0" ToolTip="Visitar rocaman.vercel.app">
+                            <Button Click="LnkRocaman_Click" Background="Transparent" BorderThickness="0" Cursor="Hand" VerticalAlignment="Center" Padding="0" ToolTip="Abrir rocaman.vercel.app">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                             <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
-                                                  Fill="#6366f1" Width="12" Height="12" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="rocaman.vercel.app" FontSize="11" FontWeight="SemiBold" Foreground="#818cf8" VerticalAlignment="Center"/>
+                                                  Fill="#6366f1" Width="13" Height="13" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="rocaman.vercel.app" FontSize="11.5" FontWeight="SemiBold" Foreground="#818cf8" VerticalAlignment="Center"/>
+                                            <TextBlock Text=" ↗" FontSize="11.5" Foreground="#6366f1" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </ControlTemplate>
                                 </Button.Template>
                             </Button>
-                            <Button Click="BtnCloseInfo_Click" HorizontalAlignment="Right" Style="{StaticResource ModernBtn}" Height="30" Padding="16,0">
-                                <TextBlock Text="Cerrar" FontSize="11" FontWeight="Bold"/>
-                            </Button>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <Border Background="#1e1e2d" BorderBrush="#35354a" BorderThickness="1" CornerRadius="4" Padding="6,2" Margin="0,0,12,0" VerticalAlignment="Center">
+                                    <TextBlock Text="v3.4" FontSize="10.5" FontWeight="Bold" Foreground="#a5b4fc"/>
+                                </Border>
+                                <Button Click="BtnCloseInfo_Click" Style="{StaticResource ModernBtn}" Height="32" Padding="20,0">
+                                    <TextBlock Text="Cerrar" FontSize="11.5" FontWeight="Bold"/>
+                                </Button>
+                            </StackPanel>
                         </Grid>
                     </Border>
                 </Grid>
