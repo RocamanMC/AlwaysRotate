@@ -691,54 +691,54 @@
                                                 <TextBlock Text="• Paleta visual de la aplicación" FontSize="10.5" Foreground="#94a3b8" Margin="6,0,0,0" VerticalAlignment="Center"/>
                                             </StackPanel>
 
-                                            <!-- Theme Selection Swatch Chips -->
-                                            <Border Grid.Row="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="2">
-                                                <UniformGrid Columns="6">
+                                            <!-- Theme Selection Swatch Chips in 2 balanced rows -->
+                                            <Border Grid.Row="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="3">
+                                                <UniformGrid Columns="3" Rows="2">
                                                     <!-- 1. Indigo -->
-                                                    <Button x:Name="BtnThemeIndigo" Click="BtnTheme_Click" Tag="Indigo" Style="{StaticResource SegmentBtn}" ToolTip="Índigo Nocturno">
+                                                    <Button x:Name="BtnThemeIndigo" Click="BtnTheme_Click" Tag="Indigo" Style="{StaticResource SegmentBtn}" Margin="2" Padding="6,4" ToolTip="Índigo Nocturno">
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                            <Ellipse Width="7" Height="7" Fill="#6366f1" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="Índigo" FontSize="10" FontWeight="Bold"/>
+                                                            <Ellipse Width="8" Height="8" Fill="#6366f1" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Índigo" FontSize="11" FontWeight="SemiBold"/>
                                                         </StackPanel>
                                                     </Button>
 
                                                     <!-- 2. Esmeralda -->
-                                                    <Button x:Name="BtnThemeEmerald" Click="BtnTheme_Click" Tag="Emerald" Style="{StaticResource SegmentBtn}" ToolTip="Esmeralda Cíber">
+                                                    <Button x:Name="BtnThemeEmerald" Click="BtnTheme_Click" Tag="Emerald" Style="{StaticResource SegmentBtn}" Margin="2" Padding="6,4" ToolTip="Esmeralda Cíber">
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                            <Ellipse Width="7" Height="7" Fill="#10b981" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="Esmeralda" FontSize="10" FontWeight="Bold"/>
+                                                            <Ellipse Width="8" Height="8" Fill="#10b981" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Esmeralda" FontSize="11" FontWeight="SemiBold"/>
                                                         </StackPanel>
                                                     </Button>
 
                                                     <!-- 3. Amatista -->
-                                                    <Button x:Name="BtnThemeAmethyst" Click="BtnTheme_Click" Tag="Amethyst" Style="{StaticResource SegmentBtn}" ToolTip="Amatista Neón">
+                                                    <Button x:Name="BtnThemeAmethyst" Click="BtnTheme_Click" Tag="Amethyst" Style="{StaticResource SegmentBtn}" Margin="2" Padding="6,4" ToolTip="Amatista Neón">
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                            <Ellipse Width="7" Height="7" Fill="#a855f7" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="Amatista" FontSize="10" FontWeight="Bold"/>
+                                                            <Ellipse Width="8" Height="8" Fill="#a855f7" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Amatista" FontSize="11" FontWeight="SemiBold"/>
                                                         </StackPanel>
                                                     </Button>
 
                                                     <!-- 4. Carmesí -->
-                                                    <Button x:Name="BtnThemeCrimson" Click="BtnTheme_Click" Tag="Crimson" Style="{StaticResource SegmentBtn}" ToolTip="Carmesí Rubí">
+                                                    <Button x:Name="BtnThemeCrimson" Click="BtnTheme_Click" Tag="Crimson" Style="{StaticResource SegmentBtn}" Margin="2" Padding="6,4" ToolTip="Carmesí Rubí">
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                            <Ellipse Width="7" Height="7" Fill="#f43f5e" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="Carmesí" FontSize="10" FontWeight="Bold"/>
+                                                            <Ellipse Width="8" Height="8" Fill="#f43f5e" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Carmesí" FontSize="11" FontWeight="SemiBold"/>
                                                         </StackPanel>
                                                     </Button>
 
                                                     <!-- 5. Ámbar -->
-                                                    <Button x:Name="BtnThemeAmber" Click="BtnTheme_Click" Tag="Amber" Style="{StaticResource SegmentBtn}" ToolTip="Ámbar Dorado">
+                                                    <Button x:Name="BtnThemeAmber" Click="BtnTheme_Click" Tag="Amber" Style="{StaticResource SegmentBtn}" Margin="2" Padding="6,4" ToolTip="Ámbar Dorado">
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                            <Ellipse Width="7" Height="7" Fill="#f59e0b" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="Ámbar" FontSize="10" FontWeight="Bold"/>
+                                                            <Ellipse Width="8" Height="8" Fill="#f59e0b" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Ámbar" FontSize="11" FontWeight="SemiBold"/>
                                                         </StackPanel>
                                                     </Button>
 
                                                     <!-- 6. Glaciar -->
-                                                    <Button x:Name="BtnThemeGlacier" Click="BtnTheme_Click" Tag="Glacier" Style="{StaticResource SegmentBtn}" Margin="0" ToolTip="Glaciar Nórdico">
+                                                    <Button x:Name="BtnThemeGlacier" Click="BtnTheme_Click" Tag="Glacier" Style="{StaticResource SegmentBtn}" Margin="2" Padding="6,4" ToolTip="Glaciar Nórdico">
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                            <Ellipse Width="7" Height="7" Fill="#06b6d4" Margin="0,0,4,0" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="Glaciar" FontSize="10" FontWeight="Bold"/>
+                                                            <Ellipse Width="8" Height="8" Fill="#06b6d4" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Glaciar" FontSize="11" FontWeight="SemiBold"/>
                                                         </StackPanel>
                                                     </Button>
                                                 </UniformGrid>

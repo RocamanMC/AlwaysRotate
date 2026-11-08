@@ -20,6 +20,13 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
+### [2026-11-08] - AlwaysRotate v3.9.1 (Distribución en Cuadrícula 3x2 de Chips de Temas)
+- **Corrección de Recorte en Nombres Largos de Temas**:
+  - Al estar los 6 temas en una sola fila (`Columns="6"`), en ventanas verticales (~480 px) cada chip quedaba constreñido a ~60 px, provocando que *"Esmeralda"* y su círculo quedasen cortados a la mitad (`"Esmerald:"`).
+  - Reestructurado el selector a una cuadrícula de 2 filas de 3 columnas (`UniformGrid Columns="3" Rows="2"`).
+  - Cada tema dispone ahora de más de 135 px de ancho, garantizando que el punto de color y el texto completo (*Índigo*, *Esmeralda*, *Amatista*, *Carmesí*, *Ámbar*, *Glaciar*) se lean completos, holgados y centrados con márgenes perfectos.
+- **Control de Versiones**: Commits realizados y sincronizados con GitHub `master`.
+
 ### [2026-11-08] - AlwaysRotate v3.9 (Nitidez Pixel-Perfect de Texto y Rediseño Adaptativo del Modal)
 - **Corrección de Borrosidad y Rasterizado de Fuentes**:
   - Activado `TextOptions.TextFormattingMode="Display"` en toda la aplicación para alinear los glifos con precisión a píxeles enteros (evitando el difuminado subpíxel de WPF).
