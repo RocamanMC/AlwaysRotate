@@ -10,6 +10,15 @@
 [![Status](https://img.shields.io/badge/Modo-100%25%20Portable-10b981.svg?style=for-the-badge)](https://github.com/RocamanMC/AlwaysRotate)
 [![Author](https://img.shields.io/badge/Creador-Rocaman-a855f7.svg?style=for-the-badge&logo=vercel)](https://rocaman.vercel.app/)
 
+<br/>
+
+### 📥 Descargas Oficiales (v3.4 - Portable)
+[![Descargar EXE](https://img.shields.io/badge/Descargar-AlwaysRotate.exe%20(Directo)-10b981?style=for-the-badge&logo=windows)](https://github.com/RocamanMC/AlwaysRotate/releases/download/v3.4/AlwaysRotate.exe)
+[![Descargar ZIP](https://img.shields.io/badge/Descargar-ZIP%20Portable%20(57%20MB)-6366f1?style=for-the-badge&logo=zip)](https://github.com/RocamanMC/AlwaysRotate/releases/download/v3.4/AlwaysRotate-v3.4-Portable.zip)
+[![Ver Todas las Releases](https://img.shields.io/badge/GitHub-Todas%20las%20Versiones-181717?style=for-the-badge&logo=github)](https://github.com/RocamanMC/AlwaysRotate/releases)
+
+*No requiere instalación ni tener .NET instalado. Descarga, haz doble clic y listo.*
+
 </div>
 
 ---
