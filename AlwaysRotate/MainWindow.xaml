@@ -596,7 +596,7 @@
         <Border x:Name="InfoOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#cc07070b"
                 Visibility="Collapsed" Panel.ZIndex="2000" Padding="12">
             <Border x:Name="InfoModalBorder" Background="#12121a" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="16"
-                    MaxWidth="540" MaxHeight="620" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                    MaxWidth="540" Height="550" HorizontalAlignment="Stretch" VerticalAlignment="Center"
                     SnapsToDevicePixels="True" UseLayoutRounding="True"
                     TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" RenderOptions.ClearTypeHint="Enabled">
                 <Border.Effect>

@@ -20,6 +20,14 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
+### [2026-11-08] - AlwaysRotate v3.9.3 (Fijación de Altura Constante en el Modal para Evitar Desplazamientos)
+- **Eliminación del Salto Vertical al Cambiar de Pestaña**:
+  - Al no tener una altura fija, el modal calculaba su alto en función del contenido de cada pestaña (*Ajustes* medía ~550 px, mientras que *Atajos* medía ~410 px).
+  - Al estar centrado verticalmente (`VerticalAlignment="Center"`), al pasar de *Ajustes* a *Atajos* el modal entero se encogía y la cabecera con la barra de pestañas saltaba verticalmente de sitio.
+  - Se fijó `Height="550 px"` constante en el contenedor `InfoModalBorder`.
+  - Ahora la cabecera, la barra de pestañas (*Ajustes*, *Atajos*, *Guía*) y el pie permanecen anclados y fijos en exactamente la misma coordenada de pantalla, cambiando únicamente el contenido interno con total estabilidad visual.
+- **Control de Versiones**: Commits realizados y sincronizados con GitHub `master`.
+
 ### [2026-11-08] - AlwaysRotate v3.9.2 (Filas de Descripción Clicables para Selección de Calidad)
 - **Interacción Directa en las Tarjetas de Calidad**:
   - Se habilitó la selección directa con el ratón sobre cualquiera de las 3 filas de descripción de calidad (*Alta*, *Bilineal*, *Nítida*).
