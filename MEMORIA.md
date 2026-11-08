@@ -20,6 +20,16 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
+### [2026-11-08] - AlwaysRotate v3.8 (Guía Visual Explicativa de Algoritmos de Calidad y Escalado)
+- **Desglose Explicativo en la Pestaña Ajustes**:
+  - Incorporada tarjeta interactiva justo debajo del selector de Calidad de Renderizado que explica detalladamente qué hace cada algoritmo y cuándo es más conveniente usarlo:
+    1. **Alta (Bicúbica)**: Suaviza bordes y curvas con interpolación continua de alta precisión eliminando bordes de sierra y pixelado. 👉 *Mejor para: Videollamadas, cámaras web y reproducción de vídeo*.
+    2. **Bilineal**: Interpolación lineal estándar con mínimo impacto en el consumo de CPU y GPU. 👉 *Mejor para: Equipos portátiles, tablets o PCs de recursos limitados*.
+    3. **Nítida (Píxel Puro / Nearest Neighbor)**: Mapeo exacto 1:1 de cada píxel sin aplicar ningún tipo de difuminado ni filtro gaussiano. 👉 *Mejor para: Textos pequeños, editores de código, consolas/terminales, apps de oficina y pixel art*.
+- **Indicador Dinámico Integrado con el Tema**:
+  - La fila del modo actualmente seleccionado se resalta con opacidad 100%, borde y resplandor sutil adaptado al color del tema activo (`cur.AccentDark` / `cur.AccentBorder`), atenuando suavemente las restantes para una comparación rápida a simple vista.
+- **Control de Versiones**: Commits realizados y sincronizados con GitHub `master`.
+
 ### [2026-11-08] - AlwaysRotate v3.7 (Temas de Decoración Personalizables en la Interfaz)
 - **Selector de Temas de Decoración**:
   - Incorporado selector dinámico con 6 paletas de color cuidadosamente diseñadas en la pestaña *Ajustes* del panel de información:

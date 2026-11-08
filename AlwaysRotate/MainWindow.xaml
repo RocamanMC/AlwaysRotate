@@ -590,7 +590,7 @@
         <Border x:Name="InfoOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#cc07070b"
                 Visibility="Collapsed" Panel.ZIndex="2000" Padding="20">
             <Border x:Name="InfoModalBorder" Background="#12121a" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="16"
-                    Width="650" Height="520" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    Width="650" Height="540" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="32" ShadowDepth="10" Direction="270" Color="#000000" Opacity="0.9"/>
                 </Border.Effect>
@@ -765,29 +765,97 @@
                                 </Border>
 
                                 <!-- Row 2: Calidad de Renderizado / Escalado -->
-                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,0,0,10">
+                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,10" Margin="0,0,0,8">
                                     <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                            <TextBlock Text="Calidad de Renderizado" FontSize="12.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
-                                            <TextBlock Text="Algoritmo de interpolación y suavizado de imagen" FontSize="11" Foreground="#94a3b8" Margin="0,2,0,0"/>
-                                        </StackPanel>
-                                        <Border Grid.Column="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="3" VerticalAlignment="Center">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Button x:Name="BtnQualityHigh" Click="BtnQualityHigh_Click" Style="{StaticResource SegmentBtn}" Width="78" ToolTip="Alta: Suavizado bicúbico nítido">
-                                                    <TextBlock Text="Alta" FontSize="11" FontWeight="Bold"/>
-                                                </Button>
-                                                <Button x:Name="BtnQualityLinear" Click="BtnQualityLinear_Click" Style="{StaticResource SegmentBtn}" Width="78" ToolTip="Bilineal: Escalado rápido estándar">
-                                                    <TextBlock Text="Bilineal" FontSize="11" FontWeight="Bold"/>
-                                                </Button>
-                                                <Button x:Name="BtnQualityNearest" Click="BtnQualityNearest_Click" Style="{StaticResource SegmentBtn}" Width="78" Margin="0" ToolTip="Nítida: Píxel puro sin desenfoque">
-                                                    <TextBlock Text="Nítida" FontSize="11" FontWeight="Bold"/>
-                                                </Button>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Selector Row -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                <TextBlock Text="Calidad de Renderizado y Escalado" FontSize="12.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                <TextBlock Text="Algoritmo de interpolación aplicado al redimensionar la ventana rotada" FontSize="11" Foreground="#94a3b8" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="3" VerticalAlignment="Center">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Button x:Name="BtnQualityHigh" Click="BtnQualityHigh_Click" Style="{StaticResource SegmentBtn}" Width="78" ToolTip="Alta: Suavizado bicúbico nítido">
+                                                        <TextBlock Text="Alta" FontSize="11" FontWeight="Bold"/>
+                                                    </Button>
+                                                    <Button x:Name="BtnQualityLinear" Click="BtnQualityLinear_Click" Style="{StaticResource SegmentBtn}" Width="78" ToolTip="Bilineal: Escalado rápido estándar">
+                                                        <TextBlock Text="Bilineal" FontSize="11" FontWeight="Bold"/>
+                                                    </Button>
+                                                    <Button x:Name="BtnQualityNearest" Click="BtnQualityNearest_Click" Style="{StaticResource SegmentBtn}" Width="78" Margin="0" ToolTip="Nítida: Píxel puro sin desenfoque">
+                                                        <TextBlock Text="Nítida" FontSize="11" FontWeight="Bold"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- Guía Explicativa: Qué es cada calidad y cuándo usarla -->
+                                        <Border Grid.Row="1" Background="#0c0d13" BorderBrush="#222332" BorderThickness="1" CornerRadius="8" Padding="6,5" Margin="0,8,0,0">
+                                            <StackPanel Orientation="Vertical">
+                                                <!-- 1. Alta (Bicúbica) -->
+                                                <Border x:Name="BdQualHigh" CornerRadius="6" Padding="8,4" Margin="0,0,0,2">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="105"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                                            <Ellipse Width="6" Height="6" Fill="#818cf8" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Alta (Bicúbica)" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                                        </StackPanel>
+                                                        <TextBlock Grid.Column="1" FontSize="11" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="15" VerticalAlignment="Center">
+                                                            <Run Text="Suaviza bordes y curvas eliminando pixelado. "/>
+                                                            <Run Text="👉 Mejor para: Videollamadas, cámaras y vídeos." FontWeight="SemiBold" Foreground="#38bdf8"/>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </Border>
+
+                                                <!-- 2. Bilineal -->
+                                                <Border x:Name="BdQualLinear" CornerRadius="6" Padding="8,4" Margin="0,0,0,2">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="105"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                                            <Ellipse Width="6" Height="6" Fill="#fbbf24" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Bilineal" FontSize="11" FontWeight="Bold" Foreground="#fef3c7"/>
+                                                        </StackPanel>
+                                                        <TextBlock Grid.Column="1" FontSize="11" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="15" VerticalAlignment="Center">
+                                                            <Run Text="Interpolación rápida con mínimo consumo de GPU. "/>
+                                                            <Run Text="👉 Mejor para: Portátiles o PCs con recursos limitados." FontWeight="SemiBold" Foreground="#fbbf24"/>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </Border>
+
+                                                <!-- 3. Nítida (Píxel Puro) -->
+                                                <Border x:Name="BdQualNearest" CornerRadius="6" Padding="8,4" Margin="0">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="105"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                                            <Ellipse Width="6" Height="6" Fill="#34d399" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Nítida (Píxel)" FontSize="11" FontWeight="Bold" Foreground="#d1fae5"/>
+                                                        </StackPanel>
+                                                        <TextBlock Grid.Column="1" FontSize="11" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="15" VerticalAlignment="Center">
+                                                            <Run Text="Mapeo 1:1 sin ningún desenfoque ni difuminado. "/>
+                                                            <Run Text="👉 Mejor para: Textos pequeños, código, apps y pixel art." FontWeight="SemiBold" Foreground="#34d399"/>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </Border>
                                             </StackPanel>
                                         </Border>
+
                                     </Grid>
                                 </Border>
 

@@ -934,9 +934,32 @@ namespace AlwaysRotate
                 }
             }
 
+            void StyleRow(Border? bd, bool isSelected)
+            {
+                if (bd == null) return;
+                if (isSelected)
+                {
+                    bd.Background = new SolidColorBrush(Color.FromArgb(45, cur.AccentDark.R, cur.AccentDark.G, cur.AccentDark.B));
+                    bd.BorderBrush = new SolidColorBrush(cur.AccentBorder);
+                    bd.BorderThickness = new Thickness(1);
+                    bd.Opacity = 1.0;
+                }
+                else
+                {
+                    bd.Background = Brushes.Transparent;
+                    bd.BorderBrush = Brushes.Transparent;
+                    bd.BorderThickness = new Thickness(0);
+                    bd.Opacity = 0.55;
+                }
+            }
+
             StyleBtn(BtnQualityHigh, _scalingMode == "HighQuality");
             StyleBtn(BtnQualityLinear, _scalingMode == "Linear");
             StyleBtn(BtnQualityNearest, _scalingMode == "NearestNeighbor");
+
+            StyleRow(BdQualHigh, _scalingMode == "HighQuality");
+            StyleRow(BdQualLinear, _scalingMode == "Linear");
+            StyleRow(BdQualNearest, _scalingMode == "NearestNeighbor");
         }
 
         private void BtnQualityHigh_Click(object sender, RoutedEventArgs e) => SetQuality("HighQuality");
