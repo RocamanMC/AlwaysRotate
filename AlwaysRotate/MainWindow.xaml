@@ -803,11 +803,13 @@
                                                 </UniformGrid>
                                             </Border>
 
-                                            <!-- Guía Explicativa: Qué es cada calidad y cuándo usarla -->
+                                            <!-- Guía Explicativa: Clickeable para seleccionar la calidad directamente -->
                                             <Border Grid.Row="2" Background="#0b0c13" BorderBrush="#202230" BorderThickness="1" CornerRadius="8" Padding="6,4">
                                                 <StackPanel Orientation="Vertical">
                                                     <!-- 1. Alta (Bicúbica) -->
-                                                    <Border x:Name="BdQualHigh" CornerRadius="6" Padding="6,3" Margin="0,0,0,2">
+                                                    <Border x:Name="BdQualHigh" CornerRadius="6" Padding="6,4" Margin="0,0,0,2" Cursor="Hand"
+                                                            Background="Transparent" MouseLeftButtonDown="BdQualHigh_Click"
+                                                            MouseEnter="BdQual_MouseEnter" MouseLeave="BdQual_MouseLeave" ToolTip="Haz clic para activar Alta (Bicúbica)">
                                                         <Grid>
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="Auto"/>
@@ -825,7 +827,9 @@
                                                     </Border>
 
                                                     <!-- 2. Bilineal -->
-                                                    <Border x:Name="BdQualLinear" CornerRadius="6" Padding="6,3" Margin="0,0,0,2">
+                                                    <Border x:Name="BdQualLinear" CornerRadius="6" Padding="6,4" Margin="0,0,0,2" Cursor="Hand"
+                                                            Background="Transparent" MouseLeftButtonDown="BdQualLinear_Click"
+                                                            MouseEnter="BdQual_MouseEnter" MouseLeave="BdQual_MouseLeave" ToolTip="Haz clic para activar Bilineal">
                                                         <Grid>
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="Auto"/>
@@ -843,7 +847,9 @@
                                                     </Border>
 
                                                     <!-- 3. Nítida (Píxel Puro) -->
-                                                    <Border x:Name="BdQualNearest" CornerRadius="6" Padding="6,3">
+                                                    <Border x:Name="BdQualNearest" CornerRadius="6" Padding="6,4" Cursor="Hand"
+                                                            Background="Transparent" MouseLeftButtonDown="BdQualNearest_Click"
+                                                            MouseEnter="BdQual_MouseEnter" MouseLeave="BdQual_MouseLeave" ToolTip="Haz clic para activar Nítida (Píxel Puro)">
                                                         <Grid>
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="Auto"/>

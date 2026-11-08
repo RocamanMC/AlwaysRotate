@@ -20,6 +20,13 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
+### [2026-11-08] - AlwaysRotate v3.9.2 (Filas de Descripción Clicables para Selección de Calidad)
+- **Interacción Directa en las Tarjetas de Calidad**:
+  - Se habilitó la selección directa con el ratón sobre cualquiera de las 3 filas de descripción de calidad (*Alta*, *Bilineal*, *Nítida*).
+  - Al hacer clic en cualquier parte de la descripción, título o punto, se activa inmediatamente ese modo de escalado y se actualizan los botones segmentados y el resaltado activo del tema.
+  - Efecto de cursor interactivo (`Cursor="Hand"`), feedback visual al pasar el cursor (`MouseEnter / MouseLeave` con aumento de opacidad al 85%) y tooltips orientativos.
+- **Control de Versiones**: Commits realizados y sincronizados con GitHub `master`.
+
 ### [2026-11-08] - AlwaysRotate v3.9.1 (Distribución en Cuadrícula 3x2 de Chips de Temas)
 - **Corrección de Recorte en Nombres Largos de Temas**:
   - Al estar los 6 temas en una sola fila (`Columns="6"`), en ventanas verticales (~480 px) cada chip quedaba constreñido a ~60 px, provocando que *"Esmeralda"* y su círculo quedasen cortados a la mitad (`"Esmerald:"`).

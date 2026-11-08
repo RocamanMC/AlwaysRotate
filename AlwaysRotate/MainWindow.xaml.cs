@@ -966,6 +966,26 @@ namespace AlwaysRotate
         private void BtnQualityLinear_Click(object sender, RoutedEventArgs e) => SetQuality("Linear");
         private void BtnQualityNearest_Click(object sender, RoutedEventArgs e) => SetQuality("NearestNeighbor");
 
+        private void BdQualHigh_Click(object sender, MouseButtonEventArgs e) => SetQuality("HighQuality");
+        private void BdQualLinear_Click(object sender, MouseButtonEventArgs e) => SetQuality("Linear");
+        private void BdQualNearest_Click(object sender, MouseButtonEventArgs e) => SetQuality("NearestNeighbor");
+
+        private void BdQual_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (sender is Border bd && bd.Opacity < 1.0)
+            {
+                bd.Opacity = 0.85;
+            }
+        }
+
+        private void BdQual_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (sender is Border bd && bd.Opacity < 1.0)
+            {
+                bd.Opacity = 0.55;
+            }
+        }
+
         private void OpenUrl(string url)
         {
             try
