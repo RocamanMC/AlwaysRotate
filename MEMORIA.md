@@ -20,6 +20,20 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
+### [2026-11-08] - AlwaysRotate v4.0 (Repositorio Dedicado en GitHub y README Oficial)
+- **Repositorio Privado Dedicado**:
+  - Creado y vinculado el repositorio exclusivo https://github.com/RocamanMC/AlwaysRotate en GitHub.
+  - Sincronizados ambos remotos (`alwaysrotate` y `origin` en `Utilidades`).
+- **README.md Profesional y Estructurado**:
+  - Encabezado con insignias oficiales (Plataforma, .NET 10 Windows, UI Fluent, Estado Portable, Autor Rocaman).
+  - Explicación de arquitectura: rotación a 60/120 FPS, reenvío matemático de coordenadas de ratón y soporte nativo de videollamadas de WhatsApp sin pantalla negra.
+  - Tabla de características completas (Modo Fantasma, 3 vistas, 6 temas, 3 modos de escalado).
+  - Tabla de atajos de teclado globales.
+  - Guía detallada de cada algoritmo de escalado (Bicúbica, Bilineal, Píxel Puro).
+  - Guía de inicio rápido y portabilidad.
+  - Créditos y enlace oficial a https://rocaman.vercel.app/.
+- **Control de Versiones**: Commits sincronizados en ambos repositorios remotos.
+
 ### [2026-11-08] - AlwaysRotate v3.9.4 (Proporción y Dimensiones Iniciales Panorámicas 880x640)
 - **Corrección de la Proporción Inicial Estrecha**:
   - Anteriormente la ventana se abría con un tamaño por defecto de `480 x 720 px` (proporción vertical de teléfono móvil muy estrecha).
