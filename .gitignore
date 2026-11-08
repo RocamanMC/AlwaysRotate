@@ -18,3 +18,8 @@ crash.log
 
 # Dist & Packages
 dist/
+
+# Memories & Agent Context
+MEMORIA.md
+.agents/
+
