@@ -188,3 +188,29 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - **Repositorio Remoto en GitHub**:
   - Repositorio privado creado en https://github.com/RocamanMC/Utilidades con rama principal `master` vinculada y sincronizada.
 - **Control de Versiones**: Commits realizados en Git `master`.
+
+### [2026-11-08] - AlwaysRotate v3.4 (Rebinding de Atajos, 6 Temas, Nitidez ClearType y Proporción)
+- **Rebinding Interactivo de Atajos de Teclado**:
+  - Pestaña "Atajos de Teclado" en el panel modal con capacidad de reconfiguración en vivo de los 8 atajos principales:
+    1. `Capturar ventana activa` (por defecto `Ctrl + Alt + R`)
+    2. `Girar +90° horario` (por defecto `Ctrl + Alt + →`)
+    3. `Girar -90° antihorario` (por defecto `Ctrl + Alt + ←`)
+    4. `Alternar Modo Solo Ventana Zen` (por defecto `F10`)
+    5. `Alternar Pantalla Completa` (por defecto `F11`)
+    6. `Modo Fantasma / Ocultar original` (por defecto `Ctrl + Alt + G`)
+    7. `Fijar Siempre Encima (Pin)` (por defecto `Ctrl + Alt + P`)
+    8. `Alternar Clics e Interacción` (por defecto `Ctrl + Alt + I`)
+  - **Grabación interactiva**: Al hacer clic en un atajo, el botón entra en estado activo con texto "Pulsar teclas...", interceptando modificadores (`Ctrl`, `Alt`, `Shift`) y la tecla pulsada, cancelando con `Esc` si se desea.
+  - **Botón "Restablecer"**: 1 clic para devolver todos los atajos a los valores de fábrica.
+  - **Persistencia en `config.json`**: Estructura `"shortcuts"` serializada en JSON y leída en el arranque para mantener las combinaciones del usuario.
+  - **Actualización dinámica de Hook y UI**: El hook de bajo nivel (`SetWindowsHookEx`) evalúa dinámicamente las combinaciones guardadas y actualiza el recordatorio de captura en el pie de la app.
+- **6 Temas de Decoración**:
+  - `Índigo`, `Esmeralda`, `Amatista`, `Carmesí`, `Ámbar` y `Glaciar` con cambio reactivo en tiempo real y guardado en `config.json`.
+  - Disposición 3x2 en el modal para evitar recortes tipográficos.
+- **Nitidez de Texto y Renderizado**:
+  - Activado `TextOptions.TextFormattingMode="Display"`, `TextOptions.TextRenderingMode="ClearType"`, `SnapsToDevicePixels="True"` y `UseLayoutRounding="True"` eliminando cualquier borrosidad.
+- **Proporción Inicial y Estabilidad**:
+  - Ventana configurada a `880 x 640 px` con persistencia de tamaño en `config.json`.
+  - Altura fija del modal (`Height="550"`) para evitar saltos de pestaña al cambiar entre Ajustes, Atajos y Guía.
+- **Repositorio Dedicado GitHub**:
+  - Creado y sincronizado `https://github.com/RocamanMC/AlwaysRotate`.

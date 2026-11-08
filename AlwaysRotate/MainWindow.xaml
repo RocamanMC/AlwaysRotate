@@ -97,6 +97,36 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
 
+        <!-- Hotkey Interactive Recording Button Style -->
+        <Style x:Key="HotkeyRecordBtn" TargetType="Button">
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="MinWidth" Value="110"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="Background" Value="#1c1c2a"/>
+            <Setter Property="BorderBrush" Value="#383852"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#e0e7ff"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#818cf8"/>
+                                <Setter TargetName="bd" Property="Background" Value="#252538"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Modern Button Base Style -->
         <Style x:Key="ModernBtn" TargetType="Button">
             <Setter Property="Background" Value="#1e1e26"/>
@@ -903,74 +933,205 @@
                                 </StackPanel>
                             </Grid>
 
-                        <!-- TAB 2: ATAJOS DE TECLADO (Shortcuts) -->
+                        <!-- TAB 2: ATAJOS DE TECLADO (Shortcuts configurables) -->
                         <Grid x:Name="TabShortcutsView" Visibility="Collapsed">
-                            <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="16,12">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
+                            <StackPanel Orientation="Vertical">
 
-                                    <!-- Esc -->
-                                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
-                                        <TextBlock Text="Esc" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
-                                    </Border>
-                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Salir de Pantalla Completa o Modo Solo Ventana" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
+                                <!-- Header banner with Reset button -->
+                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,9" Margin="0,0,0,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                                                <Path Data="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"
+                                                      Fill="#818cf8" Width="13" Height="13" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Atajos de Teclado Personalizables" FontSize="12" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                            </StackPanel>
+                                            <TextBlock Text="Haz clic en cualquier tecla para asignar tu propia combinación" FontSize="10.5" Foreground="#94a3b8"/>
+                                        </StackPanel>
 
-                                    <!-- F10 -->
-                                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
-                                        <TextBlock Text="F10" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
-                                    </Border>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Alternar Modo Solo Ventana (sin menús y redimensionable)" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
+                                        <Button x:Name="BtnResetShortcuts" Grid.Column="1" Click="BtnResetShortcuts_Click"
+                                                Style="{StaticResource ModernBtn}" Height="28" Padding="10,0" ToolTip="Restablecer atajos de fábrica">
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Path Data="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
+                                                      Fill="#94a3b8" Width="11" Height="11" Stretch="Uniform" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Restablecer" FontSize="10.5" FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </Border>
 
-                                    <!-- F11 -->
-                                    <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
-                                        <TextBlock Text="F11" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
-                                    </Border>
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Alternar Pantalla Completa total (monitor entero)" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
+                                <!-- Configurable Shortcut Rows -->
+                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="10,8" Margin="0,0,0,8">
+                                    <StackPanel Orientation="Vertical">
 
-                                    <!-- Ctrl + Alt + R -->
-                                    <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
-                                        <TextBlock Text="Ctrl + Alt + R" FontSize="11" FontWeight="Bold" Foreground="#a5b4fc"/>
-                                    </Border>
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Capturar y rotar la ventana activa actual" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
+                                        <!-- 1. Capturar ventana activa -->
+                                        <Border Background="#0f0f16" BorderBrush="#222332" BorderThickness="1" CornerRadius="7" Padding="10,6" Margin="0,0,0,4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Capturar ventana activa" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                    <TextBlock Text="Captura y rota la ventana que tengas en primer plano" FontSize="10" Foreground="#94a3b8"/>
+                                                </StackPanel>
+                                                <Button x:Name="BtnHkCapture" Grid.Column="1" Click="BtnHk_Click" Tag="Capture" Style="{StaticResource HotkeyRecordBtn}">
+                                                    <TextBlock x:Name="TxtHkCapture" Text="Ctrl + Alt + R" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
 
-                                    <!-- Ctrl + Alt + G -->
-                                    <Border Grid.Row="4" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
-                                        <TextBlock Text="Ctrl + Alt + G" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
-                                    </Border>
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Modo Fantasma (ocultar / mostrar ventana original de Windows)" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
+                                        <!-- 2. Girar +90° horario -->
+                                        <Border Background="#0f0f16" BorderBrush="#222332" BorderThickness="1" CornerRadius="7" Padding="10,6" Margin="0,0,0,4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Girar +90° (Sentido Horario)" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                    <TextBlock Text="Rota 90 grados a la derecha al instante" FontSize="10" Foreground="#94a3b8"/>
+                                                </StackPanel>
+                                                <Button x:Name="BtnHkRotateCW" Grid.Column="1" Click="BtnHk_Click" Tag="RotateCW" Style="{StaticResource HotkeyRecordBtn}">
+                                                    <TextBlock x:Name="TxtHkRotateCW" Text="Ctrl + Alt + →" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
 
-                                    <!-- Ctrl + Alt + Right / Space -->
-                                    <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
-                                        <TextBlock Text="Ctrl+Alt+→ / Espacio" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
-                                    </Border>
-                                    <TextBlock Grid.Row="5" Grid.Column="1" Text="Rotar 90° en sentido horario al vuelo" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
+                                        <!-- 3. Girar -90° antihorario -->
+                                        <Border Background="#0f0f16" BorderBrush="#222332" BorderThickness="1" CornerRadius="7" Padding="10,6" Margin="0,0,0,4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Girar -90° (Sentido Antihorario)" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                    <TextBlock Text="Rota 90 grados hacia la izquierda" FontSize="10" Foreground="#94a3b8"/>
+                                                </StackPanel>
+                                                <Button x:Name="BtnHkRotateCCW" Grid.Column="1" Click="BtnHk_Click" Tag="RotateCCW" Style="{StaticResource HotkeyRecordBtn}">
+                                                    <TextBlock x:Name="TxtHkRotateCCW" Text="Ctrl + Alt + ←" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
 
-                                    <!-- Ctrl + Alt + P -->
-                                    <Border Grid.Row="6" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
-                                        <TextBlock Text="Ctrl + Alt + P" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
-                                    </Border>
-                                    <TextBlock Grid.Row="6" Grid.Column="1" Text="Fijar Always on Top (Siempre encima de otras apps)" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
+                                        <!-- 4. Modo Solo Ventana Zen -->
+                                        <Border Background="#0f0f16" BorderBrush="#222332" BorderThickness="1" CornerRadius="7" Padding="10,6" Margin="0,0,0,4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Alternar Modo Solo Ventana" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                    <TextBlock Text="Oculta menús manteniendo el marco nativo redimensionable" FontSize="10" Foreground="#94a3b8"/>
+                                                </StackPanel>
+                                                <Button x:Name="BtnHkZen" Grid.Column="1" Click="BtnHk_Click" Tag="ZenMode" Style="{StaticResource HotkeyRecordBtn}">
+                                                    <TextBlock x:Name="TxtHkZen" Text="F10" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
 
-                                    <!-- Alt + Clic -->
-                                    <Border Grid.Row="7" Grid.Column="0" Style="{StaticResource KeyCap}" HorizontalAlignment="Left">
-                                        <TextBlock Text="Alt + Clic Arrastre" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
-                                    </Border>
-                                    <TextBlock Grid.Row="7" Grid.Column="1" Text="Mover la ventana libremente arrastrando desde el visor" FontSize="11.5" Foreground="#cbd5e1" VerticalAlignment="Center"/>
-                                </Grid>
-                            </Border>
+                                        <!-- 5. Pantalla Completa -->
+                                        <Border Background="#0f0f16" BorderBrush="#222332" BorderThickness="1" CornerRadius="7" Padding="10,6" Margin="0,0,0,4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Alternar Pantalla Completa" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                    <TextBlock Text="Ocupa todo el monitor sin distracciones con HUD" FontSize="10" Foreground="#94a3b8"/>
+                                                </StackPanel>
+                                                <Button x:Name="BtnHkFs" Grid.Column="1" Click="BtnHk_Click" Tag="Fullscreen" Style="{StaticResource HotkeyRecordBtn}">
+                                                    <TextBlock x:Name="TxtHkFs" Text="F11" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- 6. Modo Fantasma -->
+                                        <Border Background="#0f0f16" BorderBrush="#222332" BorderThickness="1" CornerRadius="7" Padding="10,6" Margin="0,0,0,4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Modo Fantasma (Ocultar original)" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                    <TextBlock Text="Vuelve invisible la ventana original para no tener duplicados" FontSize="10" Foreground="#94a3b8"/>
+                                                </StackPanel>
+                                                <Button x:Name="BtnHkGhost" Grid.Column="1" Click="BtnHk_Click" Tag="Ghost" Style="{StaticResource HotkeyRecordBtn}">
+                                                    <TextBlock x:Name="TxtHkGhost" Text="Ctrl + Alt + G" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- 7. Fijar Always on Top -->
+                                        <Border Background="#0f0f16" BorderBrush="#222332" BorderThickness="1" CornerRadius="7" Padding="10,6" Margin="0,0,0,4">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Fijar Siempre Encima (Pin)" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                    <TextBlock Text="Mantiene AlwaysRotate por encima de cualquier app" FontSize="10" Foreground="#94a3b8"/>
+                                                </StackPanel>
+                                                <Button x:Name="BtnHkPin" Grid.Column="1" Click="BtnHk_Click" Tag="Pin" Style="{StaticResource HotkeyRecordBtn}">
+                                                    <TextBlock x:Name="TxtHkPin" Text="Ctrl + Alt + P" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- 8. Alternar Clics e Interacción -->
+                                        <Border Background="#0f0f16" BorderBrush="#222332" BorderThickness="1" CornerRadius="7" Padding="10,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Alternar Clics e Interacción" FontSize="11.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                    <TextBlock Text="Activa o desactiva el reenvío de ratón a la app original" FontSize="10" Foreground="#94a3b8"/>
+                                                </StackPanel>
+                                                <Button x:Name="BtnHkInteract" Grid.Column="1" Click="BtnHk_Click" Tag="Interact" Style="{StaticResource HotkeyRecordBtn}">
+                                                    <TextBlock x:Name="TxtHkInteract" Text="Ctrl + Alt + I" FontSize="11" FontWeight="Bold"/>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Acciones Fijas de Ratón / Sistema -->
+                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="12,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <!-- Esc -->
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Border Background="#1f1f2e" BorderBrush="#3a3a52" BorderThickness="1" CornerRadius="5" Padding="6,2" Margin="0,0,8,0">
+                                                <TextBlock Text="Esc" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                            </Border>
+                                            <TextBlock Text="Salir de vistas / Cerrar panel" FontSize="10.5" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <!-- Alt + Clic -->
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Border Background="#1f1f2e" BorderBrush="#3a3a52" BorderThickness="1" CornerRadius="5" Padding="6,2" Margin="0,0,8,0">
+                                                <TextBlock Text="Alt + Clic" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                            </Border>
+                                            <TextBlock Text="Arrastrar ventana libremente" FontSize="10.5" Foreground="#94a3b8" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                            </StackPanel>
                         </Grid>
 
                         <!-- TAB 3: MODOS Y GUÍA (About & Modes) -->

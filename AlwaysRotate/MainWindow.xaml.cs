@@ -45,6 +45,37 @@ namespace AlwaysRotate
         private string _scalingMode = "HighQuality";
         private string _currentTheme = "Indigo";
 
+        public class CustomShortcut
+        {
+            public string Id { get; set; } = string.Empty;
+            public string Name { get; set; } = string.Empty;
+            public bool Ctrl { get; set; }
+            public bool Alt { get; set; }
+            public bool Shift { get; set; }
+            public uint VkCode { get; set; }
+            public string DisplayText { get; set; } = string.Empty;
+
+            public bool Matches(bool ctrl, bool alt, bool shift, uint vk)
+            {
+                return Ctrl == ctrl && Alt == alt && Shift == shift && VkCode == vk;
+            }
+        }
+
+        private readonly Dictionary<string, CustomShortcut> _shortcuts = new(StringComparer.OrdinalIgnoreCase);
+        private string? _recordingActionId = null;
+
+        private void InitializeDefaultShortcuts()
+        {
+            _shortcuts["Capture"] = new CustomShortcut { Id = "Capture", Name = "Capturar ventana activa", Ctrl = true, Alt = true, Shift = false, VkCode = 0x52, DisplayText = "Ctrl + Alt + R" };
+            _shortcuts["RotateCW"] = new CustomShortcut { Id = "RotateCW", Name = "Girar +90°", Ctrl = true, Alt = true, Shift = false, VkCode = 0x27, DisplayText = "Ctrl + Alt + →" };
+            _shortcuts["RotateCCW"] = new CustomShortcut { Id = "RotateCCW", Name = "Girar -90°", Ctrl = true, Alt = true, Shift = false, VkCode = 0x25, DisplayText = "Ctrl + Alt + ←" };
+            _shortcuts["ZenMode"] = new CustomShortcut { Id = "ZenMode", Name = "Modo Solo Ventana", Ctrl = false, Alt = false, Shift = false, VkCode = 0x79, DisplayText = "F10" };
+            _shortcuts["Fullscreen"] = new CustomShortcut { Id = "Fullscreen", Name = "Pantalla Completa", Ctrl = false, Alt = false, Shift = false, VkCode = 0x7A, DisplayText = "F11" };
+            _shortcuts["Ghost"] = new CustomShortcut { Id = "Ghost", Name = "Modo Fantasma", Ctrl = true, Alt = true, Shift = false, VkCode = 0x47, DisplayText = "Ctrl + Alt + G" };
+            _shortcuts["Pin"] = new CustomShortcut { Id = "Pin", Name = "Fijar Siempre Encima", Ctrl = true, Alt = true, Shift = false, VkCode = 0x50, DisplayText = "Ctrl + Alt + P" };
+            _shortcuts["Interact"] = new CustomShortcut { Id = "Interact", Name = "Alternar Clics", Ctrl = true, Alt = true, Shift = false, VkCode = 0x49, DisplayText = "Ctrl + Alt + I" };
+        }
+
         public record ThemeDefinition(
             string Id,
             string Name,
@@ -239,6 +270,7 @@ namespace AlwaysRotate
             }
             catch { }
 
+            InitializeDefaultShortcuts();
             LoadConfig();
             try
             {
@@ -248,6 +280,7 @@ namespace AlwaysRotate
             catch { }
 
             ApplyTheme(_currentTheme);
+            UpdateHotkeyButtonVisuals();
             SetFps(_targetFps);
             SetQuality(_scalingMode);
             ApplyAngle(_currentAngle);
@@ -685,12 +718,16 @@ namespace AlwaysRotate
             UpdateThemeButtonStyles();
             UpdateFpsButtonStyles();
             UpdateQualityButtonStyles();
+            _recordingActionId = null;
+            UpdateHotkeyButtonVisuals();
             SetActiveTab(0);
             InfoOverlay.Visibility = Visibility.Visible;
         }
 
         private void BtnCloseInfo_Click(object sender, RoutedEventArgs e)
         {
+            _recordingActionId = null;
+            UpdateHotkeyButtonVisuals();
             InfoOverlay.Visibility = Visibility.Collapsed;
         }
 
@@ -768,6 +805,7 @@ namespace AlwaysRotate
             UpdateFpsButtonStyles();
             UpdateQualityButtonStyles();
             UpdateThemeButtonStyles();
+            UpdateHotkeyButtonVisuals();
             SaveConfig();
         }
 
@@ -815,6 +853,15 @@ namespace AlwaysRotate
 
         private void SetActiveTab(int tabIndex)
         {
+            if (_recordingActionId != null && tabIndex != 1)
+            {
+                _recordingActionId = null;
+            }
+            if (tabIndex == 1)
+            {
+                UpdateHotkeyButtonVisuals();
+            }
+
             if (TabSettingsView != null) TabSettingsView.Visibility = tabIndex == 0 ? Visibility.Visible : Visibility.Collapsed;
             if (TabShortcutsView != null) TabShortcutsView.Visibility = tabIndex == 1 ? Visibility.Visible : Visibility.Collapsed;
             if (TabAboutView != null) TabAboutView.Visibility = tabIndex == 2 ? Visibility.Visible : Visibility.Collapsed;
@@ -987,6 +1034,102 @@ namespace AlwaysRotate
             }
         }
 
+        #region Hotkey Customization & Rebinding
+        private void BtnHk_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string actionId)
+            {
+                if (_recordingActionId == actionId)
+                {
+                    _recordingActionId = null;
+                }
+                else
+                {
+                    _recordingActionId = actionId;
+                }
+                UpdateHotkeyButtonVisuals();
+            }
+        }
+
+        private void BtnResetShortcuts_Click(object sender, RoutedEventArgs e)
+        {
+            _recordingActionId = null;
+            InitializeDefaultShortcuts();
+            UpdateHotkeyButtonVisuals();
+            SaveConfig();
+            TxtStatus.Text = "Atajos de teclado restablecidos a valores de fábrica.";
+        }
+
+        private void UpdateHotkeyButtonVisuals()
+        {
+            var cur = AvailableThemes.TryGetValue(_currentTheme, out var t) ? t : AvailableThemes["Indigo"];
+
+            void UpdateBtn(Button? btn, TextBlock? txt, string actionId, string defaultText)
+            {
+                if (btn == null || txt == null) return;
+                string currentText = _shortcuts.TryGetValue(actionId, out var sc) ? sc.DisplayText : defaultText;
+
+                if (_recordingActionId == actionId)
+                {
+                    txt.Text = "Pulsar teclas...";
+                    txt.Foreground = new SolidColorBrush(Colors.White);
+                    btn.Background = new SolidColorBrush(cur.BadgeBg);
+                    btn.BorderBrush = new SolidColorBrush(cur.AccentLight);
+                }
+                else
+                {
+                    txt.Text = currentText;
+                    txt.Foreground = new SolidColorBrush(cur.AccentLight);
+                    btn.Background = new SolidColorBrush(Color.FromRgb(22, 22, 34));
+                    btn.BorderBrush = new SolidColorBrush(Color.FromRgb(39, 39, 56));
+                }
+            }
+
+            UpdateBtn(BtnHkCapture, TxtHkCapture, "Capture", "Ctrl + Alt + R");
+            UpdateBtn(BtnHkRotateCW, TxtHkRotateCW, "RotateCW", "Ctrl + Alt + →");
+            UpdateBtn(BtnHkRotateCCW, TxtHkRotateCCW, "RotateCCW", "Ctrl + Alt + ←");
+            UpdateBtn(BtnHkZen, TxtHkZen, "ZenMode", "F10");
+            UpdateBtn(BtnHkFs, TxtHkFs, "Fullscreen", "F11");
+            UpdateBtn(BtnHkGhost, TxtHkGhost, "Ghost", "Ctrl + Alt + G");
+            UpdateBtn(BtnHkPin, TxtHkPin, "Pin", "Ctrl + Alt + P");
+            UpdateBtn(BtnHkInteract, TxtHkInteract, "Interact", "Ctrl + Alt + I");
+
+            if (TxtHotkeyHint != null)
+            {
+                string capText = _shortcuts.TryGetValue("Capture", out var csc) ? csc.DisplayText : "Ctrl + Alt + R";
+                TxtHotkeyHint.Text = $"Atajo: {capText}";
+            }
+        }
+
+        private static string FormatKeyString(bool ctrl, bool alt, bool shift, Key key)
+        {
+            var parts = new List<string>();
+            if (ctrl) parts.Add("Ctrl");
+            if (alt) parts.Add("Alt");
+            if (shift) parts.Add("Shift");
+
+            string keyName = key switch
+            {
+                Key.Left => "←",
+                Key.Right => "→",
+                Key.Up => "↑",
+                Key.Down => "↓",
+                Key.Return => "Enter",
+                Key.Back => "Backspace",
+                Key.Space => "Espacio",
+                _ => key.ToString()
+            };
+
+            if (keyName.Length == 2 && keyName.StartsWith("D") && char.IsDigit(keyName[1]))
+            {
+                keyName = keyName.Substring(1);
+            }
+
+            parts.Add(keyName);
+            return string.Join(" + ", parts);
+        }
+        #endregion
+
         private void OpenUrl(string url)
         {
             try
@@ -1058,9 +1201,9 @@ namespace AlwaysRotate
                     {
                         _targetFps = fpsElem.GetInt32();
                     }
-                    if (doc.RootElement.TryGetProperty("scalingMode", out var scElem))
+                    if (doc.RootElement.TryGetProperty("scalingMode", out var scaleElem))
                     {
-                        _scalingMode = scElem.GetString() ?? "HighQuality";
+                        _scalingMode = scaleElem.GetString() ?? "HighQuality";
                     }
                     if (doc.RootElement.TryGetProperty("theme", out var thElem))
                     {
@@ -1068,6 +1211,20 @@ namespace AlwaysRotate
                         if (!string.IsNullOrWhiteSpace(savedTheme) && AvailableThemes.ContainsKey(savedTheme))
                         {
                             _currentTheme = savedTheme;
+                        }
+                    }
+                    if (doc.RootElement.TryGetProperty("shortcuts", out var scElem) && scElem.ValueKind == JsonValueKind.Object)
+                    {
+                        foreach (var prop in scElem.EnumerateObject())
+                        {
+                            if (_shortcuts.TryGetValue(prop.Name, out var scObj))
+                            {
+                                if (prop.Value.TryGetProperty("ctrl", out var cElem)) scObj.Ctrl = cElem.GetBoolean();
+                                if (prop.Value.TryGetProperty("alt", out var aElem)) scObj.Alt = aElem.GetBoolean();
+                                if (prop.Value.TryGetProperty("shift", out var sElem)) scObj.Shift = sElem.GetBoolean();
+                                if (prop.Value.TryGetProperty("vk", out var vElem)) scObj.VkCode = vElem.GetUInt32();
+                                if (prop.Value.TryGetProperty("text", out var tElem)) scObj.DisplayText = tElem.GetString() ?? scObj.DisplayText;
+                            }
                         }
                     }
                     if (_rememberState)
@@ -1101,6 +1258,15 @@ namespace AlwaysRotate
                 double saveW = (this.WindowState == WindowState.Normal && this.ActualWidth >= 460) ? this.ActualWidth : 880;
                 double saveH = (this.WindowState == WindowState.Normal && this.ActualHeight >= 420) ? this.ActualHeight : 640;
 
+                var shortcutsDict = _shortcuts.ToDictionary(kvp => kvp.Key, kvp => new
+                {
+                    ctrl = kvp.Value.Ctrl,
+                    alt = kvp.Value.Alt,
+                    shift = kvp.Value.Shift,
+                    vk = kvp.Value.VkCode,
+                    text = kvp.Value.DisplayText
+                });
+
                 var obj = new
                 {
                     rememberState = _rememberState,
@@ -1110,7 +1276,8 @@ namespace AlwaysRotate
                     scalingMode = _scalingMode,
                     theme = _currentTheme,
                     windowWidth = saveW,
-                    windowHeight = saveH
+                    windowHeight = saveH,
+                    shortcuts = shortcutsDict
                 };
                 string json = JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
                 System.IO.File.WriteAllText(ConfigPath, json);
@@ -1281,10 +1448,57 @@ namespace AlwaysRotate
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if (_recordingActionId != null)
+            {
+                if (e.Key == Key.Escape)
+                {
+                    _recordingActionId = null;
+                    UpdateHotkeyButtonVisuals();
+                    e.Handled = true;
+                    return;
+                }
+
+                Key realKey = e.Key == Key.System ? e.SystemKey : e.Key;
+
+                // Ignorar teclas modificadoras solitarias
+                if (realKey == Key.LeftCtrl || realKey == Key.RightCtrl ||
+                    realKey == Key.LeftAlt || realKey == Key.RightAlt ||
+                    realKey == Key.LeftShift || realKey == Key.RightShift ||
+                    realKey == Key.LWin || realKey == Key.RWin || realKey == Key.None)
+                {
+                    return;
+                }
+
+                bool isCtrl = (Keyboard.Modifiers & ModifierKeys.Control) != 0;
+                bool isAlt = (Keyboard.Modifiers & ModifierKeys.Alt) != 0;
+                bool isShift = (Keyboard.Modifiers & ModifierKeys.Shift) != 0;
+
+                int vk = KeyInterop.VirtualKeyFromKey(realKey);
+                if (vk > 0)
+                {
+                    string disp = FormatKeyString(isCtrl, isAlt, isShift, realKey);
+                    if (_shortcuts.TryGetValue(_recordingActionId, out var scObj))
+                    {
+                        scObj.Ctrl = isCtrl;
+                        scObj.Alt = isAlt;
+                        scObj.Shift = isShift;
+                        scObj.VkCode = (uint)vk;
+                        scObj.DisplayText = disp;
+                    }
+                    _recordingActionId = null;
+                    UpdateHotkeyButtonVisuals();
+                    SaveConfig();
+                    TxtStatus.Text = $"Atajo asignado correctamente: {disp}";
+                    e.Handled = true;
+                    return;
+                }
+            }
+
             if (e.Key == Key.Escape)
             {
                 if (InfoOverlay.Visibility == Visibility.Visible)
                 {
+                    _recordingActionId = null;
                     InfoOverlay.Visibility = Visibility.Collapsed;
                     e.Handled = true;
                     return;
@@ -1295,16 +1509,6 @@ namespace AlwaysRotate
                     e.Handled = true;
                 }
             }
-            else if (e.Key == Key.F10)
-            {
-                SetViewState(_currentView == ViewState.WindowZen ? ViewState.Normal : ViewState.WindowZen);
-                e.Handled = true;
-            }
-            else if (e.Key == Key.F11)
-            {
-                SetViewState(_currentView == ViewState.Fullscreen ? ViewState.Normal : ViewState.Fullscreen);
-                e.Handled = true;
-            }
         }
 
         private IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
@@ -1314,15 +1518,26 @@ namespace AlwaysRotate
                 var hookStruct = Marshal.PtrToStructure<Win32.KBDLLHOOKSTRUCT>(lParam);
                 uint vk = hookStruct.vkCode;
 
+                // Si se está grabando un atajo dentro del panel de ajustes, dejar pasar las teclas a WPF
+                if (_recordingActionId != null && InfoOverlay.Visibility == Visibility.Visible)
+                {
+                    return Win32.CallNextHookEx(_keyboardHookId, nCode, wParam, lParam);
+                }
+
                 bool isCtrl = (Win32.GetAsyncKeyState(0x11) & 0x8000) != 0;
                 bool isAlt = (Win32.GetAsyncKeyState(0x12) & 0x8000) != 0;
+                bool isShift = (Win32.GetAsyncKeyState(0x10) & 0x8000) != 0;
 
-                // Escape: Close Info overlay or restore normal menus
+                // Escape: Cerrar modal de información o salir de fullscreen / zen
                 if (vk == 0x1B) // VK_ESCAPE
                 {
                     if (InfoOverlay.Visibility == Visibility.Visible)
                     {
-                        Dispatcher.BeginInvoke(() => InfoOverlay.Visibility = Visibility.Collapsed);
+                        Dispatcher.BeginInvoke(() =>
+                        {
+                            _recordingActionId = null;
+                            InfoOverlay.Visibility = Visibility.Collapsed;
+                        });
                         return (IntPtr)1; // swallow
                     }
                     if (_currentView != ViewState.Normal)
@@ -1332,74 +1547,85 @@ namespace AlwaysRotate
                     }
                 }
 
-                // F10: Toggle Window Zen (Solo Ventana)
-                if (vk == 0x79) // VK_F10
+                // Evaluar atajos configurados dinámicamente:
+                CustomShortcut? scCapture = _shortcuts.GetValueOrDefault("Capture");
+                CustomShortcut? scRotateCW = _shortcuts.GetValueOrDefault("RotateCW");
+                CustomShortcut? scRotateCCW = _shortcuts.GetValueOrDefault("RotateCCW");
+                CustomShortcut? scZen = _shortcuts.GetValueOrDefault("ZenMode");
+                CustomShortcut? scFs = _shortcuts.GetValueOrDefault("Fullscreen");
+                CustomShortcut? scGhost = _shortcuts.GetValueOrDefault("Ghost");
+                CustomShortcut? scPin = _shortcuts.GetValueOrDefault("Pin");
+                CustomShortcut? scInteract = _shortcuts.GetValueOrDefault("Interact");
+
+                // 1. Zen Mode (Solo Ventana)
+                if (scZen != null && scZen.Matches(isCtrl, isAlt, isShift, vk))
                 {
                     IntPtr fg = Win32.GetForegroundWindow();
                     IntPtr myHwnd = new WindowInteropHelper(this).Handle;
                     if (fg == myHwnd || (_targetHwnd != IntPtr.Zero && fg == _targetHwnd) || _currentView != ViewState.Normal)
                     {
                         Dispatcher.BeginInvoke(() => SetViewState(_currentView == ViewState.WindowZen ? ViewState.Normal : ViewState.WindowZen));
-                        return (IntPtr)1; // swallow
+                        return (IntPtr)1;
                     }
                 }
 
-                // F11: Toggle Fullscreen (Monitor Completo)
-                if (vk == 0x7A) // VK_F11
+                // 2. Fullscreen (Pantalla Completa)
+                if (scFs != null && scFs.Matches(isCtrl, isAlt, isShift, vk))
                 {
                     IntPtr fg = Win32.GetForegroundWindow();
                     IntPtr myHwnd = new WindowInteropHelper(this).Handle;
                     if (fg == myHwnd || (_targetHwnd != IntPtr.Zero && fg == _targetHwnd) || _currentView != ViewState.Normal)
                     {
                         Dispatcher.BeginInvoke(() => SetViewState(_currentView == ViewState.Fullscreen ? ViewState.Normal : ViewState.Fullscreen));
-                        return (IntPtr)1; // swallow
+                        return (IntPtr)1;
                     }
                 }
 
-                // Global hotkeys with Ctrl + Alt:
-                if (isCtrl && isAlt)
+                // 3. Capturar ventana activa
+                if (scCapture != null && scCapture.Matches(isCtrl, isAlt, isShift, vk))
                 {
-                    // Ctrl + Alt + R -> Capture active window
-                    if (vk == 0x52) // 'R'
+                    IntPtr fg = Win32.GetForegroundWindow();
+                    IntPtr myHwnd = new WindowInteropHelper(this).Handle;
+                    if (fg != IntPtr.Zero && fg != myHwnd)
                     {
-                        IntPtr fg = Win32.GetForegroundWindow();
-                        IntPtr myHwnd = new WindowInteropHelper(this).Handle;
-                        if (fg != IntPtr.Zero && fg != myHwnd)
-                        {
-                            Dispatcher.BeginInvoke(() => SetTarget(fg));
-                            return (IntPtr)1;
-                        }
-                    }
-                    // Ctrl + Alt + G -> Toggle Ghost mode (Hide original)
-                    else if (vk == 0x47) // 'G'
-                    {
-                        Dispatcher.BeginInvoke(() => BtnGhost_Click(this, new RoutedEventArgs()));
+                        Dispatcher.BeginInvoke(() => SetTarget(fg));
                         return (IntPtr)1;
                     }
-                    // Ctrl + Alt + Right Arrow OR Ctrl + Alt + Space -> Rotate +90
-                    else if (vk == 0x27 || vk == 0x20) // VK_RIGHT or VK_SPACE
-                    {
-                        Dispatcher.BeginInvoke(() => ApplyAngle(_currentAngle + 90));
-                        return (IntPtr)1;
-                    }
-                    // Ctrl + Alt + Left Arrow -> Rotate -90
-                    else if (vk == 0x25) // VK_LEFT
-                    {
-                        Dispatcher.BeginInvoke(() => ApplyAngle(_currentAngle - 90));
-                        return (IntPtr)1;
-                    }
-                    // Ctrl + Alt + P -> Toggle Pin (Always on top)
-                    else if (vk == 0x50) // 'P'
-                    {
-                        Dispatcher.BeginInvoke(() => BtnPin_Click(this, new RoutedEventArgs()));
-                        return (IntPtr)1;
-                    }
-                    // Ctrl + Alt + I -> Toggle Interact (Click forwarding)
-                    else if (vk == 0x49) // 'I'
-                    {
-                        Dispatcher.BeginInvoke(() => BtnInteract_Click(this, new RoutedEventArgs()));
-                        return (IntPtr)1;
-                    }
+                }
+
+                // 4. Modo Fantasma (Ocultar original)
+                if (scGhost != null && scGhost.Matches(isCtrl, isAlt, isShift, vk))
+                {
+                    Dispatcher.BeginInvoke(() => BtnGhost_Click(this, new RoutedEventArgs()));
+                    return (IntPtr)1;
+                }
+
+                // 5. Girar +90° horario (también soportamos espacio con Ctrl+Alt como atajo de respaldo si RotateCW es por defecto)
+                if ((scRotateCW != null && scRotateCW.Matches(isCtrl, isAlt, isShift, vk)) || (isCtrl && isAlt && vk == 0x20))
+                {
+                    Dispatcher.BeginInvoke(() => ApplyAngle(_currentAngle + 90));
+                    return (IntPtr)1;
+                }
+
+                // 6. Girar -90° antihorario
+                if (scRotateCCW != null && scRotateCCW.Matches(isCtrl, isAlt, isShift, vk))
+                {
+                    Dispatcher.BeginInvoke(() => ApplyAngle(_currentAngle - 90));
+                    return (IntPtr)1;
+                }
+
+                // 7. Fijar Always on Top
+                if (scPin != null && scPin.Matches(isCtrl, isAlt, isShift, vk))
+                {
+                    Dispatcher.BeginInvoke(() => BtnPin_Click(this, new RoutedEventArgs()));
+                    return (IntPtr)1;
+                }
+
+                // 8. Alternar Clics e Interacción
+                if (scInteract != null && scInteract.Matches(isCtrl, isAlt, isShift, vk))
+                {
+                    Dispatcher.BeginInvoke(() => BtnInteract_Click(this, new RoutedEventArgs()));
+                    return (IntPtr)1;
                 }
             }
 
