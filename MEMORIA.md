@@ -20,6 +20,19 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
+### [2026-11-08] - AlwaysRotate v3.9 (Nitidez Pixel-Perfect de Texto y Rediseño Adaptativo del Modal)
+- **Corrección de Borrosidad y Rasterizado de Fuentes**:
+  - Activado `TextOptions.TextFormattingMode="Display"` en toda la aplicación para alinear los glifos con precisión a píxeles enteros (evitando el difuminado subpíxel de WPF).
+  - Integrado `TextOptions.TextRenderingMode="ClearType"`, `TextOptions.TextHintingMode="Fixed"`, `RenderOptions.ClearTypeHint="Enabled"` y `UseLayoutRounding="True" / SnapsToDevicePixels="True"`.
+  - El texto ahora se muestra 100% nítido, definido y contrastado en cualquier monitor.
+- **Rediseño Responsivo del Modal de Ajustes**:
+  - Eliminado ancho fijo de `650 px` que desbordaba y recortaba contenido en ventanas verticales/estrechas (~480 px).
+  - Implementado `MaxWidth="540 px"` con `HorizontalAlignment="Stretch"` y padding adaptativo de `12 px`.
+  - Cabecera en 2 niveles limpios: Título + Botón de Cerrar en la fila superior, y Pestañas en `UniformGrid Columns="3"` a ancho completo en la fila inferior para evitar colisiones.
+  - El cuerpo del modal ahora está contenido dentro de un `ScrollViewer` vertical, asegurando que *"Iniciar con Windows"* y *"Recordar Sesión"* nunca se queden fuera de la pantalla ni se corten en el borde inferior.
+  - La sección de calidad de renderizado distribuye el título, los botones segmentados y la guía explicativa sin estrecheces ni textos truncados.
+- **Control de Versiones**: Commits realizados y sincronizados con GitHub `master`.
+
 ### [2026-11-08] - AlwaysRotate v3.8 (Guía Visual Explicativa de Algoritmos de Calidad y Escalado)
 - **Desglose Explicativo en la Pestaña Ajustes**:
   - Incorporada tarjeta interactiva justo debajo del selector de Calidad de Renderizado que explica detalladamente qué hace cada algoritmo y cuándo es más conveniente usarlo:

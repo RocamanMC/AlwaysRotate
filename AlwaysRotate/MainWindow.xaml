@@ -12,7 +12,13 @@
         WindowStartupLocation="CenterScreen"
         Background="#0f0f13"
         Topmost="True"
-        FontFamily="Segoe UI Variable, Segoe UI, sans-serif"
+        FontFamily="Segoe UI, Segoe UI Variable, Arial, sans-serif"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        TextOptions.TextHintingMode="Fixed"
+        RenderOptions.ClearTypeHint="Enabled"
         Loaded="Window_Loaded"
         Closing="Window_Closing"
         Deactivated="Window_Deactivated"
@@ -588,9 +594,11 @@
         </Border>
         <!-- 4. Information, Shortcuts & Settings Modal Overlay (Pro Fluent Style) -->
         <Border x:Name="InfoOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#cc07070b"
-                Visibility="Collapsed" Panel.ZIndex="2000" Padding="20">
+                Visibility="Collapsed" Panel.ZIndex="2000" Padding="12">
             <Border x:Name="InfoModalBorder" Background="#12121a" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="16"
-                    Width="650" Height="540" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    MaxWidth="540" MaxHeight="620" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                    SnapsToDevicePixels="True" UseLayoutRounding="True"
+                    TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" RenderOptions.ClearTypeHint="Enabled">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="32" ShadowDepth="10" Direction="270" Color="#000000" Opacity="0.9"/>
                 </Border.Effect>
@@ -598,299 +606,296 @@
                     <Grid.RowDefinitions>
                         <!-- Header with Tabs -->
                         <RowDefinition Height="Auto"/>
-                        <!-- Tab Content Body -->
+                        <!-- Tab Content Body (Scrollable) -->
                         <RowDefinition Height="*"/>
                         <!-- Footer -->
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <!-- Modal Header -->
-                    <Border x:Name="InfoHeaderBorder" Grid.Row="0" Background="#161622" BorderBrush="#262638" BorderThickness="0,0,0,1" CornerRadius="16,16,0,0" Padding="20,14,16,12">
+                    <Border x:Name="InfoHeaderBorder" Grid.Row="0" Background="#161622" BorderBrush="#262638" BorderThickness="0,0,0,1" CornerRadius="16,16,0,0" Padding="16,12">
                         <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                            <!-- Title & Badge -->
-                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border Width="34" Height="34" Background="#1f1f30" BorderBrush="#363650" BorderThickness="1" CornerRadius="8" Margin="0,0,12,0">
-                                    <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
-                                          Fill="#818cf8" Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Configuración y Ayuda" FontSize="14" FontWeight="Bold" Foreground="#f4f4f5"/>
-                                    <TextBlock Text="AlwaysRotate Utility" FontSize="11" Foreground="#94a3b8" Margin="0,1,0,0"/>
+                            <!-- Top Bar: Title + Close Button -->
+                            <Grid Grid.Row="0" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Border Width="30" Height="30" Background="#1f1f30" BorderBrush="#363650" BorderThickness="1" CornerRadius="8" Margin="0,0,10,0">
+                                        <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+                                              Fill="#818cf8" Width="14" Height="14" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Configuración y Ayuda" FontSize="13.5" FontWeight="Bold" Foreground="#f4f4f5"/>
+                                        <TextBlock Text="AlwaysRotate Utility" FontSize="10.5" Foreground="#94a3b8"/>
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
 
-                            <!-- Navigation Tabs -->
-                            <Border Grid.Column="1" HorizontalAlignment="Center" Background="#0f0f16" BorderBrush="#262638" BorderThickness="1" CornerRadius="8" Padding="3" Margin="16,0">
-                                <StackPanel Orientation="Horizontal">
+                                <Button Click="BtnCloseInfo_Click" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                        Width="28" Height="28" Cursor="Hand" Background="#222232" BorderBrush="#35354a" BorderThickness="1">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="14">
+                                                <TextBlock Text="✕" FontSize="11" FontWeight="Bold" Foreground="#cbd5e1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="bd" Property="Background" Value="#e11d48"/>
+                                                    <Setter TargetName="bd" Property="BorderBrush" Value="#f43f5e"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
+
+                            <!-- Navigation Tabs (Full Width Grid) -->
+                            <Border Grid.Row="1" Background="#0f0f16" BorderBrush="#262638" BorderThickness="1" CornerRadius="8" Padding="2">
+                                <UniformGrid Columns="3">
                                     <Button x:Name="BtnTabSettings" Click="BtnTabSettings_Click" Style="{StaticResource TabNavBtn}">
-                                        <TextBlock Text="Ajustes" FontSize="11.5" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Ajustes" FontSize="11" FontWeight="SemiBold"/>
                                     </Button>
                                     <Button x:Name="BtnTabShortcuts" Click="BtnTabShortcuts_Click" Style="{StaticResource TabNavBtn}">
-                                        <TextBlock Text="Atajos de Teclado" FontSize="11.5" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Atajos" FontSize="11" FontWeight="SemiBold"/>
                                     </Button>
                                     <Button x:Name="BtnTabAbout" Click="BtnTabAbout_Click" Style="{StaticResource TabNavBtn}">
-                                        <TextBlock Text="Modos y Guía" FontSize="11.5" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Guía y Modos" FontSize="11" FontWeight="SemiBold"/>
                                     </Button>
-                                </StackPanel>
+                                </UniformGrid>
                             </Border>
-
-                            <!-- Close Button -->
-                            <Button Grid.Column="2" Click="BtnCloseInfo_Click" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                    Width="30" Height="30" Cursor="Hand" Background="#222232" BorderBrush="#35354a" BorderThickness="1">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="15">
-                                            <TextBlock Text="✕" FontSize="12" FontWeight="Bold" Foreground="#cbd5e1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="bd" Property="Background" Value="#e11d48"/>
-                                                <Setter TargetName="bd" Property="BorderBrush" Value="#f43f5e"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
                         </Grid>
                     </Border>
 
-                    <!-- Tab Views Body -->
-                    <Grid Grid.Row="1" Margin="20,16">
+                    <!-- Tab Views Body (Wrapped in ScrollViewer for small windows) -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="16,12" Focusable="False">
+                        <Grid>
 
-                        <!-- TAB 1: AJUSTES (Settings) -->
-                        <Grid x:Name="TabSettingsView" Visibility="Visible">
-                            <StackPanel Orientation="Vertical">
+                            <!-- TAB 1: AJUSTES (Settings) -->
+                            <Grid x:Name="TabSettingsView" Visibility="Visible">
+                                <StackPanel Orientation="Vertical">
 
-                                <!-- Row 0: Tema de Decoración -->
-                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,10" Margin="0,0,0,8">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
+                                    <!-- Row 0: Tema de Decoración -->
+                                    <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,10" Margin="0,0,0,8">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
 
-                                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
-                                            <Path Data="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.28 19.59 10.59 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"
-                                                  Fill="#a855f7" Width="13" Height="13" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Tema de Decoración" FontSize="12.5" FontWeight="SemiBold" Foreground="#f4f4f5" VerticalAlignment="Center"/>
-                                            <TextBlock Text="• Personaliza el color y estilo visual de la aplicación" FontSize="11" Foreground="#94a3b8" Margin="8,0,0,0" VerticalAlignment="Center"/>
-                                        </StackPanel>
-
-                                        <!-- Theme Selection Swatch Chips -->
-                                        <Border Grid.Row="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="2">
-                                            <UniformGrid Columns="6">
-                                                <!-- 1. Indigo -->
-                                                <Button x:Name="BtnThemeIndigo" Click="BtnTheme_Click" Tag="Indigo" Style="{StaticResource SegmentBtn}" ToolTip="Indigo Nocturno (Clásico)">
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Ellipse Width="8" Height="8" Fill="#6366f1" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                                        <TextBlock Text="Indigo" FontSize="10.5" FontWeight="Bold"/>
-                                                    </StackPanel>
-                                                </Button>
-
-                                                <!-- 2. Esmeralda -->
-                                                <Button x:Name="BtnThemeEmerald" Click="BtnTheme_Click" Tag="Emerald" Style="{StaticResource SegmentBtn}" ToolTip="Cíber Esmeralda (WhatsApp / Matrix)">
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Ellipse Width="8" Height="8" Fill="#10b981" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                                        <TextBlock Text="Esmeralda" FontSize="10.5" FontWeight="Bold"/>
-                                                    </StackPanel>
-                                                </Button>
-
-                                                <!-- 3. Amatista -->
-                                                <Button x:Name="BtnThemeAmethyst" Click="BtnTheme_Click" Tag="Amethyst" Style="{StaticResource SegmentBtn}" ToolTip="Amatista Neón (Cyberpunk / Violeta)">
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Ellipse Width="8" Height="8" Fill="#a855f7" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                                        <TextBlock Text="Amatista" FontSize="10.5" FontWeight="Bold"/>
-                                                    </StackPanel>
-                                                </Button>
-
-                                                <!-- 4. Carmesí -->
-                                                <Button x:Name="BtnThemeCrimson" Click="BtnTheme_Click" Tag="Crimson" Style="{StaticResource SegmentBtn}" ToolTip="Carmesí Rubí (Rojo / Sunset)">
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Ellipse Width="8" Height="8" Fill="#f43f5e" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                                        <TextBlock Text="Carmesí" FontSize="10.5" FontWeight="Bold"/>
-                                                    </StackPanel>
-                                                </Button>
-
-                                                <!-- 5. Ámbar -->
-                                                <Button x:Name="BtnThemeAmber" Click="BtnTheme_Click" Tag="Amber" Style="{StaticResource SegmentBtn}" ToolTip="Ámbar Dorado (Cyber Gold)">
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Ellipse Width="8" Height="8" Fill="#f59e0b" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                                        <TextBlock Text="Ámbar" FontSize="10.5" FontWeight="Bold"/>
-                                                    </StackPanel>
-                                                </Button>
-
-                                                <!-- 6. Glaciar -->
-                                                <Button x:Name="BtnThemeGlacier" Click="BtnTheme_Click" Tag="Glacier" Style="{StaticResource SegmentBtn}" Margin="0" ToolTip="Glaciar Nórdico (Azul Hielo / Cyan)">
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <Ellipse Width="8" Height="8" Fill="#06b6d4" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                                        <TextBlock Text="Glaciar" FontSize="10.5" FontWeight="Bold"/>
-                                                    </StackPanel>
-                                                </Button>
-                                            </UniformGrid>
-                                        </Border>
-                                    </Grid>
-                                </Border>
-
-                                <!-- Row 1: Tasa de Refresco (FPS) -->
-                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,9" Margin="0,0,0,8">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                            <TextBlock Text="Fluidez de Captura (FPS)" FontSize="12.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
-                                            <TextBlock Text="Tasa de refresco por segundo del motor de captura" FontSize="11" Foreground="#94a3b8" Margin="0,2,0,0"/>
-                                        </StackPanel>
-                                        <Border Grid.Column="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="3" VerticalAlignment="Center">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Button x:Name="BtnFps30" Click="BtnFps30_Click" Style="{StaticResource SegmentBtn}" Width="78" ToolTip="30 FPS: Modo económico de batería y baja CPU">
-                                                    <TextBlock Text="30 FPS" FontSize="11" FontWeight="Bold"/>
-                                                </Button>
-                                                <Button x:Name="BtnFps60" Click="BtnFps60_Click" Style="{StaticResource SegmentBtn}" Width="78" ToolTip="60 FPS: Modo recomendado, movimiento suave">
-                                                    <TextBlock Text="60 FPS" FontSize="11" FontWeight="Bold"/>
-                                                </Button>
-                                                <Button x:Name="BtnFps120" Click="BtnFps120_Click" Style="{StaticResource SegmentBtn}" Width="78" Margin="0" ToolTip="120 FPS: Máxima fluidez para monitores gaming">
-                                                    <TextBlock Text="120 FPS" FontSize="11" FontWeight="Bold"/>
-                                                </Button>
+                                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,7" VerticalAlignment="Center">
+                                                <Path Data="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.28 19.59 10.59 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"
+                                                      Fill="#a855f7" Width="13" Height="13" Stretch="Uniform" Margin="0,0,7,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Tema de Color" FontSize="12" FontWeight="SemiBold" Foreground="#f4f4f5" VerticalAlignment="Center"/>
+                                                <TextBlock Text="• Paleta visual de la aplicación" FontSize="10.5" Foreground="#94a3b8" Margin="6,0,0,0" VerticalAlignment="Center"/>
                                             </StackPanel>
-                                        </Border>
-                                    </Grid>
-                                </Border>
 
-                                <!-- Row 2: Calidad de Renderizado / Escalado -->
-                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,10" Margin="0,0,0,8">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
+                                            <!-- Theme Selection Swatch Chips -->
+                                            <Border Grid.Row="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="2">
+                                                <UniformGrid Columns="6">
+                                                    <!-- 1. Indigo -->
+                                                    <Button x:Name="BtnThemeIndigo" Click="BtnTheme_Click" Tag="Indigo" Style="{StaticResource SegmentBtn}" ToolTip="Índigo Nocturno">
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                            <Ellipse Width="7" Height="7" Fill="#6366f1" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Índigo" FontSize="10" FontWeight="Bold"/>
+                                                        </StackPanel>
+                                                    </Button>
 
-                                        <!-- Selector Row -->
-                                        <Grid Grid.Row="0">
+                                                    <!-- 2. Esmeralda -->
+                                                    <Button x:Name="BtnThemeEmerald" Click="BtnTheme_Click" Tag="Emerald" Style="{StaticResource SegmentBtn}" ToolTip="Esmeralda Cíber">
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                            <Ellipse Width="7" Height="7" Fill="#10b981" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Esmeralda" FontSize="10" FontWeight="Bold"/>
+                                                        </StackPanel>
+                                                    </Button>
+
+                                                    <!-- 3. Amatista -->
+                                                    <Button x:Name="BtnThemeAmethyst" Click="BtnTheme_Click" Tag="Amethyst" Style="{StaticResource SegmentBtn}" ToolTip="Amatista Neón">
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                            <Ellipse Width="7" Height="7" Fill="#a855f7" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Amatista" FontSize="10" FontWeight="Bold"/>
+                                                        </StackPanel>
+                                                    </Button>
+
+                                                    <!-- 4. Carmesí -->
+                                                    <Button x:Name="BtnThemeCrimson" Click="BtnTheme_Click" Tag="Crimson" Style="{StaticResource SegmentBtn}" ToolTip="Carmesí Rubí">
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                            <Ellipse Width="7" Height="7" Fill="#f43f5e" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Carmesí" FontSize="10" FontWeight="Bold"/>
+                                                        </StackPanel>
+                                                    </Button>
+
+                                                    <!-- 5. Ámbar -->
+                                                    <Button x:Name="BtnThemeAmber" Click="BtnTheme_Click" Tag="Amber" Style="{StaticResource SegmentBtn}" ToolTip="Ámbar Dorado">
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                            <Ellipse Width="7" Height="7" Fill="#f59e0b" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Ámbar" FontSize="10" FontWeight="Bold"/>
+                                                        </StackPanel>
+                                                    </Button>
+
+                                                    <!-- 6. Glaciar -->
+                                                    <Button x:Name="BtnThemeGlacier" Click="BtnTheme_Click" Tag="Glacier" Style="{StaticResource SegmentBtn}" Margin="0" ToolTip="Glaciar Nórdico">
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                            <Ellipse Width="7" Height="7" Fill="#06b6d4" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Glaciar" FontSize="10" FontWeight="Bold"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </UniformGrid>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Row 1: Tasa de Refresco (FPS) -->
+                                    <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,9" Margin="0,0,0,8">
+                                        <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                                <TextBlock Text="Calidad de Renderizado y Escalado" FontSize="12.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
-                                                <TextBlock Text="Algoritmo de interpolación aplicado al redimensionar la ventana rotada" FontSize="11" Foreground="#94a3b8" Margin="0,2,0,0"/>
+                                                <TextBlock Text="Fluidez de Captura (FPS)" FontSize="12" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                <TextBlock Text="Tasa de refresco por segundo del motor" FontSize="10.5" Foreground="#94a3b8" Margin="0,1,0,0"/>
                                             </StackPanel>
-                                            <Border Grid.Column="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="3" VerticalAlignment="Center">
+                                            <Border Grid.Column="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="2" VerticalAlignment="Center">
                                                 <StackPanel Orientation="Horizontal">
-                                                    <Button x:Name="BtnQualityHigh" Click="BtnQualityHigh_Click" Style="{StaticResource SegmentBtn}" Width="78" ToolTip="Alta: Suavizado bicúbico nítido">
-                                                        <TextBlock Text="Alta" FontSize="11" FontWeight="Bold"/>
+                                                    <Button x:Name="BtnFps30" Click="BtnFps30_Click" Style="{StaticResource SegmentBtn}" Width="65" ToolTip="30 FPS (Bajo consumo)">
+                                                        <TextBlock Text="30 FPS" FontSize="10.5" FontWeight="Bold"/>
                                                     </Button>
-                                                    <Button x:Name="BtnQualityLinear" Click="BtnQualityLinear_Click" Style="{StaticResource SegmentBtn}" Width="78" ToolTip="Bilineal: Escalado rápido estándar">
-                                                        <TextBlock Text="Bilineal" FontSize="11" FontWeight="Bold"/>
+                                                    <Button x:Name="BtnFps60" Click="BtnFps60_Click" Style="{StaticResource SegmentBtn}" Width="65" ToolTip="60 FPS (Recomendado)">
+                                                        <TextBlock Text="60 FPS" FontSize="10.5" FontWeight="Bold"/>
                                                     </Button>
-                                                    <Button x:Name="BtnQualityNearest" Click="BtnQualityNearest_Click" Style="{StaticResource SegmentBtn}" Width="78" Margin="0" ToolTip="Nítida: Píxel puro sin desenfoque">
-                                                        <TextBlock Text="Nítida" FontSize="11" FontWeight="Bold"/>
+                                                    <Button x:Name="BtnFps120" Click="BtnFps120_Click" Style="{StaticResource SegmentBtn}" Width="65" Margin="0" ToolTip="120 FPS (Ultra)">
+                                                        <TextBlock Text="120 FPS" FontSize="10.5" FontWeight="Bold"/>
                                                     </Button>
                                                 </StackPanel>
                                             </Border>
                                         </Grid>
+                                    </Border>
 
-                                        <!-- Guía Explicativa: Qué es cada calidad y cuándo usarla -->
-                                        <Border Grid.Row="1" Background="#0c0d13" BorderBrush="#222332" BorderThickness="1" CornerRadius="8" Padding="6,5" Margin="0,8,0,0">
-                                            <StackPanel Orientation="Vertical">
-                                                <!-- 1. Alta (Bicúbica) -->
-                                                <Border x:Name="BdQualHigh" CornerRadius="6" Padding="8,4" Margin="0,0,0,2">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="105"/>
-                                                            <ColumnDefinition Width="*"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                                            <Ellipse Width="6" Height="6" Fill="#818cf8" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="Alta (Bicúbica)" FontSize="11" FontWeight="Bold" Foreground="#e0e7ff"/>
-                                                        </StackPanel>
-                                                        <TextBlock Grid.Column="1" FontSize="11" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="15" VerticalAlignment="Center">
-                                                            <Run Text="Suaviza bordes y curvas eliminando pixelado. "/>
-                                                            <Run Text="👉 Mejor para: Videollamadas, cámaras y vídeos." FontWeight="SemiBold" Foreground="#38bdf8"/>
-                                                        </TextBlock>
-                                                    </Grid>
-                                                </Border>
+                                    <!-- Row 2: Calidad de Renderizado / Escalado -->
+                                    <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,10" Margin="0,0,0,8">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
 
-                                                <!-- 2. Bilineal -->
-                                                <Border x:Name="BdQualLinear" CornerRadius="6" Padding="8,4" Margin="0,0,0,2">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="105"/>
-                                                            <ColumnDefinition Width="*"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                                            <Ellipse Width="6" Height="6" Fill="#fbbf24" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="Bilineal" FontSize="11" FontWeight="Bold" Foreground="#fef3c7"/>
-                                                        </StackPanel>
-                                                        <TextBlock Grid.Column="1" FontSize="11" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="15" VerticalAlignment="Center">
-                                                            <Run Text="Interpolación rápida con mínimo consumo de GPU. "/>
-                                                            <Run Text="👉 Mejor para: Portátiles o PCs con recursos limitados." FontWeight="SemiBold" Foreground="#fbbf24"/>
-                                                        </TextBlock>
-                                                    </Grid>
-                                                </Border>
-
-                                                <!-- 3. Nítida (Píxel Puro) -->
-                                                <Border x:Name="BdQualNearest" CornerRadius="6" Padding="8,4" Margin="0">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="105"/>
-                                                            <ColumnDefinition Width="*"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                                            <Ellipse Width="6" Height="6" Fill="#34d399" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="Nítida (Píxel)" FontSize="11" FontWeight="Bold" Foreground="#d1fae5"/>
-                                                        </StackPanel>
-                                                        <TextBlock Grid.Column="1" FontSize="11" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="15" VerticalAlignment="Center">
-                                                            <Run Text="Mapeo 1:1 sin ningún desenfoque ni difuminado. "/>
-                                                            <Run Text="👉 Mejor para: Textos pequeños, código, apps y pixel art." FontWeight="SemiBold" Foreground="#34d399"/>
-                                                        </TextBlock>
-                                                    </Grid>
-                                                </Border>
+                                            <!-- Title & Subtitle (Full width, no cutoffs) -->
+                                            <StackPanel Grid.Row="0" Margin="0,0,0,6">
+                                                <TextBlock Text="Calidad de Renderizado (Escalado)" FontSize="12" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                <TextBlock Text="Algoritmo de interpolación al girar o redimensionar la ventana" FontSize="10.5" Foreground="#94a3b8" Margin="0,1,0,0"/>
                                             </StackPanel>
-                                        </Border>
 
-                                    </Grid>
-                                </Border>
+                                            <!-- 3 Segmented Buttons spanning width -->
+                                            <Border Grid.Row="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="2" Margin="0,0,0,7">
+                                                <UniformGrid Columns="3">
+                                                    <Button x:Name="BtnQualityHigh" Click="BtnQualityHigh_Click" Style="{StaticResource SegmentBtn}">
+                                                        <TextBlock Text="Alta (Bicúbica)" FontSize="10.5" FontWeight="Bold"/>
+                                                    </Button>
+                                                    <Button x:Name="BtnQualityLinear" Click="BtnQualityLinear_Click" Style="{StaticResource SegmentBtn}">
+                                                        <TextBlock Text="Bilineal" FontSize="10.5" FontWeight="Bold"/>
+                                                    </Button>
+                                                    <Button x:Name="BtnQualityNearest" Click="BtnQualityNearest_Click" Style="{StaticResource SegmentBtn}" Margin="0">
+                                                        <TextBlock Text="Nítida (Píxel)" FontSize="10.5" FontWeight="Bold"/>
+                                                    </Button>
+                                                </UniformGrid>
+                                            </Border>
 
-                                <!-- Row 3: Iniciar con Windows -->
-                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,0,0,10">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                            <TextBlock Text="Iniciar con Windows" FontSize="12.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
-                                            <TextBlock Text="Abrir AlwaysRotate automáticamente al iniciar sesión en el PC" FontSize="11" Foreground="#94a3b8" Margin="0,2,0,0"/>
-                                        </StackPanel>
-                                        <CheckBox x:Name="ChkAutoStart" Grid.Column="1" Click="ChkAutoStart_Click" Style="{StaticResource ModernToggleSwitch}" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Border>
+                                            <!-- Guía Explicativa: Qué es cada calidad y cuándo usarla -->
+                                            <Border Grid.Row="2" Background="#0b0c13" BorderBrush="#202230" BorderThickness="1" CornerRadius="8" Padding="6,4">
+                                                <StackPanel Orientation="Vertical">
+                                                    <!-- 1. Alta (Bicúbica) -->
+                                                    <Border x:Name="BdQualHigh" CornerRadius="6" Padding="6,3" Margin="0,0,0,2">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0,0,8,0" VerticalAlignment="Center">
+                                                                <Ellipse Width="6" Height="6" Fill="#818cf8" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="Alta (Bicúbica):" FontSize="10.5" FontWeight="Bold" Foreground="#e0e7ff"/>
+                                                            </StackPanel>
+                                                            <TextBlock Grid.Column="1" FontSize="10.5" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="14" VerticalAlignment="Center">
+                                                                <Run Text="Suaviza bordes sin pixelado."/>
+                                                                <Run Text=" 👉 Para: Videollamadas, cámaras y vídeos." FontWeight="SemiBold" Foreground="#38bdf8"/>
+                                                            </TextBlock>
+                                                        </Grid>
+                                                    </Border>
 
-                                <!-- Row 4: Recordar Estado -->
-                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="16,12">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                            <TextBlock Text="Recordar Sesión" FontSize="12.5" FontWeight="SemiBold" Foreground="#f4f4f5"/>
-                                            <TextBlock Text="Restaurar automáticamente la última ventana capturada y su ángulo" FontSize="11" Foreground="#94a3b8" Margin="0,2,0,0"/>
-                                        </StackPanel>
-                                        <CheckBox x:Name="ChkRemember" Grid.Column="1" Click="ChkRemember_Click" Style="{StaticResource ModernToggleSwitch}" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Border>
+                                                    <!-- 2. Bilineal -->
+                                                    <Border x:Name="BdQualLinear" CornerRadius="6" Padding="6,3" Margin="0,0,0,2">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0,0,8,0" VerticalAlignment="Center">
+                                                                <Ellipse Width="6" Height="6" Fill="#fbbf24" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="Bilineal:" FontSize="10.5" FontWeight="Bold" Foreground="#fef3c7"/>
+                                                            </StackPanel>
+                                                            <TextBlock Grid.Column="1" FontSize="10.5" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="14" VerticalAlignment="Center">
+                                                                <Run Text="Rápido y mínimo consumo."/>
+                                                                <Run Text=" 👉 Para: Portátiles o PCs con recursos limitados." FontWeight="SemiBold" Foreground="#fbbf24"/>
+                                                            </TextBlock>
+                                                        </Grid>
+                                                    </Border>
 
-                            </StackPanel>
-                        </Grid>
+                                                    <!-- 3. Nítida (Píxel Puro) -->
+                                                    <Border x:Name="BdQualNearest" CornerRadius="6" Padding="6,3">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0,0,8,0" VerticalAlignment="Center">
+                                                                <Ellipse Width="6" Height="6" Fill="#34d399" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="Nítida (Píxel):" FontSize="10.5" FontWeight="Bold" Foreground="#d1fae5"/>
+                                                            </StackPanel>
+                                                            <TextBlock Grid.Column="1" FontSize="10.5" Foreground="#94a3b8" TextWrapping="Wrap" LineHeight="14" VerticalAlignment="Center">
+                                                                <Run Text="Píxel 1:1 puro sin desenfoque."/>
+                                                                <Run Text=" 👉 Para: Textos pequeños, código, apps y pixel art." FontWeight="SemiBold" Foreground="#34d399"/>
+                                                            </TextBlock>
+                                                        </Grid>
+                                                    </Border>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Row 3: Iniciar con Windows -->
+                                    <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,9" Margin="0,0,0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                <TextBlock Text="Iniciar con Windows" FontSize="12" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                <TextBlock Text="Abrir AlwaysRotate automáticamente al encender el PC" FontSize="10.5" Foreground="#94a3b8" Margin="0,1,0,0"/>
+                                            </StackPanel>
+                                            <CheckBox x:Name="ChkAutoStart" Grid.Column="1" Click="ChkAutoStart_Click" Style="{StaticResource ModernToggleSwitch}" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Row 4: Recordar Estado -->
+                                    <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,9">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                <TextBlock Text="Recordar Sesión" FontSize="12" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                <TextBlock Text="Restaurar automáticamente la última ventana y su ángulo" FontSize="10.5" Foreground="#94a3b8" Margin="0,1,0,0"/>
+                                            </StackPanel>
+                                            <CheckBox x:Name="ChkRemember" Grid.Column="1" Click="ChkRemember_Click" Style="{StaticResource ModernToggleSwitch}" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+
+                                </StackPanel>
+                            </Grid>
 
                         <!-- TAB 2: ATAJOS DE TECLADO (Shortcuts) -->
                         <Grid x:Name="TabShortcutsView" Visibility="Collapsed">
@@ -1029,9 +1034,10 @@
                         </Grid>
 
                     </Grid>
+                    </ScrollViewer>
 
                     <!-- Modal Footer -->
-                    <Border x:Name="InfoFooterBorder" Grid.Row="2" Background="#14141e" BorderBrush="#262638" BorderThickness="0,1,0,0" CornerRadius="0,0,16,16" Padding="20,12">
+                    <Border x:Name="InfoFooterBorder" Grid.Row="2" Background="#14141e" BorderBrush="#262638" BorderThickness="0,1,0,0" CornerRadius="0,0,16,16" Padding="16,10">
                         <Grid>
                             <Button Click="LnkRocaman_Click" Background="Transparent" BorderThickness="0" Cursor="Hand" VerticalAlignment="Center" Padding="0" ToolTip="Abrir rocaman.vercel.app">
                                 <Button.Template>
@@ -1039,19 +1045,19 @@
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                             <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
                                                   Fill="#6366f1" Width="13" Height="13" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="rocaman.vercel.app" FontSize="11.5" FontWeight="SemiBold" Foreground="#818cf8" VerticalAlignment="Center"/>
-                                            <TextBlock Text=" ↗" FontSize="11.5" Foreground="#6366f1" VerticalAlignment="Center"/>
+                                            <TextBlock Text="rocaman.vercel.app" FontSize="11" FontWeight="SemiBold" Foreground="#818cf8" VerticalAlignment="Center"/>
+                                            <TextBlock Text=" ↗" FontSize="11" Foreground="#6366f1" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </ControlTemplate>
                                 </Button.Template>
                             </Button>
 
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                <Border Background="#1e1e2d" BorderBrush="#35354a" BorderThickness="1" CornerRadius="4" Padding="6,2" Margin="0,0,12,0" VerticalAlignment="Center">
-                                    <TextBlock Text="v3.4" FontSize="10.5" FontWeight="Bold" Foreground="#a5b4fc"/>
+                                <Border Background="#1e1e2d" BorderBrush="#35354a" BorderThickness="1" CornerRadius="4" Padding="6,2" Margin="0,0,10,0" VerticalAlignment="Center">
+                                    <TextBlock Text="v3.8" FontSize="10.5" FontWeight="Bold" Foreground="#a5b4fc"/>
                                 </Border>
-                                <Button Click="BtnCloseInfo_Click" Style="{StaticResource ModernBtn}" Height="32" Padding="20,0">
-                                    <TextBlock Text="Cerrar" FontSize="11.5" FontWeight="Bold"/>
+                                <Button Click="BtnCloseInfo_Click" Style="{StaticResource ModernBtn}" Height="30" Padding="18,0">
+                                    <TextBlock Text="Cerrar" FontSize="11" FontWeight="Bold"/>
                                 </Button>
                             </StackPanel>
                         </Grid>
