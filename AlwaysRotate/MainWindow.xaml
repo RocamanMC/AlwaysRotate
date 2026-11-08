@@ -579,18 +579,18 @@
 
                 <TextBlock x:Name="TxtStatus" Text="Listo • Selecciona WhatsApp en el menú superior" FontSize="11" Foreground="#94a3b8" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
 
-                <Border Grid.Column="1" Background="#4f46e5" CornerRadius="4" Padding="6,1" Margin="8,0,8,0" VerticalAlignment="Center">
+                <Border x:Name="BdAngleBadge" Grid.Column="1" Background="#4f46e5" CornerRadius="4" Padding="6,1" Margin="8,0,8,0" VerticalAlignment="Center">
                     <TextBlock x:Name="TxtAngleBadge" Text="90°" FontSize="10" FontWeight="Bold" Foreground="White"/>
                 </Border>
 
-                <TextBlock Text="Atajo: Ctrl + Alt + R" FontSize="10" FontWeight="SemiBold" Foreground="#6366f1" Grid.Column="2" VerticalAlignment="Center"/>
+                <TextBlock x:Name="TxtHotkeyHint" Text="Atajo: Ctrl + Alt + R" FontSize="10" FontWeight="SemiBold" Foreground="#6366f1" Grid.Column="2" VerticalAlignment="Center"/>
             </Grid>
         </Border>
         <!-- 4. Information, Shortcuts & Settings Modal Overlay (Pro Fluent Style) -->
         <Border x:Name="InfoOverlay" Grid.Row="0" Grid.RowSpan="3" Background="#cc07070b"
                 Visibility="Collapsed" Panel.ZIndex="2000" Padding="20">
-            <Border Background="#12121a" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="16"
-                    Width="650" Height="510" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border x:Name="InfoModalBorder" Background="#12121a" BorderBrush="#2e2e42" BorderThickness="1" CornerRadius="16"
+                    Width="650" Height="520" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="32" ShadowDepth="10" Direction="270" Color="#000000" Opacity="0.9"/>
                 </Border.Effect>
@@ -605,7 +605,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Modal Header -->
-                    <Border Grid.Row="0" Background="#161622" BorderBrush="#262638" BorderThickness="0,0,0,1" CornerRadius="16,16,0,0" Padding="20,14,16,12">
+                    <Border x:Name="InfoHeaderBorder" Grid.Row="0" Background="#161622" BorderBrush="#262638" BorderThickness="0,0,0,1" CornerRadius="16,16,0,0" Padding="20,14,16,12">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -667,8 +667,78 @@
                         <Grid x:Name="TabSettingsView" Visibility="Visible">
                             <StackPanel Orientation="Vertical">
 
+                                <!-- Row 0: Tema de Decoración -->
+                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,10" Margin="0,0,0,8">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
+                                            <Path Data="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.28 19.59 10.59 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"
+                                                  Fill="#a855f7" Width="13" Height="13" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Tema de Decoración" FontSize="12.5" FontWeight="SemiBold" Foreground="#f4f4f5" VerticalAlignment="Center"/>
+                                            <TextBlock Text="• Personaliza el color y estilo visual de la aplicación" FontSize="11" Foreground="#94a3b8" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+
+                                        <!-- Theme Selection Swatch Chips -->
+                                        <Border Grid.Row="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="2">
+                                            <UniformGrid Columns="6">
+                                                <!-- 1. Indigo -->
+                                                <Button x:Name="BtnThemeIndigo" Click="BtnTheme_Click" Tag="Indigo" Style="{StaticResource SegmentBtn}" ToolTip="Indigo Nocturno (Clásico)">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <Ellipse Width="8" Height="8" Fill="#6366f1" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="Indigo" FontSize="10.5" FontWeight="Bold"/>
+                                                    </StackPanel>
+                                                </Button>
+
+                                                <!-- 2. Esmeralda -->
+                                                <Button x:Name="BtnThemeEmerald" Click="BtnTheme_Click" Tag="Emerald" Style="{StaticResource SegmentBtn}" ToolTip="Cíber Esmeralda (WhatsApp / Matrix)">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <Ellipse Width="8" Height="8" Fill="#10b981" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="Esmeralda" FontSize="10.5" FontWeight="Bold"/>
+                                                    </StackPanel>
+                                                </Button>
+
+                                                <!-- 3. Amatista -->
+                                                <Button x:Name="BtnThemeAmethyst" Click="BtnTheme_Click" Tag="Amethyst" Style="{StaticResource SegmentBtn}" ToolTip="Amatista Neón (Cyberpunk / Violeta)">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <Ellipse Width="8" Height="8" Fill="#a855f7" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="Amatista" FontSize="10.5" FontWeight="Bold"/>
+                                                    </StackPanel>
+                                                </Button>
+
+                                                <!-- 4. Carmesí -->
+                                                <Button x:Name="BtnThemeCrimson" Click="BtnTheme_Click" Tag="Crimson" Style="{StaticResource SegmentBtn}" ToolTip="Carmesí Rubí (Rojo / Sunset)">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <Ellipse Width="8" Height="8" Fill="#f43f5e" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="Carmesí" FontSize="10.5" FontWeight="Bold"/>
+                                                    </StackPanel>
+                                                </Button>
+
+                                                <!-- 5. Ámbar -->
+                                                <Button x:Name="BtnThemeAmber" Click="BtnTheme_Click" Tag="Amber" Style="{StaticResource SegmentBtn}" ToolTip="Ámbar Dorado (Cyber Gold)">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <Ellipse Width="8" Height="8" Fill="#f59e0b" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="Ámbar" FontSize="10.5" FontWeight="Bold"/>
+                                                    </StackPanel>
+                                                </Button>
+
+                                                <!-- 6. Glaciar -->
+                                                <Button x:Name="BtnThemeGlacier" Click="BtnTheme_Click" Tag="Glacier" Style="{StaticResource SegmentBtn}" Margin="0" ToolTip="Glaciar Nórdico (Azul Hielo / Cyan)">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <Ellipse Width="8" Height="8" Fill="#06b6d4" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="Glaciar" FontSize="10.5" FontWeight="Bold"/>
+                                                    </StackPanel>
+                                                </Button>
+                                            </UniformGrid>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+
                                 <!-- Row 1: Tasa de Refresco (FPS) -->
-                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,0,0,10">
+                                <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,9" Margin="0,0,0,8">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -893,7 +963,7 @@
                     </Grid>
 
                     <!-- Modal Footer -->
-                    <Border Grid.Row="2" Background="#14141e" BorderBrush="#262638" BorderThickness="0,1,0,0" CornerRadius="0,0,16,16" Padding="20,12">
+                    <Border x:Name="InfoFooterBorder" Grid.Row="2" Background="#14141e" BorderBrush="#262638" BorderThickness="0,1,0,0" CornerRadius="0,0,16,16" Padding="20,12">
                         <Grid>
                             <Button Click="LnkRocaman_Click" Background="Transparent" BorderThickness="0" Cursor="Hand" VerticalAlignment="Center" Padding="0" ToolTip="Abrir rocaman.vercel.app">
                                 <Button.Template>

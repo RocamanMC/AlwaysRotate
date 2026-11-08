@@ -43,6 +43,110 @@ namespace AlwaysRotate
         private string _lastRememberedTarget = string.Empty;
         private int _targetFps = 60;
         private string _scalingMode = "HighQuality";
+        private string _currentTheme = "Indigo";
+
+        public record ThemeDefinition(
+            string Id,
+            string Name,
+            Color WindowBg,
+            Color HeaderBg,
+            Color HeaderBorder,
+            Color FooterBg,
+            Color AccentDark,
+            Color AccentBorder,
+            Color AccentLight,
+            Color BadgeBg,
+            Color BadgeBorder,
+            Color HudBorder
+        );
+
+        private static readonly Dictionary<string, ThemeDefinition> AvailableThemes = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Indigo"] = new(
+                "Indigo",
+                "Índigo Nocturno",
+                Color.FromRgb(12, 13, 20),
+                Color.FromRgb(18, 19, 31),
+                Color.FromRgb(32, 34, 53),
+                Color.FromRgb(16, 17, 27),
+                Color.FromRgb(79, 70, 229),
+                Color.FromRgb(99, 102, 241),
+                Color.FromRgb(165, 180, 252),
+                Color.FromRgb(30, 27, 75),
+                Color.FromRgb(55, 48, 163),
+                Color.FromRgb(79, 70, 229)
+            ),
+            ["Emerald"] = new(
+                "Emerald",
+                "Esmeralda Cíber",
+                Color.FromRgb(10, 16, 13),
+                Color.FromRgb(15, 25, 20),
+                Color.FromRgb(25, 48, 38),
+                Color.FromRgb(12, 20, 16),
+                Color.FromRgb(5, 150, 105),
+                Color.FromRgb(16, 185, 129),
+                Color.FromRgb(110, 231, 183),
+                Color.FromRgb(6, 78, 59),
+                Color.FromRgb(4, 120, 87),
+                Color.FromRgb(5, 150, 105)
+            ),
+            ["Amethyst"] = new(
+                "Amethyst",
+                "Amatista Neón",
+                Color.FromRgb(14, 10, 20),
+                Color.FromRgb(23, 16, 34),
+                Color.FromRgb(46, 26, 69),
+                Color.FromRgb(18, 12, 28),
+                Color.FromRgb(147, 51, 234),
+                Color.FromRgb(168, 85, 247),
+                Color.FromRgb(216, 180, 254),
+                Color.FromRgb(59, 7, 100),
+                Color.FromRgb(107, 33, 168),
+                Color.FromRgb(147, 51, 234)
+            ),
+            ["Crimson"] = new(
+                "Crimson",
+                "Carmesí Rubí",
+                Color.FromRgb(19, 9, 11),
+                Color.FromRgb(28, 13, 16),
+                Color.FromRgb(56, 23, 30),
+                Color.FromRgb(23, 10, 13),
+                Color.FromRgb(220, 38, 38),
+                Color.FromRgb(239, 68, 68),
+                Color.FromRgb(252, 165, 165),
+                Color.FromRgb(69, 10, 10),
+                Color.FromRgb(153, 27, 27),
+                Color.FromRgb(220, 38, 38)
+            ),
+            ["Amber"] = new(
+                "Amber",
+                "Ámbar Dorado",
+                Color.FromRgb(17, 13, 6),
+                Color.FromRgb(28, 20, 9),
+                Color.FromRgb(61, 42, 16),
+                Color.FromRgb(23, 16, 8),
+                Color.FromRgb(217, 119, 6),
+                Color.FromRgb(245, 158, 11),
+                Color.FromRgb(253, 230, 138),
+                Color.FromRgb(69, 26, 3),
+                Color.FromRgb(146, 64, 14),
+                Color.FromRgb(217, 119, 6)
+            ),
+            ["Glacier"] = new(
+                "Glacier",
+                "Glaciar Nórdico",
+                Color.FromRgb(8, 16, 20),
+                Color.FromRgb(12, 24, 31),
+                Color.FromRgb(20, 48, 62),
+                Color.FromRgb(10, 19, 26),
+                Color.FromRgb(8, 145, 178),
+                Color.FromRgb(6, 182, 212),
+                Color.FromRgb(103, 232, 249),
+                Color.FromRgb(22, 78, 99),
+                Color.FromRgb(14, 116, 144),
+                Color.FromRgb(8, 145, 178)
+            )
+        };
 
         public enum ViewState
         {
@@ -143,6 +247,7 @@ namespace AlwaysRotate
             }
             catch { }
 
+            ApplyTheme(_currentTheme);
             SetFps(_targetFps);
             SetQuality(_scalingMode);
             ApplyAngle(_currentAngle);
@@ -576,6 +681,7 @@ namespace AlwaysRotate
         {
             ChkAutoStart.IsChecked = IsAutoStartEnabled();
             ChkRemember.IsChecked = _rememberState;
+            UpdateThemeButtonStyles();
             UpdateFpsButtonStyles();
             UpdateQualityButtonStyles();
             SetActiveTab(0);
@@ -587,19 +693,140 @@ namespace AlwaysRotate
             InfoOverlay.Visibility = Visibility.Collapsed;
         }
 
+        private void ApplyTheme(string themeId)
+        {
+            if (!AvailableThemes.TryGetValue(themeId, out var theme))
+            {
+                theme = AvailableThemes["Indigo"];
+                themeId = "Indigo";
+            }
+            _currentTheme = themeId;
+
+            // 1. Window & Main Surfaces
+            this.Background = new SolidColorBrush(theme.WindowBg);
+            if (HeaderBorder != null)
+            {
+                HeaderBorder.Background = new SolidColorBrush(theme.HeaderBg);
+                HeaderBorder.BorderBrush = new SolidColorBrush(theme.HeaderBorder);
+            }
+            if (FooterBorder != null)
+            {
+                FooterBorder.Background = new SolidColorBrush(theme.FooterBg);
+                FooterBorder.BorderBrush = new SolidColorBrush(theme.HeaderBorder);
+            }
+
+            // 2. Footer Angle Badge & Hotkey Text
+            if (BdAngleBadge != null)
+            {
+                BdAngleBadge.Background = new SolidColorBrush(theme.BadgeBg);
+                BdAngleBadge.BorderBrush = new SolidColorBrush(theme.BadgeBorder);
+            }
+            if (TxtAngleBadge != null)
+            {
+                TxtAngleBadge.Foreground = new SolidColorBrush(theme.AccentLight);
+            }
+            if (TxtHotkeyHint != null)
+            {
+                TxtHotkeyHint.Foreground = new SolidColorBrush(theme.AccentBorder);
+            }
+
+            // 3. Fullscreen HUD Elements
+            if (BdFsRotate != null)
+            {
+                BdFsRotate.Background = new SolidColorBrush(theme.BadgeBg);
+                BdFsRotate.BorderBrush = new SolidColorBrush(theme.AccentBorder);
+            }
+            if (TxtFsAngle != null)
+            {
+                TxtFsAngle.Foreground = new SolidColorBrush(theme.AccentLight);
+            }
+            if (FullscreenHud != null)
+            {
+                FullscreenHud.BorderBrush = new SolidColorBrush(theme.HudBorder);
+            }
+
+            // 4. Modal Surfaces
+            if (InfoModalBorder != null)
+            {
+                InfoModalBorder.Background = new SolidColorBrush(theme.WindowBg);
+                InfoModalBorder.BorderBrush = new SolidColorBrush(theme.HeaderBorder);
+            }
+            if (InfoHeaderBorder != null)
+            {
+                InfoHeaderBorder.Background = new SolidColorBrush(theme.HeaderBg);
+                InfoHeaderBorder.BorderBrush = new SolidColorBrush(theme.HeaderBorder);
+            }
+            if (InfoFooterBorder != null)
+            {
+                InfoFooterBorder.Background = new SolidColorBrush(theme.FooterBg);
+                InfoFooterBorder.BorderBrush = new SolidColorBrush(theme.HeaderBorder);
+            }
+
+            // 5. Update Active Controls
+            UpdateRotationButtonStyles();
+            UpdateFpsButtonStyles();
+            UpdateQualityButtonStyles();
+            UpdateThemeButtonStyles();
+            SaveConfig();
+        }
+
+        private void UpdateThemeButtonStyles()
+        {
+            var buttons = new (string id, Button? btn)[]
+            {
+                ("Indigo", BtnThemeIndigo),
+                ("Emerald", BtnThemeEmerald),
+                ("Amethyst", BtnThemeAmethyst),
+                ("Crimson", BtnThemeCrimson),
+                ("Amber", BtnThemeAmber),
+                ("Glacier", BtnThemeGlacier)
+            };
+
+            var cur = AvailableThemes.TryGetValue(_currentTheme, out var t) ? t : AvailableThemes["Indigo"];
+
+            foreach (var (id, btn) in buttons)
+            {
+                if (btn == null) continue;
+                bool isSelected = string.Equals(_currentTheme, id, StringComparison.OrdinalIgnoreCase);
+                if (isSelected)
+                {
+                    btn.Background = new SolidColorBrush(cur.BadgeBg);
+                    btn.BorderBrush = new SolidColorBrush(cur.AccentBorder);
+                    btn.Foreground = Brushes.White;
+                }
+                else
+                {
+                    btn.Background = new SolidColorBrush(Color.FromRgb(26, 26, 36));
+                    btn.BorderBrush = new SolidColorBrush(Color.FromRgb(45, 45, 60));
+                    btn.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                }
+            }
+        }
+
+        private void BtnTheme_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string themeId)
+            {
+                ApplyTheme(themeId);
+                TxtStatus.Text = $"Tema decorativo aplicado: {AvailableThemes.GetValueOrDefault(themeId)?.Name ?? themeId}";
+            }
+        }
+
         private void SetActiveTab(int tabIndex)
         {
             if (TabSettingsView != null) TabSettingsView.Visibility = tabIndex == 0 ? Visibility.Visible : Visibility.Collapsed;
             if (TabShortcutsView != null) TabShortcutsView.Visibility = tabIndex == 1 ? Visibility.Visible : Visibility.Collapsed;
             if (TabAboutView != null) TabAboutView.Visibility = tabIndex == 2 ? Visibility.Visible : Visibility.Collapsed;
 
+            var cur = AvailableThemes.TryGetValue(_currentTheme, out var t) ? t : AvailableThemes["Indigo"];
+
             void StyleTab(Button? btn, bool active)
             {
                 if (btn == null) return;
                 if (active)
                 {
-                    btn.Background = new SolidColorBrush(Color.FromRgb(49, 46, 129));
-                    btn.BorderBrush = new SolidColorBrush(Color.FromRgb(99, 102, 241));
+                    btn.Background = new SolidColorBrush(cur.BadgeBg);
+                    btn.BorderBrush = new SolidColorBrush(cur.AccentBorder);
                     btn.Foreground = Brushes.White;
                 }
                 else
@@ -643,13 +870,15 @@ namespace AlwaysRotate
 
         private void UpdateFpsButtonStyles()
         {
+            var cur = AvailableThemes.TryGetValue(_currentTheme, out var t) ? t : AvailableThemes["Indigo"];
+
             void StyleBtn(Button? btn, bool isActive)
             {
                 if (btn == null) return;
                 if (isActive)
                 {
-                    btn.Background = new SolidColorBrush(Color.FromRgb(79, 70, 229));
-                    btn.BorderBrush = new SolidColorBrush(Color.FromRgb(99, 102, 241));
+                    btn.Background = new SolidColorBrush(cur.AccentDark);
+                    btn.BorderBrush = new SolidColorBrush(cur.AccentBorder);
                     btn.Foreground = Brushes.White;
                 }
                 else
@@ -686,13 +915,15 @@ namespace AlwaysRotate
 
         private void UpdateQualityButtonStyles()
         {
+            var cur = AvailableThemes.TryGetValue(_currentTheme, out var t) ? t : AvailableThemes["Indigo"];
+
             void StyleBtn(Button? btn, bool isActive)
             {
                 if (btn == null) return;
                 if (isActive)
                 {
-                    btn.Background = new SolidColorBrush(Color.FromRgb(79, 70, 229));
-                    btn.BorderBrush = new SolidColorBrush(Color.FromRgb(99, 102, 241));
+                    btn.Background = new SolidColorBrush(cur.AccentDark);
+                    btn.BorderBrush = new SolidColorBrush(cur.AccentBorder);
                     btn.Foreground = Brushes.White;
                 }
                 else
@@ -787,6 +1018,14 @@ namespace AlwaysRotate
                     {
                         _scalingMode = scElem.GetString() ?? "HighQuality";
                     }
+                    if (doc.RootElement.TryGetProperty("theme", out var thElem))
+                    {
+                        string? savedTheme = thElem.GetString();
+                        if (!string.IsNullOrWhiteSpace(savedTheme) && AvailableThemes.ContainsKey(savedTheme))
+                        {
+                            _currentTheme = savedTheme;
+                        }
+                    }
                     if (_rememberState)
                     {
                         if (doc.RootElement.TryGetProperty("lastAngle", out var aElem))
@@ -813,7 +1052,8 @@ namespace AlwaysRotate
                     lastAngle = _rememberState ? _currentAngle : 90,
                     lastTarget = _rememberState ? _targetTitle : string.Empty,
                     targetFps = _targetFps,
-                    scalingMode = _scalingMode
+                    scalingMode = _scalingMode,
+                    theme = _currentTheme
                 };
                 string json = JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
                 System.IO.File.WriteAllText(ConfigPath, json);
@@ -1122,12 +1362,14 @@ namespace AlwaysRotate
 
         private void UpdateRotationButtonStyles()
         {
+            var cur = AvailableThemes.TryGetValue(_currentTheme, out var t) ? t : AvailableThemes["Indigo"];
+
             void StyleBtn(Button btn, bool isActive)
             {
                 if (isActive)
                 {
-                    btn.Background = new SolidColorBrush(Color.FromRgb(79, 70, 229));
-                    btn.BorderBrush = new SolidColorBrush(Color.FromRgb(99, 102, 241));
+                    btn.Background = new SolidColorBrush(cur.AccentDark);
+                    btn.BorderBrush = new SolidColorBrush(cur.AccentBorder);
                     btn.Foreground = Brushes.White;
                 }
                 else

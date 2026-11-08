@@ -20,6 +20,27 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
+### [2026-11-08] - AlwaysRotate v3.7 (Temas de Decoración Personalizables en la Interfaz)
+- **Selector de Temas de Decoración**:
+  - Incorporado selector dinámico con 6 paletas de color cuidadosamente diseñadas en la pestaña *Ajustes* del panel de información:
+    1. `Indigo` (Índigo Nocturno - Clásico y elegante por defecto).
+    2. `Emerald` (Esmeralda Cíber - Inspirado en WhatsApp / Matrix).
+    3. `Amethyst` (Amatista Neón - Estilo Cyberpunk / Violeta).
+    4. `Crimson` (Carmesí Rubí - Rojo Sunset).
+    5. `Amber` (Ámbar Dorado - Cyber Gold).
+    6. `Glacier` (Glaciar Nórdico - Azul Hielo / Cyan ártico).
+- **Personalización Reactiva en Tiempo Real**:
+  - El tema seleccionado transforma instantáneamente:
+    - Fondos y bordes de la ventana principal y de cabecera/pie.
+    - Superficies y encabezados del modal de ajustes.
+    - Distintivo de ángulo en el pie (`BdAngleBadge`) y texto de atajos (`TxtHotkeyHint`).
+    - Controles activos de rotación (`0°`, `90°`, `180°`, `270°`), fluidez (FPS) y calidad.
+    - Insignia de rotación y borde del HUD flotante en modo pantalla completa.
+    - Pestañas activas del modal de configuración.
+- **Persistencia**:
+  - El tema seleccionado se guarda en `config.json` (`theme`) y se restaura automáticamente en cada inicio de la aplicación.
+- **Control de Versiones**: Commits realizados y sincronizados con GitHub `master`.
+
 ### [2026-11-08] - AlwaysRotate v3.6 (Detección Completa y Captura de Videollamadas de WhatsApp)
 - **Corrección de Filtro Oculto**:
   - Eliminado el filtro previo en `Win32.cs` que descartaba intencionalmente las ventanas con "Video call" o "Call" de WhatsApp.
