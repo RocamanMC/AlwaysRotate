@@ -266,6 +266,7 @@ namespace AlwaysRotate
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             _captureTimer.Stop();
+            SaveConfig();
 
             // Always restore ghosted original window
             if (_ghostedHwnd != IntPtr.Zero)
@@ -1079,6 +1080,14 @@ namespace AlwaysRotate
                         {
                             _lastRememberedTarget = tElem.GetString() ?? string.Empty;
                         }
+                        if (doc.RootElement.TryGetProperty("windowWidth", out var wElem) && wElem.GetDouble() >= 460)
+                        {
+                            this.Width = wElem.GetDouble();
+                        }
+                        if (doc.RootElement.TryGetProperty("windowHeight", out var hElem) && hElem.GetDouble() >= 420)
+                        {
+                            this.Height = hElem.GetDouble();
+                        }
                     }
                 }
             }
@@ -1089,6 +1098,9 @@ namespace AlwaysRotate
         {
             try
             {
+                double saveW = (this.WindowState == WindowState.Normal && this.ActualWidth >= 460) ? this.ActualWidth : 880;
+                double saveH = (this.WindowState == WindowState.Normal && this.ActualHeight >= 420) ? this.ActualHeight : 640;
+
                 var obj = new
                 {
                     rememberState = _rememberState,
@@ -1096,7 +1108,9 @@ namespace AlwaysRotate
                     lastTarget = _rememberState ? _targetTitle : string.Empty,
                     targetFps = _targetFps,
                     scalingMode = _scalingMode,
-                    theme = _currentTheme
+                    theme = _currentTheme,
+                    windowWidth = saveW,
+                    windowHeight = saveH
                 };
                 string json = JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
                 System.IO.File.WriteAllText(ConfigPath, json);

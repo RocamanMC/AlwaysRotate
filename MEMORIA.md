@@ -20,6 +20,16 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
+### [2026-11-08] - AlwaysRotate v3.9.4 (Proporción y Dimensiones Iniciales Panorámicas 880x640)
+- **Corrección de la Proporción Inicial Estrecha**:
+  - Anteriormente la ventana se abría con un tamaño por defecto de `480 x 720 px` (proporción vertical de teléfono móvil muy estrecha).
+  - Se actualizó el tamaño por defecto a **`880 x 640 px`** (`MinWidth="460" MinHeight="420"`), ofreciendo una proporción panorámica de escritorio amplia y cómoda.
+  - El visor tiene mucho más espacio para renderizar ventanas rotadas y videollamadas con excelente resolución, y la barra superior y menús se muestran holgados.
+- **Persistencia del Tamaño Personalizado**:
+  - Se añadieron `windowWidth` y `windowHeight` en `SaveConfig()` y `LoadConfig()`.
+  - Si el usuario redimensiona la ventana a cualquier tamaño a su gusto, AlwaysRotate lo memoriza y lo restaura fielmente al volver a abrirla.
+- **Control de Versiones**: Commits realizados y sincronizados con GitHub `master`.
+
 ### [2026-11-08] - AlwaysRotate v3.9.3 (Fijación de Altura Constante en el Modal para Evitar Desplazamientos)
 - **Eliminación del Salto Vertical al Cambiar de Pestaña**:
   - Al no tener una altura fija, el modal calculaba su alto en función del contenido de cada pestaña (*Ajustes* medía ~550 px, mientras que *Atajos* medía ~410 px).
