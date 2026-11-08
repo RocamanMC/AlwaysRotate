@@ -20,6 +20,18 @@ Desarrollar una suite de herramientas y utilidades de sistema para Windows (simi
 - Definición de objetivo: alternativa propia y estable a PowerToys.
 - Repositorio Git inicializado con `.gitignore` oficial y commits estructurados.
 
+### [2026-11-08] - AlwaysRotate: Preparación y Publicación Open Source
+- **Branding y Activos Visuales**:
+  - Incorporado icono oficial en alta resolución en `assets/app_icon.png`.
+  - README completamente rediseñado con encabezado centrado, insignias dinámicas de GitHub Releases, MIT License y autoría oficial.
+  - Añadido diagrama de arquitectura interactivo (Mermaid) mostrando el pipeline: BitBlt GPU 60/120 FPS -> Matriz de Rotación -> Visor Interactivo -> Mapeo vectorial inverso de ratón/teclas.
+  - Añadida guía de compilación desde código fuente con .NET 10 y `dotnet publish` single-file.
+- **Licencia Oficial**:
+  - Creado archivo `LICENSE` con Licencia MIT (Copyright (c) 2026 Rocaman).
+- **Publicación Abierta**:
+  - Configurados metadatos y temas oficiales en GitHub (`windows`, `wpf`, `screen-rotation`, `whatsapp`, `utility`, `portable`).
+  - Repositorio transformado a visibilidad pública para distribución comunitaria.
+
 ### [2026-11-08] - AlwaysRotate v4.0 (Repositorio Dedicado en GitHub y README Oficial)
 - **Repositorio Privado Dedicado**:
   - Creado y vinculado el repositorio exclusivo https://github.com/RocamanMC/AlwaysRotate en GitHub.
