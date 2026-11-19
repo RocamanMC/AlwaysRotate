@@ -347,40 +347,71 @@
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                         <Image Source="app_icon.ico" Width="15" Height="15" Margin="0,0,7,0" VerticalAlignment="Center"/>
                         <TextBlock Text="AlwaysRotate" FontSize="11.5" FontWeight="SemiBold" Foreground="#a1a1aa" VerticalAlignment="Center"/>
-                        <TextBlock Text="v3.4" FontSize="9" Foreground="#6366f1" Margin="6,0,0,0" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Text="v3.5" FontSize="9" Foreground="#6366f1" Margin="6,0,0,0" VerticalAlignment="Center" FontWeight="Bold"/>
                     </StackPanel>
 
-                    <!-- Window Control Buttons (Minimize, Maximize, Close) -->
+                    <!-- Modern Fluent Window Caption Controls (Minimize, Maximize, Close) -->
                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Click="BtnWinMin_Click" ToolTip="Minimizar" Width="30" Height="22"
-                                Background="Transparent" BorderThickness="0" Cursor="Hand" Margin="2,0">
-                            <TextBlock Text="—" FontSize="10" Foreground="#a1a1aa" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <!-- Minimize Button -->
+                        <Button Click="BtnWinMin_Click" ToolTip="Minimizar" Width="42" Height="28" Cursor="Hand" Margin="1,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="bd" Background="Transparent" CornerRadius="4">
+                                        <Path Data="M0 5h10" Stroke="#a1a1aa" StrokeThickness="1.2" Width="10" Height="10"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="bd" Property="Background" Value="#262638"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="bd" Property="Background" Value="#32324a"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
                         </Button>
-                        <Button Click="BtnWinMax_Click" ToolTip="Maximizar / Restaurar" Width="30" Height="22"
-                                Background="Transparent" BorderThickness="0" Cursor="Hand" Margin="2,0">
-                            <TextBlock Text="□" FontSize="11" Foreground="#a1a1aa" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                        <!-- Maximize / Restore Button -->
+                        <Button Click="BtnWinMax_Click" ToolTip="Maximizar / Restaurar" Width="42" Height="28" Cursor="Hand" Margin="1,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="bd" Background="Transparent" CornerRadius="4">
+                                        <Path Data="M0.5 0.5h9v9h-9z" Stroke="#a1a1aa" StrokeThickness="1.2" Fill="Transparent" Width="10" Height="10"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="bd" Property="Background" Value="#262638"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="bd" Property="Background" Value="#32324a"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
                         </Button>
-                        <Button Click="BtnWinClose_Click" ToolTip="Cerrar" Width="30" Height="22"
-                                Background="Transparent" BorderThickness="0" Cursor="Hand" Margin="2,0">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border x:Name="bd" Background="Transparent" CornerRadius="4">
-                                                    <TextBlock x:Name="tb" Text="✕" FontSize="11" Foreground="#a1a1aa" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="bd" Property="Background" Value="#e11d48"/>
-                                                        <Setter TargetName="tb" Property="Foreground" Value="#ffffff"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
+
+                        <!-- Close Button -->
+                        <Button Click="BtnWinClose_Click" ToolTip="Cerrar" Width="42" Height="28" Cursor="Hand" Margin="1,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="bd" Background="Transparent" CornerRadius="4">
+                                        <Path x:Name="ico" Data="M0.5 0.5l9 9m0-9l-9 9" Stroke="#a1a1aa" StrokeThickness="1.2" Width="10" Height="10"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="bd" Property="Background" Value="#e81123"/>
+                                            <Setter TargetName="ico" Property="Stroke" Value="#ffffff"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter TargetName="bd" Property="Background" Value="#c4101e"/>
+                                            <Setter TargetName="ico" Property="Stroke" Value="#ffffff"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -554,6 +585,16 @@
                 <Viewbox x:Name="ViewportViewbox" Stretch="Uniform">
                     <Image x:Name="RotatedImageHost" RenderOptions.BitmapScalingMode="HighQuality"/>
                 </Viewbox>
+
+                <!-- Top Drag Zone for Zen Mode (Drag to move window without Alt key) -->
+                <Border x:Name="ZenTopDragZone"
+                        VerticalAlignment="Top"
+                        Height="28"
+                        Background="#01000000"
+                        Cursor="SizeAll"
+                        ToolTip="Arrastrar para mover la ventana (o doble clic para auto-ajustar)"
+                        MouseDown="ZenTopDragZone_MouseDown"
+                        Panel.ZIndex="500"/>
 
                 <!-- Floating Fullscreen & Zen HUD Toolbar -->
                 <Border x:Name="FullscreenHud"

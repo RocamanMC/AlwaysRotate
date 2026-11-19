@@ -1323,6 +1323,21 @@ namespace AlwaysRotate
         private void BtnWinMax_Click(object sender, RoutedEventArgs e) => this.WindowState = this.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         private void BtnWinClose_Click(object sender, RoutedEventArgs e) => this.Close();
 
+        private void ZenTopDragZone_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                if (e.ClickCount == 2)
+                {
+                    AutoFitWindowToTarget();
+                }
+                else
+                {
+                    DragMove();
+                }
+            }
+        }
+
         private void AutoFitWindowToTarget()
         {
             if (RotatedImageHost.Source is BitmapSource bmp && bmp.PixelWidth > 0 && bmp.PixelHeight > 0)
