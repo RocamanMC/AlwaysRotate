@@ -189,8 +189,12 @@ namespace AlwaysRotate
         private ViewState _currentView = ViewState.Normal;
         private bool _isFullscreen => _currentView == ViewState.Fullscreen;
         private WindowState _prevWindowState = WindowState.Normal;
-        private WindowStyle _prevWindowStyle = WindowStyle.SingleBorderWindow;
+        private WindowStyle _prevWindowStyle = WindowStyle.None;
         private ResizeMode _prevResizeMode = ResizeMode.CanResize;
+
+        private bool _isFillMode = false;
+        private bool _syncTargetSizeEnabled = true;
+        private readonly DispatcherTimer _syncSizeTimer = new DispatcherTimer();
 
         private HwndSource? _hwndSource;
 
@@ -217,6 +221,19 @@ namespace AlwaysRotate
             IntPtr handle = new WindowInteropHelper(this).Handle;
             _hwndSource = HwndSource.FromHwnd(handle);
             _hwndSource?.AddHook(HwndHook);
+
+            // Configure DWM dark mode and window resize sync
+            try
+            {
+                int darkMode = 1;
+                Win32.DwmSetWindowAttribute(handle, 20, ref darkMode, sizeof(int));
+                Win32.DwmSetWindowAttribute(handle, 19, ref darkMode, sizeof(int));
+            }
+            catch { }
+
+            _syncSizeTimer.Interval = TimeSpan.FromMilliseconds(70);
+            _syncSizeTimer.Tick += (s, ev) => { _syncSizeTimer.Stop(); SyncTargetWindowSize(); };
+            this.SizeChanged += OnWindowSizeChanged;
 
             // Register global hotkey Ctrl + Alt + R
             Win32.RegisterHotKey(handle, HOTKEY_ID, (uint)(Win32.MOD_CONTROL | Win32.MOD_ALT), 0x52);
@@ -1287,6 +1304,101 @@ namespace AlwaysRotate
         #endregion
 
         #region Fullscreen & Window Zen Modes
+        private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                if (e.ClickCount == 2)
+                {
+                    this.WindowState = this.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+                }
+                else
+                {
+                    DragMove();
+                }
+            }
+        }
+
+        private void BtnWinMin_Click(object sender, RoutedEventArgs e) => this.WindowState = WindowState.Minimized;
+        private void BtnWinMax_Click(object sender, RoutedEventArgs e) => this.WindowState = this.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        private void BtnWinClose_Click(object sender, RoutedEventArgs e) => this.Close();
+
+        private void AutoFitWindowToTarget()
+        {
+            if (RotatedImageHost.Source is BitmapSource bmp && bmp.PixelWidth > 0 && bmp.PixelHeight > 0)
+            {
+                double targetAspect = (double)bmp.PixelWidth / bmp.PixelHeight;
+                if (targetAspect <= 0) return;
+
+                if (_currentView == ViewState.WindowZen)
+                {
+                    double newWidth = this.ActualHeight * targetAspect;
+                    if (newWidth < 220) newWidth = 220;
+                    if (newWidth > SystemParameters.VirtualScreenWidth * 0.95)
+                    {
+                        newWidth = SystemParameters.VirtualScreenWidth * 0.95;
+                        this.Height = newWidth / targetAspect;
+                    }
+                    this.Width = newWidth;
+                    TxtStatus.Text = $"Ventana auto-ajustada al vídeo ({bmp.PixelWidth}x{bmp.PixelHeight})";
+                }
+                else if (_currentView == ViewState.Normal)
+                {
+                    double extraHeight = (HeaderBorder?.ActualHeight ?? 130) + (FooterBorder?.ActualHeight ?? 30);
+                    double availableHeight = Math.Max(200, this.ActualHeight - extraHeight);
+                    double newWidth = availableHeight * targetAspect;
+                    if (newWidth >= 460)
+                    {
+                        this.Width = Math.Min(newWidth, SystemParameters.VirtualScreenWidth * 0.9);
+                    }
+                    TxtStatus.Text = $"Ventana auto-ajustada al vídeo ({bmp.PixelWidth}x{bmp.PixelHeight})";
+                }
+            }
+        }
+
+        private void ToggleStretchMode()
+        {
+            _isFillMode = !_isFillMode;
+            if (ViewportViewbox != null)
+            {
+                ViewportViewbox.Stretch = _isFillMode ? Stretch.UniformToFill : Stretch.Uniform;
+            }
+            if (IcoFsStretch != null)
+            {
+                IcoFsStretch.Fill = new SolidColorBrush(_isFillMode ? Color.FromRgb(56, 189, 248) : Color.FromRgb(163, 230, 53));
+            }
+            TxtStatus.Text = _isFillMode ? "Modo de vídeo: Rellenar ventana (sin bordes negros)" : "Modo de vídeo: Ajustar completo (proporción original)";
+        }
+
+        private void BtnFsAutoFit_Click(object sender, RoutedEventArgs e) => AutoFitWindowToTarget();
+        private void BtnFsStretch_Click(object sender, RoutedEventArgs e) => ToggleStretchMode();
+
+        private void OnWindowSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (_currentView == ViewState.WindowZen && _targetHwnd != IntPtr.Zero && _syncTargetSizeEnabled && e.PreviousSize.Width > 0)
+            {
+                _syncSizeTimer.Stop();
+                _syncSizeTimer.Start();
+            }
+        }
+
+        private void SyncTargetWindowSize()
+        {
+            if (_targetHwnd == IntPtr.Zero || !Win32.IsWindow(_targetHwnd)) return;
+
+            double curW = this.ActualWidth;
+            double curH = this.ActualHeight;
+
+            int newTargetW = (_currentAngle == 90 || _currentAngle == 270) ? (int)curH : (int)curW;
+            int newTargetH = (_currentAngle == 90 || _currentAngle == 270) ? (int)curW : (int)curH;
+
+            if (newTargetW >= 200 && newTargetH >= 200)
+            {
+                Win32.SetWindowPos(_targetHwnd, IntPtr.Zero, 0, 0, newTargetW, newTargetH,
+                    Win32.SWP_NOMOVE | Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
+            }
+        }
+
         private void BtnFullscreen_Click(object sender, RoutedEventArgs e)
         {
             SetViewState(_currentView == ViewState.Fullscreen ? ViewState.Normal : ViewState.Fullscreen);
@@ -1349,13 +1461,17 @@ namespace AlwaysRotate
                     HeaderBorder.Visibility = Visibility.Visible;
                     FooterBorder.Visibility = Visibility.Visible;
 
-                    // Ensure standard window frame
                     if (WindowState == WindowState.Maximized)
                     {
                         WindowState = WindowState.Normal;
                     }
-                    WindowStyle = WindowStyle.SingleBorderWindow;
+                    WindowStyle = WindowStyle.None;
                     ResizeMode = ResizeMode.CanResize;
+                    if (AppChrome != null)
+                    {
+                        AppChrome.CaptionHeight = 0;
+                        AppChrome.ResizeBorderThickness = new Thickness(8);
+                    }
                     break;
 
                 case ViewState.WindowZen:
@@ -1363,13 +1479,17 @@ namespace AlwaysRotate
                     HeaderBorder.Visibility = Visibility.Collapsed;
                     FooterBorder.Visibility = Visibility.Collapsed;
 
-                    // Keep normal window frame so titlebar and borders are 100% native Windows
                     if (WindowState == WindowState.Maximized)
                     {
                         WindowState = WindowState.Normal;
                     }
-                    WindowStyle = WindowStyle.SingleBorderWindow;
+                    WindowStyle = WindowStyle.None;
                     ResizeMode = ResizeMode.CanResize;
+                    if (AppChrome != null)
+                    {
+                        AppChrome.CaptionHeight = 0;
+                        AppChrome.ResizeBorderThickness = new Thickness(8);
+                    }
 
                     // Configure HUD toggle button
                     if (IcoFsToggleMode != null)
@@ -1393,6 +1513,11 @@ namespace AlwaysRotate
                     // Borderless Fullscreen
                     WindowStyle = WindowStyle.None;
                     ResizeMode = ResizeMode.NoResize;
+                    if (AppChrome != null)
+                    {
+                        AppChrome.CaptionHeight = 0;
+                        AppChrome.ResizeBorderThickness = new Thickness(0);
+                    }
                     WindowState = WindowState.Maximized;
 
                     // Configure HUD toggle button
@@ -1820,6 +1945,14 @@ namespace AlwaysRotate
         {
             if (_isSimulatingInput)
             {
+                e.Handled = true;
+                return;
+            }
+
+            // Double click on viewport auto-fits window to video aspect ratio
+            if (e.ClickCount == 2)
+            {
+                AutoFitWindowToTarget();
                 e.Handled = true;
                 return;
             }

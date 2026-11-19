@@ -23,7 +23,18 @@
         Closing="Window_Closing"
         Deactivated="Window_Deactivated"
         PreviewKeyDown="Window_PreviewKeyDown"
-        PreviewMouseMove="Window_PreviewMouseMove">
+        PreviewMouseMove="Window_PreviewMouseMove"
+        WindowStyle="None"
+        ResizeMode="CanResize">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome x:Name="AppChrome"
+                      CaptionHeight="0"
+                      ResizeBorderThickness="8"
+                      CornerRadius="0"
+                      GlassFrameThickness="0"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
 
     <Window.Resources>
         <!-- Modern Fluent ToggleSwitch Style -->
@@ -322,8 +333,57 @@
         </Grid.RowDefinitions>
 
         <!-- 1. Header Toolbar Card -->
-        <Border x:Name="HeaderBorder" Grid.Row="0" Background="#14141a" BorderBrush="#262633" BorderThickness="0,0,0,1" Padding="14,12">
+        <Border x:Name="HeaderBorder" Grid.Row="0" Background="#14141a" BorderBrush="#262633" BorderThickness="0,0,0,1" Padding="14,8,14,12">
             <StackPanel Orientation="Vertical">
+
+                <!-- Row 0: App Custom Title Bar (Drag & Window Controls) -->
+                <Grid Margin="0,0,0,8" Background="Transparent" MouseDown="TitleBar_MouseDown">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Image Source="app_icon.ico" Width="15" Height="15" Margin="0,0,7,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="AlwaysRotate" FontSize="11.5" FontWeight="SemiBold" Foreground="#a1a1aa" VerticalAlignment="Center"/>
+                        <TextBlock Text="v3.4" FontSize="9" Foreground="#6366f1" Margin="6,0,0,0" VerticalAlignment="Center" FontWeight="Bold"/>
+                    </StackPanel>
+
+                    <!-- Window Control Buttons (Minimize, Maximize, Close) -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Click="BtnWinMin_Click" ToolTip="Minimizar" Width="30" Height="22"
+                                Background="Transparent" BorderThickness="0" Cursor="Hand" Margin="2,0">
+                            <TextBlock Text="—" FontSize="10" Foreground="#a1a1aa" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Button>
+                        <Button Click="BtnWinMax_Click" ToolTip="Maximizar / Restaurar" Width="30" Height="22"
+                                Background="Transparent" BorderThickness="0" Cursor="Hand" Margin="2,0">
+                            <TextBlock Text="□" FontSize="11" Foreground="#a1a1aa" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Button>
+                        <Button Click="BtnWinClose_Click" ToolTip="Cerrar" Width="30" Height="22"
+                                Background="Transparent" BorderThickness="0" Cursor="Hand" Margin="2,0">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="bd" Background="Transparent" CornerRadius="4">
+                                                    <TextBlock x:Name="tb" Text="✕" FontSize="11" Foreground="#a1a1aa" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="bd" Property="Background" Value="#e11d48"/>
+                                                        <Setter TargetName="tb" Property="Foreground" Value="#ffffff"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Grid>
 
                 <!-- Row 1: Target Window Selector, Refresh & Info -->
                 <Grid Margin="0,0,0,12">
@@ -491,7 +551,7 @@
                   MouseWheel="ViewportContainer_MouseWheel">
 
                 <!-- Viewbox with smooth scaling -->
-                <Viewbox Stretch="Uniform">
+                <Viewbox x:Name="ViewportViewbox" Stretch="Uniform">
                     <Image x:Name="RotatedImageHost" RenderOptions.BitmapScalingMode="HighQuality"/>
                 </Viewbox>
 
@@ -551,7 +611,25 @@
                             </Border>
                         </Button>
 
-                        <!-- 5. Toggle Fullscreen / Window Zen -->
+                        <!-- 5. Auto-Ajustar a la proporción del vídeo (Eliminar bandas negras) -->
+                        <Button x:Name="BtnFsAutoFit" Click="BtnFsAutoFit_Click" Style="{StaticResource HudBtn}"
+                                ToolTip="Auto-ajustar ventana a la proporción del vídeo (Elimina bandas negras)" Margin="2,0" Width="34" Height="34">
+                            <Border x:Name="BdFsAutoFit" Background="#1e1e28" BorderBrush="#383848" BorderThickness="1" CornerRadius="17" Width="34" Height="34">
+                                <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"
+                                      Fill="#38bdf8" Width="12" Height="12" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Button>
+
+                        <!-- 6. Alternar Ajustar / Rellenar sin bandas -->
+                        <Button x:Name="BtnFsStretch" Click="BtnFsStretch_Click" Style="{StaticResource HudBtn}"
+                                ToolTip="Alternar modo: Ajustar completo / Rellenar 100% sin bandas" Margin="2,0" Width="34" Height="34">
+                            <Border x:Name="BdFsStretch" Background="#1e1e28" BorderBrush="#383848" BorderThickness="1" CornerRadius="17" Width="34" Height="34">
+                                <Path x:Name="IcoFsStretch" Data="M3 5v4h2V5h4V3H5c-1.1 0-2 .9-2 2zm2 10H3v4c0 1.1.9 2 2 2h4v-2H5v-4zm14 4h-4v2h4c1.1 0 2-.9 2-2v-4h-2v4zm0-16h-4v2h4v4h2V5c0-1.1-.9-2-2-2z"
+                                      Fill="#a3e635" Width="12" Height="12" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Button>
+
+                        <!-- 7. Toggle Fullscreen / Window Zen -->
                         <Button x:Name="BtnFsToggleMode" Click="BtnFsToggleMode_Click" Style="{StaticResource HudBtn}"
                                 Margin="2,0" Width="34" Height="34">
                             <Border x:Name="BdFsToggleMode" Background="#1e1e28" BorderBrush="#383848" BorderThickness="1" CornerRadius="17" Width="34" Height="34">
