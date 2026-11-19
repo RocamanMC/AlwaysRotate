@@ -1019,7 +1019,38 @@
                                         </Grid>
                                     </Border>
 
-                                    <!-- Row 3: Iniciar con Windows -->
+                                    <!-- Row 3: Al Finalizar o Colgar la Ventana -->
+                                    <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,10" Margin="0,0,0,8">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <StackPanel Grid.Row="0" Margin="0,0,0,6">
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+                                                          Fill="#f43f5e" Width="12" Height="12" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Al Colgar o Cerrarse la Ventana" FontSize="12" FontWeight="SemiBold" Foreground="#f4f4f5"/>
+                                                </StackPanel>
+                                                <TextBlock Text="Acción al finalizar la llamada o cerrarse la app capturada" FontSize="10.5" Foreground="#94a3b8" Margin="0,1,0,0"/>
+                                            </StackPanel>
+                                            <Border Grid.Row="1" Background="#0f0f16" BorderBrush="#2b2b3d" BorderThickness="1" CornerRadius="8" Padding="2">
+                                                <UniformGrid Columns="3">
+                                                    <Button x:Name="BtnOnCloseLogo" Click="BtnOnCloseAction_Click" Tag="Placeholder" Style="{StaticResource SegmentBtn}">
+                                                        <TextBlock Text="Mostrar Logo" FontSize="10.5" FontWeight="Bold"/>
+                                                    </Button>
+                                                    <Button x:Name="BtnOnCloseWhatsApp" Click="BtnOnCloseAction_Click" Tag="SwitchToParent" Style="{StaticResource SegmentBtn}">
+                                                        <TextBlock Text="Cambiar a WhatsApp" FontSize="10.5" FontWeight="Bold"/>
+                                                    </Button>
+                                                    <Button x:Name="BtnOnCloseExit" Click="BtnOnCloseAction_Click" Tag="CloseApp" Style="{StaticResource SegmentBtn}" Margin="0">
+                                                        <TextBlock Text="Cerrar App" FontSize="10.5" FontWeight="Bold"/>
+                                                    </Button>
+                                                </UniformGrid>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Row 4: Iniciar con Windows -->
                                     <Border Background="#161622" BorderBrush="#272738" BorderThickness="1" CornerRadius="10" Padding="14,9" Margin="0,0,0,8">
                                         <Grid>
                                             <Grid.ColumnDefinitions>

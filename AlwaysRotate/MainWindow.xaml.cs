@@ -44,6 +44,8 @@ namespace AlwaysRotate
         private int _targetFps = 60;
         private string _scalingMode = "HighQuality";
         private string _currentTheme = "Indigo";
+        private string _onTargetCloseAction = "Placeholder"; // "Placeholder", "SwitchToParent", "CloseApp"
+        private int _failedCaptureCount = 0;
 
         public class CustomShortcut
         {
@@ -298,6 +300,7 @@ namespace AlwaysRotate
 
             ApplyTheme(_currentTheme);
             UpdateHotkeyButtonVisuals();
+            UpdateOnCloseActionButtons();
             SetFps(_targetFps);
             SetQuality(_scalingMode);
             ApplyAngle(_currentAngle);
@@ -515,6 +518,13 @@ namespace AlwaysRotate
                 return;
             }
 
+            // Detect if target window has been closed or destroyed (e.g. hang up videocall)
+            if (!Win32.IsWindow(_targetHwnd))
+            {
+                HandleTargetWindowClosed();
+                return;
+            }
+
             if (_isAlwaysOnTop && !_isSimulatingInput && !_isForwardingWheel)
             {
                 IntPtr handle = new WindowInteropHelper(this).Handle;
@@ -532,6 +542,7 @@ namespace AlwaysRotate
             bool captured = _engine.Capture(_targetHwnd, _currentAngle);
             if (captured && _engine.CurrentBitmap != null)
             {
+                _failedCaptureCount = 0;
                 if (RotatedImageHost.Source != _engine.CurrentBitmap)
                 {
                     RotatedImageHost.Source = _engine.CurrentBitmap;
@@ -540,6 +551,13 @@ namespace AlwaysRotate
             }
             else
             {
+                _failedCaptureCount++;
+                // If capture fails continuously and window is not visible or 0x0 size, trigger closed handler
+                if (_failedCaptureCount > 25 && (!Win32.IsWindowVisible(_targetHwnd) || (Win32.GetWindowRect(_targetHwnd, out var r) && (r.Width <= 0 || r.Height <= 0))))
+                {
+                    HandleTargetWindowClosed();
+                    return;
+                }
                 TxtStatus.Text = $"Esperando señal de: {_targetTitle}";
             }
         }
@@ -737,6 +755,7 @@ namespace AlwaysRotate
             UpdateQualityButtonStyles();
             _recordingActionId = null;
             UpdateHotkeyButtonVisuals();
+            UpdateOnCloseActionButtons();
             SetActiveTab(0);
             InfoOverlay.Visibility = Visibility.Visible;
         }
@@ -823,6 +842,7 @@ namespace AlwaysRotate
             UpdateQualityButtonStyles();
             UpdateThemeButtonStyles();
             UpdateHotkeyButtonVisuals();
+            UpdateOnCloseActionButtons();
             SaveConfig();
         }
 
@@ -1051,6 +1071,108 @@ namespace AlwaysRotate
             }
         }
 
+        #region On Target Close Action
+        private void BtnOnCloseAction_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string action)
+            {
+                _onTargetCloseAction = action;
+                UpdateOnCloseActionButtons();
+                SaveConfig();
+                TxtStatus.Text = action switch
+                {
+                    "SwitchToParent" => "Al colgar: Conmutar a WhatsApp automáticamente",
+                    "CloseApp" => "Al colgar: Cerrar AlwaysRotate",
+                    _ => "Al colgar: Mostrar logo limpio"
+                };
+            }
+        }
+
+        private void UpdateOnCloseActionButtons()
+        {
+            var cur = AvailableThemes.TryGetValue(_currentTheme, out var t) ? t : AvailableThemes["Indigo"];
+
+            void StyleBtn(Button? btn, bool active)
+            {
+                if (btn == null) return;
+                if (active)
+                {
+                    btn.Background = new SolidColorBrush(cur.AccentDark);
+                    btn.BorderBrush = new SolidColorBrush(cur.AccentBorder);
+                    btn.Foreground = Brushes.White;
+                }
+                else
+                {
+                    btn.Background = new SolidColorBrush(Color.FromRgb(26, 26, 36));
+                    btn.BorderBrush = new SolidColorBrush(Color.FromRgb(45, 45, 60));
+                    btn.Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184));
+                }
+            }
+
+            StyleBtn(BtnOnCloseLogo, _onTargetCloseAction == "Placeholder");
+            StyleBtn(BtnOnCloseWhatsApp, _onTargetCloseAction == "SwitchToParent");
+            StyleBtn(BtnOnCloseExit, _onTargetCloseAction == "CloseApp");
+        }
+
+        private void HandleTargetWindowClosed()
+        {
+            IntPtr oldHwnd = _targetHwnd;
+            _failedCaptureCount = 0;
+
+            switch (_onTargetCloseAction)
+            {
+                case "CloseApp":
+                    this.Close();
+                    break;
+
+                case "SwitchToParent":
+                    IntPtr nextHwnd = FindWhatsAppMainWindow(oldHwnd);
+                    if (nextHwnd != IntPtr.Zero && nextHwnd != oldHwnd)
+                    {
+                        SetTarget(nextHwnd);
+                        TxtStatus.Text = "Llamada finalizada: Conmutado a WhatsApp";
+                        return;
+                    }
+                    ResetToPlaceholder("Llamada finalizada: Sin ventana activa");
+                    break;
+
+                case "Placeholder":
+                default:
+                    ResetToPlaceholder("Llamada o ventana finalizada");
+                    break;
+            }
+        }
+
+        private void ResetToPlaceholder(string statusMsg)
+        {
+            _targetHwnd = IntPtr.Zero;
+            _targetTitle = string.Empty;
+            RotatedImageHost.Source = null;
+            PlaceholderOverlay.Visibility = Visibility.Visible;
+            if (CmbWindows != null) CmbWindows.SelectedIndex = -1;
+            TxtStatus.Text = statusMsg;
+        }
+
+        private IntPtr FindWhatsAppMainWindow(IntPtr excludeHwnd)
+        {
+            try
+            {
+                var windows = Win32.GetOpenWindows(excludeHwnd);
+                var waWin = windows.FirstOrDefault(w => w.Handle != excludeHwnd &&
+                    (w.ProcessName.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase) ||
+                     w.Title.Contains("WhatsApp", StringComparison.OrdinalIgnoreCase)) &&
+                    Win32.IsWindowVisible(w.Handle));
+
+                if (waWin != null)
+                {
+                    return waWin.Handle;
+                }
+            }
+            catch { }
+            return IntPtr.Zero;
+        }
+        #endregion
+
         #region Hotkey Customization & Rebinding
         private void BtnHk_Click(object sender, RoutedEventArgs e)
         {
@@ -1073,6 +1195,7 @@ namespace AlwaysRotate
             _recordingActionId = null;
             InitializeDefaultShortcuts();
             UpdateHotkeyButtonVisuals();
+            UpdateOnCloseActionButtons();
             SaveConfig();
             TxtStatus.Text = "Atajos de teclado restablecidos a valores de fábrica.";
         }
@@ -1244,6 +1367,10 @@ namespace AlwaysRotate
                             }
                         }
                     }
+                    if (doc.RootElement.TryGetProperty("onTargetCloseAction", out var closeActionElem))
+                    {
+                        _onTargetCloseAction = closeActionElem.GetString() ?? "Placeholder";
+                    }
                     if (_rememberState)
                     {
                         if (doc.RootElement.TryGetProperty("lastAngle", out var aElem))
@@ -1294,7 +1421,8 @@ namespace AlwaysRotate
                     theme = _currentTheme,
                     windowWidth = saveW,
                     windowHeight = saveH,
-                    shortcuts = shortcutsDict
+                    shortcuts = shortcutsDict,
+                    onTargetCloseAction = _onTargetCloseAction
                 };
                 string json = JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
                 System.IO.File.WriteAllText(ConfigPath, json);
